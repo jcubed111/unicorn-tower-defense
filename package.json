@@ -1,0 +1,25 @@
+{
+  "name": "js13kgames2026",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "make all"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLISCENSED",
+  "dependencies": {
+    "advzip-bin": "^2.0.0",
+    "colord": "^2.9.3",
+    "google-closure-compiler": "^20260811.0.0",
+    "html-minifier": "^4.0.0",
+    "postcss": "^8.5.26",
+    "postcss-cli": "^11.0.1",
+    "postcss-colormin": "^8.0.3",
+    "sass": "^1.102.0",
+    "terser": "^5.50.0",
+    "tone": "^15.5.36",
+    "uglify-js": "^3.19.3"
+  }
+}
