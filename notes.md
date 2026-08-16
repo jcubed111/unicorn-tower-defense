@@ -23,21 +23,38 @@ Simulation
     - unicorn farmer
     - unicorn cafe
 
-Tower Defense
-    - multiple colors of towers
-    - combining colors (in patterns?) creates different effects
-    - eg, start with only primary colors of rgb
-        - [r] bolt
-        - [g] poison
-        - [b] slow
-    - then [r][g] -> [yllw] (lightning)
-    > An EVIL WIZARD has descended upon the realm (that's you)
-    > You've stolen the GOLDEN HORN, but the unicorns want it back (obviously)
-    > Defend your RIGHTEOUSLY STOLEN BOOTY from the attacking hoards! (or die trying)
+### Tower Defense
+- multiple colors of towers
+- combining colors (in patterns?) creates different effects
+- eg, start with only primary colors of rgb
+    - [r] bolt
+    - [g] poison
+    - [b] slow
+- then [r][g] -> [yllw] (lightning)
 
-Unicorn auto battler
+> An EVIL WIZARD has descended upon the realm (that's you)
+> You've stolen the GOLDEN HORN, but the unicorns want it back (obviously)
+> Defend your RIGHTEOUSLY STOLEN BOOTY from the attacking hoards! (or die trying)
 
-"Unicorn Warlord"
+Tower types:
+- red $5: area blast (long cooldown, hits all in range)
+- green $3: bolt (short cooldown, hits one)
+- blue $1: wall (blocks path)
+
+- r-g-r: orange, applies fire aoe
+- r-g: yellow, lightning, chain=sum(level)
+- g-b: cyan, freeze single target for sum(level) secs
+- g-g-r: greenyellow, poison single target (ignores armor)
+- 2x2b square: lightblue, passive slow aoe
+- r-b magenta:
+- b-b-r-b-b: purple, fear tower, makes enemies flee for some time
+
+The tower combination algo works from most cells -> least. So dual towers will break easily but large shapes are stickier. Combo algo should be idempotent, so recomputing doesn't create new tower objects. Maybe key results by pos+type?
+
+
+### Unicorn auto battler
+
+### "Unicorn Warlord"
     - send waves of unicorns into battle against [enemy]
     - like that base defense flash game, except waves of enemies (so asymmetric)
     - killing enemies gives mana, which you use to upgrade your infra

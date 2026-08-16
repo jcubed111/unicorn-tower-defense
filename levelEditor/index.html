@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Level Editor</title>
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    background: #222;
+    color: #eee;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 24px;
+  }
+
+  #grid {
+    display: grid;
+    grid-template-columns: repeat(16, 24px);
+    grid-template-rows: repeat(16, 24px);
+    gap: 1px;
+    background: #444;
+    border: 1px solid #444;
+  }
+
+  .cell {
+    width: 24px;
+    height: 24px;
+    background: #111;
+    cursor: pointer;
+    display: block;
+    touch-action: none;
+    user-select: none;
+  }
+
+  .cell.filled {
+    background: #eee;
+  }
+
+  .cell input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .encoded-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  #encoded,
+  #base64 {
+    font-family: monospace;
+    font-size: 14px;
+    width: 420px;
+    padding: 4px 6px;
+  }
+
+  .ascii-row {
+    align-items: flex-start;
+  }
+
+  /* Value is a single unbroken line; the box is sized to exactly 16 chars so
+     it soft-wraps back into the 16x16 shape on screen. */
+  #ascii {
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.15;
+    width: 16ch;
+    padding: 4px 6px;
+    resize: none;
+    overflow: hidden;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    background: #111;
+    color: #eee;
+    border: 1px solid #555;
+  }
+
+  #byte-count,
+  #base64-byte-count,
+  #ascii-byte-count {
+    font-size: 12px;
+    color: #aaa;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+  <h1>Level Editor</h1>
+
+  <div id="grid"></div>
+
+  <div class="encoded-row">
+    <label for="encoded">Encoded:</label>
+    <input id="encoded" type="text" spellcheck="false" autocomplete="off">
+    <span id="byte-count"></span>
+  </div>
+
+  <div class="encoded-row">
+    <label for="base64">Base64:</label>
+    <input id="base64" type="text" spellcheck="false" autocomplete="off">
+    <span id="base64-byte-count"></span>
+  </div>
+
+  <div class="encoded-row ascii-row">
+    <label for="ascii">ASCII:</label>
+    <textarea id="ascii" rows="16" spellcheck="false" autocomplete="off"></textarea>
+    <span id="ascii-byte-count"></span>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>

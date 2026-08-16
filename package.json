@@ -21,5 +21,10 @@
     "terser": "^5.50.0",
     "tone": "^15.5.36",
     "uglify-js": "^3.19.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "chokidar": "^3.6.0"
+    }
   }
 }

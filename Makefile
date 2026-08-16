@@ -1,4 +1,6 @@
 JS_FILES := \
+	src/utils.js \
+	src/tower.js \
 	src/main.js
 
 IMAGES := $(wildcard src/*.png)
