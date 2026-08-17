@@ -50,7 +50,9 @@ function render(mainCanvas, terrain) {
 
             const maybeComputedTower = terrain.computedTowers[x][y];
             if(maybeComputedTower) {
-                renderTower(x, y, maybeComputedTower, ...terrain.rawTowers[x][y])
+                for(const s of getTowerSprites(x, y, maybeComputedTower, ...terrain.rawTowers[x][y])) {
+                    renderSprite(x, y, s);
+                }
             }
 
             // render descent map for debug
@@ -60,7 +62,7 @@ function render(mainCanvas, terrain) {
         });
     });
 
-    function renderTower(x, y, computedTower, rawTowerType, rawTowerLevel) {
+    function * getTowerSprites(x, y, computedTower, rawTowerType, rawTowerLevel) {
         const towerTypeIndex = {'r': 0, 'g': 1, 'b': 2}[rawTowerType];
         const innerSprite = sprites[towerTypeIndex * 4 + rawTowerLevel + 3];
         const outerColor = computedTower.getColor();
@@ -69,29 +71,28 @@ function render(mainCanvas, terrain) {
             normalizedTowerRgb(rawTowerType == 'r', rawTowerType == 'g', rawTowerType == 'b'),
             0.5,
         );
-        renderSprite(x, y, innerSprite, 0, colorAsString(innerColor));
+        yield innerSprite.withColor(innerColor);
 
         for(const [sideRot, isSameTower] of [
             [0, terrain.computedTowers[x]?.[y - 1] == computedTower],
-            [1, terrain.computedTowers[x + 1]?.[y] == computedTower],
+            [1, terrain.computedTowers[x - 1]?.[y] == computedTower],
             [2, terrain.computedTowers[x]?.[y + 1] == computedTower],
-            [3, terrain.computedTowers[x - 1]?.[y] == computedTower],
+            [3, terrain.computedTowers[x + 1]?.[y] == computedTower],
         ]) {
-            renderSprite(x, y, sprites[+isSameTower], sideRot, colorAsString(outerColor));
+            yield sprites[+isSameTower].withRot(sideRot).withColor(outerColor);
         }
-
-        // ctx.fillStyle = computedTower.getColor();
-        // ctx.fillRect(x + 1/15, y + 1/15, 13/15, 13/15);
-        // ctx.fillStyle = {r: '#f00', g: '#0c0', b: '#54f'}[rawTowerType];
-        // ctx.fillRect(x + 3/15, y + 3/15, 9/15, 9/15);
     }
 
-    function renderSprite(x, y, sprite, rot, useColor='#fff') {
-        ctx.save();
-        ctx.translate(x + 0.5, y + 0.5);
-        ctx.rotate(rot * Math.PI / 2);
-        ctx.drawImage(sprite.asImageWithColor(useColor), -0.5, -0.5, 1, 1);
-        ctx.restore();
+    // function renderSprite(x, y, sprite, rot, useColor='#fff') {
+    //     ctx.save();
+    //     ctx.translate(x + 0.5, y + 0.5);
+    //     ctx.rotate(rot * Math.PI / 2);
+    //     ctx.drawImage(sprite.asImageWithColor(useColor), -0.5, -0.5, 1, 1);
+    //     ctx.restore();
+    // }
+
+    function renderSprite(x, y, sprite) {
+        ctx.drawImage(sprite.asImage, x, y, 1, 1);
     }
 }
 

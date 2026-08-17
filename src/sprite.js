@@ -13,16 +13,15 @@ class Sprite{
             );
     }
 
-    _imageColorCache = {};
-    asImageWithColor(c) {
-        return this._imageColorCache[c] ??= (() => {
-            const canvas = new OffscreenCanvas(this.asImage.width, this.asImage.height);
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(this.asImage, 0, 0);
-            ctx.globalCompositeOperation = 'source-atop';
-            ctx.fillStyle = c;
-            ctx.fillRect(0, 0, 1e8, 1e8);
-            return canvas;
-        })();
+    _withColorCache = {};
+    withColor(c) {
+        return this._withColorCache[colorAsString(c)] ??= new Sprite(
+            mapGrid2d(this.data2d, v => multiplyColor(v, c))
+        );
+    }
+
+    _withRotCache = {};
+    withRot(n) {
+        return this._withRotCache[n] ??= new Sprite(rotGrid2dMulti(this.data2d, n));
     }
 }

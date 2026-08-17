@@ -45,6 +45,7 @@ const mapGrid2d = (grid, cb) => grid.map((row, x) => row.map((cell, y) => cb(cel
 
 const transposeGrid2d = grid => grid[0].map((_, i) => grid.map(row => row[i]));
 const rotGrid2d = grid => transposeGrid2d(grid).reverse();
+const rotGrid2dMulti = (grid, rot) => (rot & 3) == 0 ? grid : rotGrid2dMulti(rotGrid2d(grid), rot - 1);
 const allFormsGrid2d = grid => {
     const result = [
         grid,
@@ -64,3 +65,4 @@ const grid2dToIndexed = grid => grid.flatMap((row, x) => row.map((cell, y) => [x
 const lerpColor = (a, b, f) => a.map((v, i) => v * (1 - f) + b[i] * f);
 const clampColorComponent = v => v < 0 ? 0 : v > 255 ? 255 : ~~v;
 const colorAsString = c => `#` + c.map(v => clampColorComponent(v).toString(16).padStart(2, '0')).join('');
+const multiplyColor = (a, b) => a.map((v, i) => v * b[i] / 255);
