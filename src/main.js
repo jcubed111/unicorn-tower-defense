@@ -22,7 +22,11 @@ window.onload = () => {
             ),
             "Draw",
             ...range(3).map(i => {
-                const button = styled('button', '', {}, 'rgb'[i]);
+                const button = styled('button', 'C_RuneDrawSelectButton', {},
+                    sprites[i * 4 + 4].withColor(
+                        normalizedTowerRgb(i == 0, i == 1, i == 2),
+                    ).asImage
+                );
                 button.addEventListener('click', _ => drawType = i + 1);
                 return button;
             }),

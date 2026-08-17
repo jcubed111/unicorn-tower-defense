@@ -7,13 +7,18 @@ class Sprite{
         const height = data2d.length;
         const width = data2d[0].length;
 
-        (this.asImage = new OffscreenCanvas(width, height))
-            .getContext('2d').putImageData(
+        this.asImage = (() => {
+            const canvas = styled('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            canvas.getContext('2d').putImageData(
                 // flat(2) gives us a flat run of r,g,b,a,r,g,b,a,...
                 new ImageData(new Uint8ClampedArray(data2d.flat(2)), width),
                 0,
                 0,
             );
+            return canvas;
+        })();
         // as indexed drops transparent pixels
         this.asIndexed = grid2dToIndexed(data2d).filter(([x,y,c]) => c[3] > 0);
     }
