@@ -15,11 +15,11 @@ function TowerPattern(stringRepr) {
     };
 }
 
-const normalizedRgb = (r, g, b) => {
+const normalizedTowerRgb = (r, g, b) => {
     const m = Math.max(r, g, b);
-    if(!m) return `#000`;
+    if(!m) return [0, 0, 0, 255];
     // We boost the luminance of blue, and drop the luminance of green, so it looks more aligned visually.
-    return `rgb(${r * 255 + 76 * b},${g * 204 + b * 61},${b * 255})`;
+    return [r * 255 + 76 * b, g * 204 + b * 61, b * 255, 255].map(clampColorComponent);
 }
 
 class Tower{
@@ -29,7 +29,7 @@ class Tower{
     }
 
     getColor() {
-        return normalizedRgb(
+        return normalizedTowerRgb(
             this.componentTowers.filter(([_, t]) => t == 'r').length,
             this.componentTowers.filter(([_, t]) => t == 'g').length,
             this.componentTowers.filter(([_, t]) => t == 'b').length,

@@ -1,6 +1,13 @@
+ASEPRITE := "$$HOME/Library/Application Support/Steam/steamapps/common/Aseprite/Aseprite.app/Contents/MacOS/aseprite"
+
+SPRITE_SIZE := 15
+
 JS_FILES := \
 	src/utils.js \
+	src/sprite.js \
+	dev/sprites.js \
 	src/tower.js \
+	src/terrain.js \
 	src/main.js
 
 IMAGES := $(wildcard src/*.png)
@@ -31,6 +38,10 @@ dev/%.js: src/%.js
 dev/styles.css: build/styles-min.css
 	cp $^ $@
 
+dev/sprites.js: build/sprites.png scripts/compileSprites.js
+	@echo $@ "<-" $^
+	@node scripts/compileSprites.js $< $@ $(SPRITE_SIZE)
+
 dev/index.html: build/index.html $(IMAGES_DEV) $(JS_DEV) scripts/combine-dev.py dev/styles.css
 	python3 scripts/combine-dev.py $(JS_DEV) > $@
 
@@ -51,6 +62,10 @@ build/main-min.js: build/main-max.js
 # 	    --mangle \
 # 	    --toplevel \
 # 	    --output $@
+
+build/sprites.png: src/sprites.aseprite
+	@echo $@ "<-" $^
+	@$(ASEPRITE) -b $^ --sheet-type horizontal --sheet $@ > /dev/null
 
 build/styles-min.css: src/styles.scss scripts/optimize-css.js
 	@echo $@ "<-" $<
