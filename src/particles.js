@@ -106,10 +106,6 @@ const ParticleSystem = new class{
                     [x * 15 + fx, y * 15 + fy],
                     color,
                 ));
-                // this.addParticle(new ExplodeFadeParticle(
-                //     [x * 15, y * 15],
-                //     color,
-                // ));
             })
         );
     }

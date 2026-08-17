@@ -54,6 +54,11 @@ class Terrain{
             // error if there isn't any top spawn point
             throw 1;
         }
+        // error if any enemy is inside a WALL
+        for(const e of this.enemies) {
+            const [x, y] = e.getSquare();
+            if(y >= 0 && this.descentMap[x][y] >= DESCENT_WALL) throw 1;
+        }
 
         /* joined towers */
         const unjoinedTowerColors = mapGrid2d(this.rawTowers, t => t[0]);

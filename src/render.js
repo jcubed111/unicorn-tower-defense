@@ -2,8 +2,8 @@ function render(dt) {
     const mainCanvas = GameState.mainCanvas;
     const terrain = GameState.terrain;
 
-    // size of a visual pixel in canvas pixels
     const tileSize = 15;
+    // size of a visual pixel in canvas pixels
     const pxSize = Math.floor(
         Math.min(window.innerHeight, window.innerWidth)
         * window.devicePixelRatio
@@ -70,6 +70,19 @@ function render(dt) {
     for(const e of terrain.enemies) {
         for(const s of e.getSprites()) {
             renderSprite(e.pos[0] - 0.5, e.pos[1] - 0.5, s, e.facing);
+        }
+    }
+    // Draw enemy hp
+    for(const e of terrain.enemies) {
+        if(e.hp < e.maxHp) {
+            const [x, y] = e.pos;
+            const radius = 4 * e.maxHp / (e.maxHp + 10); // in (0, 1)
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = '#f26';
+
+            ctx.beginPath();
+            ctx.arc(x * 15, y * 15 - 8, radius, 0, Math.PI * 2 * e.hp / e.maxHp);
+            ctx.stroke();
         }
     }
 
