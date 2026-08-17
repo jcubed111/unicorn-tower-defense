@@ -47,6 +47,31 @@ class EnergyFadeParticle extends Particle{
     }
 }
 
+class ExplodeFadeParticle extends Particle{
+    constructor(pos, color, speed = randFloat(20, 25)) {
+        super(pos);
+        this.color = color;
+        const angle = randFloat(0, Math.PI * 2);
+        this.vel = [Math.cos(angle) * speed, Math.sin(angle) * speed];
+    }
+
+    render(ctx) {
+        // fade from base color -> transparent
+        const color = colorAsString(lerpColor(
+            this.color,
+            [...this.color.slice(0, -1), 0],
+            this.age / this.lifespan,
+        ));
+
+        this._render(
+            ctx,
+            this.pos[0] + this.vel[0] * this.age,
+            this.pos[1] + this.vel[1] * this.age,
+            color,
+        );
+    }
+}
+
 
 const ParticleSystem = new class{
     particles = new Set;
@@ -72,5 +97,20 @@ const ParticleSystem = new class{
             ax + (bx - ax) * i / num,
             ay + (by - ay) * i / num,
         ].map(Math.round))));
+    }
+
+    explodeSpritesAt([x, y], ...sprites) {
+        sprites.forEach(sprite =>
+            sprite.asIndexed.forEach(([fx, fy, color]) => {
+                this.addParticle(new ExplodeFadeParticle(
+                    [x * 15 + fx, y * 15 + fy],
+                    color,
+                ));
+                // this.addParticle(new ExplodeFadeParticle(
+                //     [x * 15, y * 15],
+                //     color,
+                // ));
+            })
+        );
     }
 }

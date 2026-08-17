@@ -129,7 +129,10 @@ class Terrain{
             const [tx, ty] = this.goalLocation;
             if(e.hp <= 0) {
                 this.enemies.delete(e);
-                console.log('TODO: die animation');
+                ParticleSystem.explodeSpritesAt(
+                    e.pos.map(v => v - 0.5),
+                    ...e.getSprites(),
+                );
             }else if(sx == tx && sy == ty) {
                 this.enemies.delete(e);
                 console.log('TODO: hit');

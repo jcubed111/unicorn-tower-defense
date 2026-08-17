@@ -21,7 +21,7 @@ window.onload = () => {
     GameState.terrain = new Terrain([7, 15], '....#########......#####.#####....#####...#####..#####..#..##########..###..########..#####..######..#####..########..###..##########..#..#####..#####...#####....#####.#####......#########........#######..........#####............###..............#........');
     GameState.terrain.recomputeDerivedValues();
 
-    range(10).forEach(x => GameState.terrain.enemies.add(
+    range(3).forEach(x => GameState.terrain.enemies.add(
         new Enemy(randChoice(GameState.terrain.spawnLocations), 10),
     ));
 
