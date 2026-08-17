@@ -1,3 +1,6 @@
+const tileSize = 15;
+
+
 class Sprite{
     constructor(data2d) {
         this.data2d = data2d;
@@ -31,4 +34,15 @@ class Sprite{
         const toSpawn = probRound(chance * this.asIndexed.length);
         return range(toSpawn).map(_ => randChoice(this.asIndexed));
     }
+}
+
+function renderSprite(ctx, x, y, sprite, rot=0) {
+    // renderSprite expects a ctx where 15 units = 1 tile
+    ctx.imageSmoothingEnabled = false;
+    ctx.save();
+    ctx.scale(tileSize, tileSize);
+    ctx.translate(x + 0.5, y + 0.5);
+    ctx.rotate(rot);
+    ctx.drawImage(sprite.asImage, -0.5, -0.5, 1, 1);
+    ctx.restore();
 }

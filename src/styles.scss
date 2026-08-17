@@ -6,6 +6,7 @@ body{
     justify-content: center;
     font-family: 'Iowan Old Style', 'Palatino Linotype', P052, serif;;
     height: 100vh;
+    image-rendering: pixelated;
 }
 
 .C_mainCanvas{
@@ -13,6 +14,10 @@ body{
 }
 
 .C_sidebar{
-    background: #72634f;
-    color: #261704;
+    background: #222;
+    color: #eee;
+}
+
+.C_towerName{
+    font-size: 0.6rem;
 }

@@ -3,20 +3,6 @@ const MAX_TOWER_LEVEL = 3;
 
 const decodeTowerType = n => 'rgb'.indexOf(n) + 1;
 
-function TowerPattern(stringRepr) {
-    // NOTE: super important that stringRepr is a perfect grid with every row being
-    // the same size. We don't check but the game will crash otherwise.
-    const asGrid = stringRepr.split('|').map(row => row.split('').map(decodeTowerType));
-    const allFormsAsIndexed = allFormsGrid2d(asGrid).map(
-        g => grid2dToIndexed(g).filter(g => g[2])
-    );
-    return {
-        allFormsAsIndexed,
-        // the number of towers contained in this pattern
-        size: allFormsAsIndexed[0].length,
-    };
-}
-
 const normalizedTowerRgb = (r, g, b) => {
     const m = Math.max(r, g, b);
     if(!m) return [0, 0, 0, 255];
@@ -24,7 +10,67 @@ const normalizedTowerRgb = (r, g, b) => {
     return [r / m * 255 + 76 * b / m, g / m * 204 + b / m * 61, b / m * 255, 255].map(clampColorComponent);
 }
 
+function * getTowerSprites(x, y, rawCell, outerColor, isSameAt) {
+    const [rawTowerType, rawTowerLevel] = rawCell;
+    const innerSprite = sprites[rawTowerType * 4 + rawTowerLevel - 1];
+    const innerColor = lerpColor(
+        outerColor,
+        normalizedTowerRgb(rawTowerType == 1, rawTowerType == 2, rawTowerType == 3),
+        0.5,
+    );
+    yield innerSprite.withColor(innerColor);
+
+    for(const [sideRot, isSameTower] of [
+        [0, isSameAt(x,     y - 1)],
+        [1, isSameAt(x - 1, y)],
+        [2, isSameAt(x,     y + 1)],
+        [3, isSameAt(x + 1, y)],
+    ]) {
+        yield sprites[+isSameTower].withRot(sideRot).withColor(outerColor);
+    }
+}
+
+function TowerPattern(stringRepr) {
+    // NOTE: super important that stringRepr is a perfect grid with every row being
+    // the same size. We don't check but the game will crash otherwise.
+    const asGrid = stringRepr.split('|').map(row => row.split('').map(decodeTowerType));
+    const allFormsAsIndexed = allFormsGrid2d(asGrid).map(
+        g => grid2dToIndexed(g).filter(g => g[2])
+    );
+
+    const values = range(3).fill(0);
+    mapGrid2d(asGrid, c => {
+        if(c) values[c - 1]++;
+    });
+    const outerColor = normalizedTowerRgb(...values);
+
+    const asElement = styled('canvas', 'C_towerPattern');
+    asElement.width = tileSize * asGrid[0].length;
+    asElement.height = tileSize * asGrid.length;
+    asElement.style.width = asGrid[0].length + 'rem';
+    const ctx = asElement.getContext('2d');
+    mapGrid2d(asGrid, (c, [x, y]) => {
+        for(const s of getTowerSprites(
+            x, y,
+            [c, 1],
+            outerColor,
+            (x, y) => asGrid[y]?.[x] > 0,
+        )) {
+            renderSprite(ctx, x, y, s);
+        }
+    });
+
+    return {
+        outerColor,
+        allFormsAsIndexed,
+        // the number of towers contained in this pattern
+        size: allFormsAsIndexed[0].length,
+        asElement,
+    };
+}
+
 class Tower{
+    static pattern;
     displayName = '?';
     chargeTime = 2;
     range = 4;
@@ -43,9 +89,7 @@ class Tower{
     }
 
     getColor() {
-        const values = range(3).fill(0);
-        this.componentTowers.forEach(([_, t]) => values[t - 1]++);
-        return normalizedTowerRgb(...values);
+        return this.constructor.pattern.outerColor;
     }
 
     step(dt) {
