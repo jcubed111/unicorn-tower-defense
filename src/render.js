@@ -1,3 +1,18 @@
+function renderCircleIndicator(
+    ctx,
+    x, y,
+    radius,
+    lineWidth,
+    lineColor,
+    pct,
+) {
+    ctx.lineWidth = lineWidth;
+    ctx.strokeStyle = lineColor;
+    ctx.beginPath();
+    ctx.arc(x * 15, y * 15, radius * 15, 0, Math.PI * 2 * pct);
+    ctx.stroke();
+}
+
 function render(dt) {
     const mainCanvas = GameState.mainCanvas;
     const terrain = GameState.terrain;
@@ -75,13 +90,9 @@ function render(dt) {
     for(const e of terrain.enemies) {
         if(e.hp < e.maxHp) {
             const [x, y] = e.pos;
-            const radius = 4 * e.maxHp / (e.maxHp + 10); // in (0, 1)
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = '#f26';
+            const radius = 0.27 * e.maxHp / (e.maxHp + 10); // in (0, 1)
 
-            ctx.beginPath();
-            ctx.arc(x * 15, y * 15 - 8, radius, 0, Math.PI * 2 * e.hp / e.maxHp);
-            ctx.stroke();
+            renderCircleIndicator(ctx, x, y - 0.4, radius, 1, '#f26', e.hp / e.maxHp);
         }
     }
 
@@ -92,15 +103,22 @@ function render(dt) {
     // Draw hovered tower info
     // We use `&& hoveringTile` here to distinguish from non-world towers (eg the runebook)
     if(GameState.hoveringTower && GameState.hoveringTile) {
-        ctx.lineWidth = 0.5;
-        ctx.strokeStyle = colorAsString(GameState.hoveringTower.getColor());
-        ctx.beginPath();
-        ctx.arc(
-            ...GameState.hoveringTower.center.map(v => v * 15),
-            GameState.hoveringTower.range * 15,
-            0,
-            Math.PI * 2,
+        const [x, y] = GameState.hoveringTower.center;
+        renderCircleIndicator(
+            ctx,
+            x, y,
+            GameState.hoveringTower.range,
+            0.5,
+            colorAsString(GameState.hoveringTower.getColor()),
+            1,
         );
-        ctx.stroke();
+        renderCircleIndicator(
+            ctx,
+            x, y,
+            0.125,
+            0.5,
+            '#fff',
+            GameState.hoveringTower.charge / GameState.hoveringTower.chargeTime,
+        );
     }
 }
