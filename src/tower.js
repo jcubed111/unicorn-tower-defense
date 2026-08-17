@@ -49,7 +49,7 @@ function TowerPattern(stringRepr) {
     asElement.height = tileSize * asGrid.length;
     asElement.style.width = asGrid[0].length + 'rem';
     const ctx = asElement.getContext('2d');
-    mapGrid2d(asGrid, (c, [x, y]) => {
+    mapGrid2d(asGrid, (c, [y, x]) => {
         for(const s of getTowerSprites(
             x, y,
             [c, 1],

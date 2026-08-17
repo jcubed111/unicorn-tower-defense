@@ -55,7 +55,7 @@ const minByTiesRand = (arr, cb) => {
 
 /* 2d Grid Helpers */
 const grid2d = (size, fill) => range(size).map(i => range(size).fill(fill));
-const mapGrid2d = (grid, cb) => grid.map((row, y) => row.map((cell, x) => cb(cell, [x, y], grid)));
+const mapGrid2d = (grid, cb) => grid.map((row, i) => row.map((cell, j) => cb(cell, [i, j], grid)));
 
 const transposeGrid2d = grid => grid[0].map((_, i) => grid.map(row => row[i]));
 const rotGrid2d = grid => transposeGrid2d(grid).reverse();
