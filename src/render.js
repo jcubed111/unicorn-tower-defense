@@ -24,16 +24,21 @@ function render(dt) {
 
     range(terrain.size).map(x => {
         range(terrain.size).map(y => {
+            // Ground tile
             const isGround = terrain.isGround[x][y];
             if(isGround) {
-                renderSprite(x, y, sprites[(x + 3 * y) % 7 ? 3 : 2]);
+                if(terrain.computedTowers[x][y]) {
+                    renderSprite(x, y, sprites[3].withColor([200,200,200,255]));
+                }else{
+                    renderSprite(x, y, sprites[(x + 3 * y) % 7 ? 3 : 2]);
+                }
             }else if(terrain.isGround[x][y - 1]) {
                 renderSprite(x, y, sprites[7]);
             }else{
                 renderSprite(x, y, sprites[11]);
             }
-            // ctx.fillRect(tileSize * x, tileSize * y, tileSize, tileSize);
 
+            // Tower
             const maybeComputedTower = terrain.computedTowers[x][y];
             if(maybeComputedTower) {
                 for(const s of getTowerSprites(x, y, maybeComputedTower)) {
