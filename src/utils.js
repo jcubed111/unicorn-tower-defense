@@ -6,9 +6,10 @@
 //     return styled(tagName, '', {}, ...children);
 // }
 
-// const div = (className = '', ...children) => {
-//     return styledDiv(className, {}, ...children);
-// }
+const div = (className = '', ...children) => {
+    return styled("div", className, {}, ...children);
+    // return styledDiv(className, {}, ...children);
+};
 
 // const span = (className = '', ...children) => {
 //     return styled('span', className, {}, ...children);
@@ -31,7 +32,7 @@ const styled = (tagName = "div", className = "", style = {}, ...children) => {
 
     el.append(...children.flat().filter(c => c));
     return el;
-}
+};
 
 
 /* random helpers */

@@ -8,17 +8,22 @@ function mainLoop() {
 }
 
 window.onload = () => {
-    GameState.mainCanvas = styled('canvas', 'C_mainCanvas');
-    document.body.appendChild(GameState.mainCanvas);
-
     let drawType = 1;
-    for(const i of range(3)) {
-        const button = styled('button', '', {}, 'rgb'[i]);
-        button.addEventListener('click', _ => drawType = i + 1);
-        document.body.appendChild(button);
-    }
 
-    GameState.terrain = new Terrain([7, 15], '....#########......#####.#####....#####...#####..#####..#..##########..###..########..#####..######..#####..########..###..##########..#..#####..#####...#####....#####.#####......#########........#######..........#####............###..............#........');
+    document.body.append(
+        GameState.mainCanvas = styled('canvas', 'C_mainCanvas'),
+        GameState.sidebarEl = div('C_sidebar',
+            "Runebook",
+            ...range(3).map(i => {
+                const button = styled('button', '', {}, 'rgb'[i]);
+                button.addEventListener('click', _ => drawType = i + 1);
+                return button;
+            }),
+        ),
+    );
+
+    // GameState.terrain = new Terrain([7, 15], '....#########......#####.#####....#####...#####..#####..#..##########..###..########..#####..######..#####..########..###..##########..#..#####..#####...#####....#####.#####......#########........#######..........#####............###..............#........');
+    GameState.terrain = new Terrain([7, 15], '..######..#####...#############...######..#####...######...##.....###.....##......####...#####.....####.#######.....###########.........#######..........######.......####.###.......########........#######.........######..........######............#........');
     GameState.terrain.recomputeDerivedValues();
 
     range(3).forEach(x => GameState.terrain.enemies.add(

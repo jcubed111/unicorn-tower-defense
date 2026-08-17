@@ -1,8 +1,18 @@
 body{
     margin: 0;
     background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Iowan Old Style', 'Palatino Linotype', P052, serif;;
+    height: 100vh;
 }
 
 .C_mainCanvas{
-    background: #467;
+    // background: #467;
+}
+
+.C_sidebar{
+    background: #72634f;
+    color: #261704;
 }

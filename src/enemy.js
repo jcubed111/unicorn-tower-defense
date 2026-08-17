@@ -18,6 +18,10 @@ class Enemy{
         yield sprites[16 + Math.floor(performance.now() / 200 * this.speed) % 4];
     }
 
+    takeDamage(amt) {
+        this.hp -= amt;
+    }
+
     step(dt) {
         if(!this.targetLocation) {
             // TODO: support diagonals?

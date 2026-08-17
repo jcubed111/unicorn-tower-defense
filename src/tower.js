@@ -39,6 +39,7 @@ class Tower{
             this.componentTowers.reduce((acc, [pos]) => acc + pos[0], 0) / this.componentTowers.length + 0.5,
             this.componentTowers.reduce((acc, [pos]) => acc + pos[1], 0) / this.componentTowers.length + 0.5,
         ];
+        this.level = this.componentTowers.map(t => t[2]).reduce((a, b) => a + b, 0);
     }
 
     getColor() {
@@ -62,9 +63,12 @@ class Tower{
     }
 
     hit(targetsInRange) {
-        console.log('tower bolt')
         const target = randChoice(targetsInRange);
-        target.hp -= this.damage;
+        target.takeDamage(this.damage);
+        this.boltAt(target);
+    }
+
+    boltAt(target) {
         ParticleSystem.spawnParticlePixelLine(
             this.center,
             target.pos,
@@ -78,41 +82,71 @@ const orderedTowerTypes = [
     class extends Tower{
         static pattern = TowerPattern('bbrbb');
         displayName = 'Fear';
+        // TODO
     },
     class extends Tower{
         static pattern = TowerPattern('bb|bb');
         displayName = 'Slow';
+        // TODO
     },
     class extends Tower{
         static pattern = TowerPattern('rgr');
         displayName = 'Fire';
+        // TODO
     },
     class extends Tower{
         static pattern = TowerPattern('ggr');
         displayName = 'Poison';
+        // TODO
     },
     class extends Tower{
         static pattern = TowerPattern('rg');
         displayName = 'Lightning';
+        // TODO
     },
     class extends Tower{
         static pattern = TowerPattern('gb');
         displayName = 'Freeze';
+        // TODO
     },
     class extends Tower{
         static pattern = TowerPattern('rb');
         displayName = 'Magenta';
+        // TODO
     },
+
     class extends Tower{
         static pattern = TowerPattern('r');
         displayName = 'Red';
+        keywords = 'AoE';
+        // hits all enemies in range on each shot
+        range = 3;
+        chargeTime = 4;
+        damage = 2;
+
+        hit(targetsInRange) {
+            targetsInRange.forEach(target => {
+                target.takeDamage(this.damage);
+                this.boltAt(target);
+            });
+        }
     },
+
     class extends Tower{
         static pattern = TowerPattern('g');
         displayName = 'Green';
+        // simple bolt tower
+        range = 3;
+        chargeTime = 2;
+        damage = 3;
     },
+
     class extends Tower{
         static pattern = TowerPattern('b');
         displayName = 'Blue';
+        // Doesn't attack, just blocks
+        chargeTime = 0;
+        range = 0;
+        damage = 0;
     },
 ];

@@ -5,14 +5,17 @@ function render(dt) {
     const tileSize = 15;
     // size of a visual pixel in canvas pixels
     const pxSize = Math.floor(
-        Math.min(window.innerHeight, window.innerWidth)
+        Math.min(window.innerHeight, window.innerWidth * 0.8)
         * window.devicePixelRatio
         / terrain.size
         / tileSize
     );
 
+    document.body.style.fontSize = 0.5 * pxSize * tileSize / window.devicePixelRatio + 'px';
     mainCanvas.width = mainCanvas.height = pxSize * tileSize * terrain.size;
-    mainCanvas.style.width = mainCanvas.style.height = pxSize * tileSize * terrain.size / window.devicePixelRatio + 'px';
+    const cssEdgeSize = mainCanvas.width / window.devicePixelRatio;
+    GameState.sidebarEl.style.height = mainCanvas.style.width = mainCanvas.style.height = cssEdgeSize + 'px';
+    GameState.sidebarEl.style.width = (cssEdgeSize >> 2) + 'px';
 
     const ctx = mainCanvas.getContext('2d');
     ctx.imageSmoothingEnabled = false;
