@@ -6,11 +6,14 @@ class Terrain{
     // raw towers stores primary color + level for each square.
     rawTowers = grid2d(this.size, [0, 0]); // [x][y] -> Tuple<0 | 1 (r) | 2 (g) | 3 (b), level: number = 0>
 
-    // Grid2d<Tower>
-    computedTowers = grid2d(this.size, 0);
+    computedTowers = grid2d(this.size, 0);  // Grid2d<Tower>
     computedTowerCache = {};  // Record<key, Tower>
 
-    descentMap = [];
+    descentMap = [];  // Grid2d<number>
+    spawnLocations = [];
+
+    enemies = new Set;
+    actionQueue = [];  // Array<[delayTime, cb]>
 
     constructor(goalLocation, terrainString) {
         terrainString.split('').forEach((c, i) => this.isGround[i % this.size][~~(i / this.size)] = c == '#');
@@ -43,7 +46,10 @@ class Terrain{
                 [[x, y - 1], val + 1],
             );
         }
-        if(range(this.size).every(x => this.descentMap[x][0] >= DESCENT_WALL)) {
+        this.spawnLocations = range(this.size)
+            .filter(x => this.descentMap[x][0] < DESCENT_WALL)
+            .map(x => [x, -1]);
+        if(this.spawnLocations.length == 0) {
             // error if there isn't any top spawn point
             throw 1;
         }
@@ -107,6 +113,18 @@ class Terrain{
             this.rawTowers[x][y] = [current, currentLevel];
             this.recomputeDerivedValues();
             return false;
+        }
+    }
+
+    step(dt) {
+        for(const e of this.enemies) {
+            e.step(dt);
+            const [sx, sy] = e.getSquare();
+            const [tx, ty] = this.goalLocation;
+            if(sx == tx && sy == ty) {
+                this.enemies.delete(e);
+                console.log('TODO: hit');
+            }
         }
     }
 }

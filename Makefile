@@ -8,6 +8,7 @@ JS_FILES := \
 	src/sprite.js \
 	dev/sprites.js \
 	src/gameState.js \
+	src/enemy.js \
 	src/tower.js \
 	src/terrain.js \
 	src/render.js \

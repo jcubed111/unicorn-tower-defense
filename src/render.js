@@ -58,17 +58,27 @@ function render(dt) {
                 }
             }
 
-            // render descent map for debug
-            // ctx.font = '0.2px sans-serif';
+            // // render descent map for debug
+            // ctx.font = '3px sans-serif';
             // ctx.fillStyle = `#fff`;
-            // ctx.fillText(terrain.descentMap[x][y], x + 0.1, y + 0.4);
+            // ctx.fillText(terrain.descentMap[x][y], x * tileSize + 2, y * tileSize + 2);
         });
     });
 
+    // Unmark towers as new
     mapGrid2d(terrain.computedTowers, t => t._particleFirstRender = false);
 
+    // Draw enemies
+    for(const e of terrain.enemies) {
+        for(const s of e.getSprites()) {
+            renderSprite(e.pos[0] - 0.5, e.pos[1] - 0.5, s, e.facing);
+        }
+    }
+
+    // Draw particles
     ParticleSystem.render(ctx);
     ParticleSystem.step(dt);
+
 
     function * getTowerSprites(x, y, computedTower) {
         const [rawTowerType, rawTowerLevel] = terrain.rawTowers[x][y];
@@ -91,16 +101,17 @@ function render(dt) {
         }
     }
 
-    // function renderSprite(x, y, sprite, rot, useColor='#fff') {
-    //     ctx.save();
-    //     ctx.translate(x + 0.5, y + 0.5);
-    //     ctx.rotate(rot * Math.PI / 2);
-    //     ctx.drawImage(sprite.asImageWithColor(useColor), -0.5, -0.5, 1, 1);
-    //     ctx.restore();
-    // }
-
-    function renderSprite(x, y, sprite) {
-        ctx.drawImage(sprite.asImage, tileSize * x, tileSize * y, tileSize, tileSize);
+    function renderSprite(x, y, sprite, rot=0) {
+        ctx.save();
+        ctx.scale(tileSize, tileSize);
+        ctx.translate(x + 0.5, y + 0.5);
+        ctx.rotate(rot);
+        ctx.drawImage(sprite.asImage, -0.5, -0.5, 1, 1);
+        ctx.restore();
     }
+
+    // function renderSprite(x, y, sprite) {
+    //     ctx.drawImage(sprite.asImage, tileSize * x, tileSize * y, tileSize, tileSize);
+    // }
 }
 

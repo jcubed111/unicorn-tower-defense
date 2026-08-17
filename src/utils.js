@@ -33,11 +33,24 @@ const styled = (tagName = "div", className = "", style = {}, ...children) => {
     return el;
 }
 
+
+/* random helpers */
+// Performs a probabalistic rounding; so 1.25 -> `1` 75% of the time and `2` 25%.
+const probRound = v => ~~v + (Math.random() < v % 1);
+// const randInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;
+const randChoice = arr => arr[~~(Math.random() * arr.length)];
+const randFloat = (a, b) => Math.random() * (b - a) + a;
+
+
 /* Array Helpers */
 const range = end => [...Array(end).keys()];
 // NOTE: doesn't handle non-perfect sizes
 const chunked = (size, arr) => range(arr.length / size).map(i => arr.slice(i * size, i * size + size));
-
+// const minBy = (arr, cb) => arr.reduce((a, b) => cb(a) < cb(b) ? a : b, arr[0]);
+const minByTiesRand = (arr, cb) => {
+    const best = Math.min(...arr.map(cb));
+    return randChoice(arr.filter(v => cb(v) == best));
+}
 
 /* 2d Grid Helpers */
 const grid2d = (size, fill) => range(size).map(i => range(size).fill(fill));
@@ -66,10 +79,3 @@ const lerpColor = (a, b, f) => a.map((v, i) => v * (1 - f) + b[i] * f);
 const clampColorComponent = v => v < 0 ? 0 : v > 255 ? 255 : ~~v;
 const colorAsString = c => `#` + c.map(v => clampColorComponent(v).toString(16).padStart(2, '0')).join('');
 const multiplyColor = (a, b) => a.map((v, i) => v * b[i] / 255);
-
-/* random helpers */
-// Performs a probabalistic rounding; so 1.25 -> `1` 75% of the time and `2` 25%.
-const probRound = v => ~~v + (Math.random() < v % 1);
-// const randInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;
-const randChoice = arr => arr[~~(Math.random() * arr.length)];
-const randFloat = (a, b) => Math.random() * (b - a) + a;

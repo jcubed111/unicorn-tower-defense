@@ -2,6 +2,7 @@ let lastRender = performance.now();
 function mainLoop() {
     const dt = Math.min(1e2, performance.now() - lastRender) / 1e3;
     lastRender = performance.now();
+    GameState.terrain.step(dt);
     render(dt);
     window.requestAnimationFrame(mainLoop);
 }
@@ -19,6 +20,10 @@ window.onload = () => {
 
     GameState.terrain = new Terrain([7, 15], '....#########......#####.#####....#####...#####..#####..#..##########..###..########..#####..######..#####..########..###..##########..#..#####..#####...#####....#####.#####......#########........#######..........#####............###..............#........');
     GameState.terrain.recomputeDerivedValues();
+
+    range(10).forEach(x => GameState.terrain.enemies.add(
+        new Enemy(randChoice(GameState.terrain.spawnLocations), 10),
+    ));
 
     GameState.mainCanvas.addEventListener('click', e => {
         GameState.terrain.placeTower(GameState.terrain.eventToTile(e), drawType);
