@@ -37,8 +37,20 @@ window.onload = () => {
         new Enemy(randChoice(GameState.terrain.spawnLocations), 10),
     ));
 
+    const recomputeHovering = e => {
+        const [x, y] = GameState.hoveringTile = GameState.terrain.eventToTile(e);
+        GameState.hoveringTower = GameState.terrain.computedTowersByLocation[x]?.[y] ?? null;
+    };
+
     GameState.mainCanvas.addEventListener('click', e => {
         GameState.terrain.placeTower(GameState.terrain.eventToTile(e), drawType);
+        recomputeHovering(e);
+    });
+    GameState.mainCanvas.addEventListener('mousemove', e => {
+        recomputeHovering(e);
+    });
+    GameState.mainCanvas.addEventListener('mouseout', e => {
+        GameState.hoveringTile = GameState.hoveringTower = null;
     });
 
     mainLoop();

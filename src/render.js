@@ -19,50 +19,47 @@ function render(dt) {
     const ctx = mainCanvas.getContext('2d');
     ctx.setTransform(pxSize, 0, 0, pxSize, 0, 0);
 
-    range(terrain.size).map(x => {
-        range(terrain.size).map(y => {
-            // Ground tile
-            const isGround = terrain.isGround[x][y];
-            if(isGround) {
-                if(terrain.computedTowersByLocation[x][y]) {
-                    renderSprite(ctx, x, y, sprites[3].withColor([200,200,200,255]));
-                }else{
-                    renderSprite(ctx, x, y, sprites[(x + 3 * y) % 7 ? 3 : 2]);
-                }
-            }else if(terrain.isGround[x][y - 1]) {
-                renderSprite(ctx, x, y, sprites[7]);
+    // Render terrain & towers
+    mapGrid2d(terrain.isGround, (isGround, [x, y]) => {
+        if(isGround) {
+            if(terrain.computedTowersByLocation[x][y]) {
+                renderSprite(ctx, x, y, sprites[3].withColor([200,200,200,255]));
             }else{
-                renderSprite(ctx, x, y, sprites[11]);
+                renderSprite(ctx, x, y, sprites[(x + 3 * y) % 7 ? 3 : 2]);
             }
+        }else if(terrain.isGround[x][y - 1]) {
+            renderSprite(ctx, x, y, sprites[7]);
+        }else{
+            renderSprite(ctx, x, y, sprites[11]);
+        }
 
-            // Tower
-            const maybeComputedTower = terrain.computedTowersByLocation[x][y];
-            if(maybeComputedTower) {
-                for(const s of getTowerSprites(
-                    x, y,
-                    terrain.rawTowers[x][y],
-                    maybeComputedTower.getColor(),
-                    (x, y) => terrain.computedTowersByLocation[x]?.[y] == maybeComputedTower,
-                )) {
-                    renderSprite(ctx, x, y, s);
+        // Tower
+        const maybeComputedTower = terrain.computedTowersByLocation[x][y];
+        if(maybeComputedTower) {
+            for(const s of getTowerSprites(
+                x, y,
+                terrain.rawTowers[x][y],
+                maybeComputedTower.getColor(),
+                (x, y) => terrain.computedTowersByLocation[x]?.[y] == maybeComputedTower,
+            )) {
+                renderSprite(ctx, x, y, s);
 
-                    // sparkle: each pixel should generate a particle every 20 seconds.
-                    s.toParticlesSparse(
-                        maybeComputedTower._particleFirstRender ? 0.5 : dt / 20
-                    ).forEach(([fy, fx, color]) => {
-                        ParticleSystem.addParticle(new EnergyFadeParticle(
-                            [x * tileSize + fx, y * tileSize + fy],
-                            color,
-                        ))
-                    });
-                }
+                // sparkle: each pixel should generate a particle every 20 seconds.
+                s.toParticlesSparse(
+                    maybeComputedTower._particleFirstRender ? 0.5 : dt / 20
+                ).forEach(([fy, fx, color]) => {
+                    ParticleSystem.addParticle(new EnergyFadeParticle(
+                        [x * tileSize + fx, y * tileSize + fy],
+                        color,
+                    ))
+                });
             }
+        }
 
-            // // render descent map for debug
-            // ctx.font = '3px sans-serif';
-            // ctx.fillStyle = `#fff`;
-            // ctx.fillText(terrain.descentMap[x][y], x * tileSize + 2, y * tileSize + 2);
-        });
+        // // render descent map for debug
+        // ctx.font = '3px sans-serif';
+        // ctx.fillStyle = `#fff`;
+        // ctx.fillText(terrain.descentMap[x][y], x * tileSize + 2, y * tileSize + 2);
     });
 
     // Unmark towers as new
@@ -91,4 +88,19 @@ function render(dt) {
     // Draw particles
     ParticleSystem.render(ctx);
     ParticleSystem.step(dt);
+
+    // Draw hovered tower info
+    // We use `&& hoveringTile` here to distinguish from non-world towers (eg the runebook)
+    if(GameState.hoveringTower && GameState.hoveringTile) {
+        ctx.lineWidth = 0.5;
+        ctx.strokeStyle = colorAsString(GameState.hoveringTower.getColor());
+        ctx.beginPath();
+        ctx.arc(
+            ...GameState.hoveringTower.center.map(v => v * 15),
+            GameState.hoveringTower.range * 15,
+            0,
+            Math.PI * 2,
+        );
+        ctx.stroke();
+    }
 }
