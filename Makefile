@@ -4,10 +4,13 @@ SPRITE_SIZE := 15
 
 JS_FILES := \
 	src/utils.js \
+	src/particles.js \
 	src/sprite.js \
 	dev/sprites.js \
+	src/gameState.js \
 	src/tower.js \
 	src/terrain.js \
+	src/render.js \
 	src/main.js
 
 IMAGES := $(wildcard src/*.png)

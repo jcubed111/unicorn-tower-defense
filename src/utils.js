@@ -57,7 +57,7 @@ const allFormsGrid2d = grid => {
 }
 
 // T[][] => [x, y, T][]
-const grid2dToIndexed = grid => grid.flatMap((row, x) => row.map((cell, y) => [x, y, cell]));
+const grid2dToIndexed = grid => grid.flatMap((col, x) => col.map((cell, y) => [x, y, cell]));
 
 
 /* Color helpers */
@@ -66,3 +66,10 @@ const lerpColor = (a, b, f) => a.map((v, i) => v * (1 - f) + b[i] * f);
 const clampColorComponent = v => v < 0 ? 0 : v > 255 ? 255 : ~~v;
 const colorAsString = c => `#` + c.map(v => clampColorComponent(v).toString(16).padStart(2, '0')).join('');
 const multiplyColor = (a, b) => a.map((v, i) => v * b[i] / 255);
+
+/* random helpers */
+// Performs a probabalistic rounding; so 1.25 -> `1` 75% of the time and `2` 25%.
+const probRound = v => ~~v + (Math.random() < v % 1);
+// const randInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;
+const randChoice = arr => arr[~~(Math.random() * arr.length)];
+const randFloat = (a, b) => Math.random() * (b - a) + a;

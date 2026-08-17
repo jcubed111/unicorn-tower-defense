@@ -11,6 +11,8 @@ class Sprite{
                 0,
                 0,
             );
+        // as indexed drops transparent pixels
+        this.asIndexed = grid2dToIndexed(data2d).filter(([x,y,c]) => c[3] > 0);
     }
 
     _withColorCache = {};
@@ -23,5 +25,10 @@ class Sprite{
     _withRotCache = {};
     withRot(n) {
         return this._withRotCache[n] ??= new Sprite(rotGrid2dMulti(this.data2d, n));
+    }
+
+    toParticlesSparse(chance) {  // -> [y, x, color] (note the y-first order)
+        const toSpawn = probRound(chance * this.asIndexed.length);
+        return range(toSpawn).map(_ => randChoice(this.asIndexed));
     }
 }

@@ -4,7 +4,7 @@ class Terrain{
     isGround = grid2d(this.size, 0);
     goalLocation = [0, 0];
     // raw towers stores primary color + level for each square.
-    rawTowers = grid2d(this.size, [0, 0]); // [x][y] -> Tuple<0 | 'r' | 'g' | 'b', level: number = 0>
+    rawTowers = grid2d(this.size, [0, 0]); // [x][y] -> Tuple<0 | 1 (r) | 2 (g) | 3 (b), level: number = 0>
 
     // Grid2d<Tower>
     computedTowers = grid2d(this.size, 0);
