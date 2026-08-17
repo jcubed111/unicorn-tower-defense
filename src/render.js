@@ -26,11 +26,13 @@ function render(dt) {
         range(terrain.size).map(y => {
             const isGround = terrain.isGround[x][y];
             if(isGround) {
-                ctx.fillStyle = `#547c47`;
+                renderSprite(x, y, sprites[(x + 3 * y) % 7 ? 3 : 2]);
+            }else if(terrain.isGround[x][y - 1]) {
+                renderSprite(x, y, sprites[7]);
             }else{
-                ctx.fillStyle = '#467';
+                renderSprite(x, y, sprites[11]);
             }
-            ctx.fillRect(tileSize * x, tileSize * y, tileSize, tileSize);
+            // ctx.fillRect(tileSize * x, tileSize * y, tileSize, tileSize);
 
             const maybeComputedTower = terrain.computedTowers[x][y];
             if(maybeComputedTower) {
