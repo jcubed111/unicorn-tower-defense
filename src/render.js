@@ -27,7 +27,7 @@ function render(dt) {
             // Ground tile
             const isGround = terrain.isGround[x][y];
             if(isGround) {
-                if(terrain.computedTowers[x][y]) {
+                if(terrain.computedTowersByLocation[x][y]) {
                     renderSprite(x, y, sprites[3].withColor([200,200,200,255]));
                 }else{
                     renderSprite(x, y, sprites[(x + 3 * y) % 7 ? 3 : 2]);
@@ -39,7 +39,7 @@ function render(dt) {
             }
 
             // Tower
-            const maybeComputedTower = terrain.computedTowers[x][y];
+            const maybeComputedTower = terrain.computedTowersByLocation[x][y];
             if(maybeComputedTower) {
                 for(const s of getTowerSprites(x, y, maybeComputedTower)) {
                     renderSprite(x, y, s);
@@ -48,10 +48,8 @@ function render(dt) {
                     s.toParticlesSparse(
                         maybeComputedTower._particleFirstRender ? 0.5 : dt / 20
                     ).forEach(([fy, fx, color]) => {
-                        console.log('spawning particle')
                         ParticleSystem.addParticle(new EnergyFadeParticle(
-                            x * tileSize + fx,
-                            y * tileSize + fy,
+                            [x * tileSize + fx, y * tileSize + fy],
                             color,
                         ))
                     });
@@ -66,7 +64,7 @@ function render(dt) {
     });
 
     // Unmark towers as new
-    mapGrid2d(terrain.computedTowers, t => t._particleFirstRender = false);
+    mapGrid2d(terrain.computedTowersByLocation, t => t._particleFirstRender = false);
 
     // Draw enemies
     for(const e of terrain.enemies) {
@@ -92,10 +90,10 @@ function render(dt) {
         yield innerSprite.withColor(innerColor);
 
         for(const [sideRot, isSameTower] of [
-            [0, terrain.computedTowers[x]?.[y - 1] == computedTower],
-            [1, terrain.computedTowers[x - 1]?.[y] == computedTower],
-            [2, terrain.computedTowers[x]?.[y + 1] == computedTower],
-            [3, terrain.computedTowers[x + 1]?.[y] == computedTower],
+            [0, terrain.computedTowersByLocation[x]?.[y - 1] == computedTower],
+            [1, terrain.computedTowersByLocation[x - 1]?.[y] == computedTower],
+            [2, terrain.computedTowersByLocation[x]?.[y + 1] == computedTower],
+            [3, terrain.computedTowersByLocation[x + 1]?.[y] == computedTower],
         ]) {
             yield sprites[+isSameTower].withRot(sideRot).withColor(outerColor);
         }

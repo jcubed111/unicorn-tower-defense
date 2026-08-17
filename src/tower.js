@@ -26,15 +26,50 @@ const normalizedTowerRgb = (r, g, b) => {
 
 class Tower{
     displayName = '?';
+    chargeTime = 2;
+    range = 4;
+    charge = 0;
+    damage = 2;
+
     _particleFirstRender = true;
+
     constructor(componentTowers) {
         this.componentTowers = componentTowers; // Array<[[x, y], type, level]>
+        this.center = [
+            this.componentTowers.reduce((acc, [pos]) => acc + pos[0], 0) / this.componentTowers.length + 0.5,
+            this.componentTowers.reduce((acc, [pos]) => acc + pos[1], 0) / this.componentTowers.length + 0.5,
+        ];
     }
 
     getColor() {
         const values = range(3).fill(0);
         this.componentTowers.forEach(([_, t]) => values[t - 1]++);
         return normalizedTowerRgb(...values);
+    }
+
+    step(dt) {
+        this.charge = Math.min(this.charge + dt, this.chargeTime);
+        if(this.charge >= this.chargeTime) {
+            const [x, y] = this.center;
+            const possibleTargets = [...GameState.terrain.enemies].filter(
+                e => (e.pos[0] - x) ** 2 + (e.pos[1] - y) ** 2 < this.range ** 2,
+            );
+            if(possibleTargets.length) {
+                this.hit(possibleTargets);
+                this.charge = 0;
+            }
+        }
+    }
+
+    hit(targetsInRange) {
+        console.log('tower bolt')
+        const target = randChoice(targetsInRange);
+        target.hp -= this.damage;
+        ParticleSystem.spawnParticlePixelLine(
+            this.center,
+            target.pos,
+            pos => new EnergyFadeParticle(pos, this.getColor(), 0.5),
+        );
     }
 }
 

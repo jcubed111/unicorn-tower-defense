@@ -1,8 +1,8 @@
 class Particle{
     age = 0;
     lifespan = 2;
-    constructor(x, y) {
-        this.pos = [x, y];
+    constructor(pos) {
+        this.pos = pos;
     }
 
     // render(ctx)  // implement in derived classes
@@ -14,8 +14,10 @@ class Particle{
 }
 
 class EnergyFadeParticle extends Particle{
-    constructor(x, y, baseColor) {
-        super(x, y);
+    constructor(pos, baseColor, lifespan = 2) {
+        super(pos);
+        this.lifespan = lifespan;
+        const [x, y] = pos;
         this.baseColor = baseColor;
         this.asymptoticVel = [
             3 * Math.sin(y * 0.10 + x * 0.01) + randFloat(-1, 1),
@@ -61,5 +63,14 @@ const ParticleSystem = new class{
             p.age += dt;
             if(p.age > p.lifespan) this.particles.delete(p);
         }
+    }
+
+    spawnParticlePixelLine(aPos, bPos, makeParticleCb) {
+        const [ax, ay, bx, by] = [...aPos, ...bPos].map(v => Math.floor(v * 15));
+        const num = Math.max(...[ax - bx, ay - by].map(Math.abs));
+        range(num + 1).map(i => this.addParticle(makeParticleCb([
+            ax + (bx - ax) * i / num,
+            ay + (by - ay) * i / num,
+        ].map(Math.round))));
     }
 }

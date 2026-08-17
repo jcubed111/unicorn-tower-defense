@@ -6,7 +6,8 @@ class Terrain{
     // raw towers stores primary color + level for each square.
     rawTowers = grid2d(this.size, [0, 0]); // [x][y] -> Tuple<0 | 1 (r) | 2 (g) | 3 (b), level: number = 0>
 
-    computedTowers = grid2d(this.size, 0);  // Grid2d<Tower>
+    computedTowersArr = [];
+    computedTowersByLocation = grid2d(this.size, 0);  // Grid2d<Tower>
     computedTowerCache = {};  // Record<key, Tower>
 
     descentMap = [];  // Grid2d<number>
@@ -56,7 +57,8 @@ class Terrain{
 
         /* joined towers */
         const unjoinedTowerColors = mapGrid2d(this.rawTowers, t => t[0]);
-        this.computedTowers = grid2d(this.size, 0);
+        this.computedTowersByLocation = grid2d(this.size, 0);
+        this.computedTowersArr = [];
 
         for(const CandidateTower of orderedTowerTypes) {
             range(this.size).map(x => {
@@ -73,11 +75,12 @@ class Terrain{
                             ],
                         )
                         const key = JSON.stringify(towerCells);
-                        this.computedTowerCache[key] ??= new CandidateTower(towerCells);
+                        const tower = this.computedTowerCache[key] ??= new CandidateTower(towerCells);
                         for(const [[x, y]] of towerCells) {
                             unjoinedTowerColors[x][y] = 0;
-                            this.computedTowers[x][y] = this.computedTowerCache[key];
+                            this.computedTowersByLocation[x][y] = tower;
                         }
+                        this.computedTowersArr.push(tower);
                     })
                 })
             });
@@ -117,11 +120,17 @@ class Terrain{
     }
 
     step(dt) {
+        for(const t of this.computedTowersArr) {
+            t.step(dt);
+        }
         for(const e of this.enemies) {
             e.step(dt);
             const [sx, sy] = e.getSquare();
             const [tx, ty] = this.goalLocation;
-            if(sx == tx && sy == ty) {
+            if(e.hp <= 0) {
+                this.enemies.delete(e);
+                console.log('TODO: die animation');
+            }else if(sx == tx && sy == ty) {
                 this.enemies.delete(e);
                 console.log('TODO: hit');
             }
