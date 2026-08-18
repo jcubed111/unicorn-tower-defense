@@ -148,6 +148,12 @@ const orderedTowerTypes = [
         displayName = 'Fear';
         // TODO
     }),
+    withTowerPattern('gb|bb', class extends Tower{
+        displayName = 'Sniper';
+        chargeTime = 10;
+        /** @type {number} */ range = 5 + this.level;
+        damage = 4 * this.level;
+    }),
     withTowerPattern('bb|bb', class extends Tower{
         displayName = 'Slow';
         slowAmount = 3 / this.level;
