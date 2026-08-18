@@ -62,8 +62,14 @@ build/main-max.js: $(JS_FILES)
 build/main-min.js: build/main-max.js
 	@echo $@ "<-" $^
 	@npx google-closure-compiler --js=build/main-max.js --js_output_file=build/main-min-1.js --compilation_level=ADVANCED_OPTIMIZATIONS
-	@npx uglifyjs build/main-min-1.js -c -m --mangle-props --toplevel > build/main-min-2.js
+	@npx uglifyjs build/main-min-1.js -c drop_console=true,unsafe=true,passes=3 -m --mangle-props --toplevel > build/main-min-2.js
 	@cat build/main-min-2.js | sed 's/window[.]//g' > $@
+
+# Roadroller is a context-mixing packer: it beats DEFLATE badly enough on this
+# payload to be worth the ~2KB self-extracting stub it prepends.
+build/main-packed.js: build/main-payload.js
+	@echo $@ "<-" $^
+	@npx roadroller $^ -o $@ -O2 -D
 # 	npx uglifyjs build/main-min-1.js \
 # 	    --compress \
 # 	        arrows=true,booleans=true,collapse_vars=true,comparisons=true,dead_code=true,drop_console=true,drop_debugger=true,hoist_funs=true,hoist_props=true,hoist_vars=true,if_return=true,inline=3,join_vars=true,keep_fargs=false,keep_infinity=false,loops=true,module=true,negate_iife=true,properties=true,pure_getters=true,reduce_funcs=true,reduce_vars=true,sequences=true,side_effects=true,strings=true,switches=true,templates=true,top_retain=false,toplevel=true,typeofs=true,unsafe=true,unsafe_comps=true,unsafe_Function=true,unsafe_math=true,unsafe_proto=true,unsafe_regexp=true,unsafe_undefined=true,unused=true \
@@ -103,9 +109,15 @@ dist/%.webp: src/%.png
 dist/styles-min.css: build/styles-min.css
 	cp $^ $@
 
-dist/index.html: build/index.html build/main-min.js build/styles-min.css scripts/combine.py
+# The finished JS payload: minified code with the stylesheet injected into it
+# and every C-- CSS class name shortened, in both the code and the CSS.
+build/main-payload.js: build/main-min.js build/styles-min.css scripts/combine.py
 	@echo $@ "<-" $^
 	@python3 scripts/combine.py > $@
+
+dist/index.html: build/index.html build/main-packed.js scripts/wrap-html.py
+	@echo $@ "<-" $^
+	@python3 scripts/wrap-html.py > $@
 
 to-be-titled.zip: dist/index.html $(IMAGES_DIST)
 	@echo $@ "<-" $^

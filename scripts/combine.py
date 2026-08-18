@@ -6,11 +6,14 @@ import string
 class_re = r'C--[a-zA-Z0-9_-]+'
 
 
-# the minifier leaves a couple newlines in we need to cut out.
-js = open('build/main-min.js').read().replace('\n', '');
+# NOTE: only strip the trailing newline. A blanket replace('\n', '') also eats
+# newline characters the minifier emits *inside* template literals (eg the one
+# in the "Wave n/m\nNext wave in ..." countdown), silently corrupting them.
+js = open('build/main-min.js').read().rstrip('\n');
 
-css = open('build/styles-min.css').read()
-html = open('build/index.html').read()
+# .strip() matters: this gets injected into a JS string literal, and a stray
+# trailing newline makes it an unterminated string.
+css = open('build/styles-min.css').read().strip()
 
 css_class_names = set(re.findall(class_re, css))
 js_class_names = set(re.findall(class_re, js))
@@ -41,10 +44,11 @@ def replace_classes(source):
 
     return re.sub(class_re, class_replace, source)
 
-# print(class_name_remapping, file=sys.stderr)
+# The stylesheet rides along inside the JS payload (main.js document.write's it)
+# rather than in its own <style> tag, so that it goes through the same
+# compressor as the code instead of being deflated on its own.
+if '[CSS]' not in js:
+    print("ERROR: no [CSS] placeholder in the JS to inject the stylesheet into", file=sys.stderr)
+    sys.exit(1)
 
-sys.stdout.write(
-    html
-        .replace("[JS]", '<script>' + replace_classes(js) + '</script>')
-        .replace("[CSS]", '<style>' + replace_classes(css) + '</style>')
-)
+sys.stdout.write(replace_classes(js.replace('[CSS]', css)))

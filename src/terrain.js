@@ -40,7 +40,7 @@ class Terrain{
         const DESCENT_MAX = 1e8;
         const DESCENT_WALL = 1e4;
 
-        this.descentMap = range(this.size).map(_ => range(this.size).fill(DESCENT_MAX));
+        this.descentMap = grid2d(this.size, DESCENT_MAX);
         const next = [[this.goalLocation, 0]];
         while(next.length) {
             let [[x, y], val] = next.shift();

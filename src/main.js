@@ -1,3 +1,7 @@
+// In the dist build `[CSS]` gets replaced with the raw styles.
+// In dev this line is a noop.
+document.write('<style>[CSS]</style>');
+
 let lastRender = performance.now();
 function mainLoop() {
     const dt = Math.min(1e2, performance.now() - lastRender) / 1e3;

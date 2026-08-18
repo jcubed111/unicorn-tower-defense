@@ -52,8 +52,7 @@ body{
     }
 
     .C--runeButtonWrapper{
-        display: flex;
-        flex-direction: column;
+        @extend %flexCol;
         text-align: center;
         // font-size: 0.5rem;
 
