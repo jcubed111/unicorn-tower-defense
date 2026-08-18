@@ -156,6 +156,13 @@ class Terrain{
 
         for(const e of this.enemies) {
             e.step(dt);
+        }
+
+        for(const t of this.computedTowersArr) {
+            t.step(dt);
+        }
+
+        for(const e of this.enemies) {
             const [sx, sy] = e.getSquare();
             const [tx, ty] = this.goalLocation;
             if(e.hp <= 0) {
@@ -169,10 +176,6 @@ class Terrain{
                 this.enemies.delete(e);
                 console.log('TODO: hit');
             }
-        }
-
-        for(const t of this.computedTowersArr) {
-            t.step(dt);
         }
     }
 
