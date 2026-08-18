@@ -14,25 +14,25 @@ window.onload = () => {
         ).asImage;
         button.addEventListener('click', _ => GameState.drawType = i + 1);
         return div(
-            'C_runeButtonWrapper',
-            div('C_runeButtonCost'),
+            'C--runeButtonWrapper',
+            div(/*'C--runeButtonCost'*/),
             button,
         );
     });
 
     document.body.append(
-        GameState.mainCanvas = styled('canvas', 'C_mainCanvas'),
-        GameState.sidebarEl = div('C_sidebar',
+        GameState.mainCanvas = styled('canvas'),
+        GameState.sidebarEl = div('C--sidebar',
             "Runebook",
             ...orderedTowerTypes.map(T =>
-                div('C_runeListing',
-                    div('C_towerName', new T([]).displayName),
+                div(/*'C--runeListing'*/ '',
+                    div('C--towerName', new T([]).displayName),
                     T.pattern.asElement,
                 ),
             ),
             div('', "Inscribe Rune"),
             div('', "Mana: ", GameState.manaDisplay = styled('span')),
-            div('C_runeButtonRow', ...GameState.runeButtons),
+            div('C--runeButtonRow', ...GameState.runeButtons),
         ),
     );
 

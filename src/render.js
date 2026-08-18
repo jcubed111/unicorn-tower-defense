@@ -126,8 +126,8 @@ function render(dt) {
     GameState.manaDisplay.innerText = GameState.terrain.mana;
     GameState.runeButtons.forEach((el, i) => {
         const cost = GameState.terrain.getDrawCost(i + 1);
-        el.classList.toggle('C_runeButtonActive', i + 1 == GameState.drawType);
-        el.classList.toggle('C_runeButtonTooExpensive', cost > GameState.terrain.mana);
+        el.classList.toggle('C--runeButtonActive', i + 1 == GameState.drawType);
+        el.classList.toggle('C--runeButtonTooExpensive', cost > GameState.terrain.mana);
         el.children[0].innerText = cost;
     });
 }

@@ -44,7 +44,7 @@ function TowerPattern(stringRepr) {
     });
     const outerColor = normalizedTowerRgb(...values);
 
-    const asElement = styled('canvas', 'C_towerPattern');
+    const asElement = styled('canvas'/*, 'C--towerPattern'*/);
     asElement.width = tileSize * asGrid[0].length;
     asElement.height = tileSize * asGrid.length;
     asElement.style.width = asGrid[0].length + 'rem';

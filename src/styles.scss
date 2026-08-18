@@ -9,25 +9,21 @@ body{
     image-rendering: pixelated;
 }
 
-.C_mainCanvas{
-    // background: #467;
-}
-
-.C_sidebar{
+.C--sidebar{
     background: #222;
     color: #eee;
 }
 
-.C_towerName{
+.C--towerName{
     font-size: 0.6rem;
 }
 
-.C_runeButtonRow{
+.C--runeButtonRow{
     display: flex;
     justify-content: space-evenly;
 }
 
-.C_runeButtonWrapper{
+.C--runeButtonWrapper{
     display: flex;
     flex-direction: column;
     text-align: center;
@@ -44,13 +40,13 @@ body{
     }
 }
 
-.C_runeButtonActive canvas{
+.C--runeButtonActive canvas{
     border: 1px solid #ccc;
 }
 
-.C_runeButtonTooExpensive {
+.C--runeButtonTooExpensive {
     color: #e00;
 }
-.C_runeButtonTooExpensive canvas{
+.C--runeButtonTooExpensive canvas{
     filter: grayscale(1);
 }
