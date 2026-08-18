@@ -120,6 +120,11 @@ function render(dt) {
             '#fff',
             GameState.hoveringTower.charge / GameState.hoveringTower.chargeTime,
         );
+        GameState.hoverInfoEl.replaceChildren(
+            GameState.hoveringTower.asHoverEl(),
+        );
+    }else{
+        GameState.hoverInfoEl.replaceChildren();
     }
 
     // Update rune draw buttons

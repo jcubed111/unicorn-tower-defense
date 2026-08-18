@@ -1,11 +1,15 @@
-%flexR {
+%flexRow {
     display: flex;
     align-items: center;
     justify-content: center;
 }
+%flexCol {
+    display: flex;
+    flex-direction: column;
+}
 
 body{
-    @extend %flexR;
+    @extend %flexRow;
     font-size: 0.5rem;
     margin: 0;
     background: #000;
@@ -17,7 +21,7 @@ body{
 }
 
 .C--mainWrapper{
-    @extend %flexR;
+    @extend %flexRow;
     position: relative;
 }
 
@@ -30,43 +34,47 @@ body{
 }
 
 .C--sidebar{
+    @extend %flexCol;
     background: #222;
     color: #eee;
 }
+    .C--hoverInfoArea{
+        height: 8rem;
+    }
 
-// .C--towerName{
-//     font-size: 0.6rem;
-// }
+    // .C--towerName{
+    //     font-size: 0.6rem;
+    // }
 
-.C--runeButtonRow{
-    display: flex;
-    justify-content: space-evenly;
-}
+    .C--runeButtonRow{
+        display: flex;
+        justify-content: space-evenly;
+    }
 
-.C--runeButtonWrapper{
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    // font-size: 0.5rem;
+    .C--runeButtonWrapper{
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        // font-size: 0.5rem;
 
-    canvas{
-        width: 1.5rem;
-        cursor: pointer;
-        border: 1px solid #444;
+        canvas{
+            width: 1.5rem;
+            cursor: pointer;
+            border: 1px solid #444;
 
-        &:hover{
-            background: #fff2;
+            &:hover{
+                background: #fff2;
+            }
         }
     }
-}
 
-.C--runeButtonActive canvas{
-    border: 1px solid #ccc;
-}
+    .C--runeButtonActive canvas{
+        border: 1px solid #ccc;
+    }
 
-.C--runeButtonTooExpensive {
-    color: #e00;
-}
-.C--runeButtonTooExpensive canvas{
-    filter: grayscale(1);
-}
+    .C--runeButtonTooExpensive {
+        color: #e00;
+    }
+    .C--runeButtonTooExpensive canvas{
+        filter: grayscale(1);
+    }

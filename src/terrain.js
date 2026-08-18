@@ -5,7 +5,7 @@ class Terrain{
     goalLocation = [0, 0];
     // raw towers stores primary color + level for each square.
     rawTowers = grid2d(this.size, [0, 0]); // [x][y] -> Tuple<0 | 1 (r) | 2 (g) | 3 (b), level: number = 0>
-    mana = 100;
+    mana = 150;
     waves = 0;
 
     computedTowersArr = [];

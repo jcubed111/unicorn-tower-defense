@@ -44,28 +44,29 @@ function TowerPattern(stringRepr) {
     });
     const outerColor = normalizedTowerRgb(...values);
 
-    const asElement = styled('canvas'/*, 'C--towerPattern'*/);
-    asElement.width = tileSize * asGrid[0].length;
-    asElement.height = tileSize * asGrid.length;
-    asElement.style.width = asGrid[0].length + 'rem';
-    const ctx = asElement.getContext('2d');
-    mapGrid2d(asGrid, (c, [y, x]) => {
-        for(const s of getTowerSprites(
-            x, y,
-            [c, 1],
-            outerColor,
-            (x, y) => asGrid[y]?.[x] > 0,
-        )) {
-            renderSprite(ctx, x, y, s);
-        }
-    });
-
     return {
         outerColor,
         allFormsAsIndexed,
         // the number of towers contained in this pattern
         size: allFormsAsIndexed[0].length,
-        asElement,
+        makeElement: () => {
+            const asElement = styled('canvas'/*, 'C--towerPattern'*/);
+            asElement.width = tileSize * asGrid[0].length;
+            asElement.height = tileSize * asGrid.length;
+            asElement.style.width = asGrid[0].length + 'rem';
+            const ctx = asElement.getContext('2d');
+            mapGrid2d(asGrid, (c, [y, x]) => {
+                for(const s of getTowerSprites(
+                    x, y,
+                    [c, 1],
+                    outerColor,
+                    (x, y) => asGrid[y]?.[x] > 0,
+                )) {
+                    renderSprite(ctx, x, y, s);
+                }
+            });
+            return asElement;
+        },
     };
 }
 
@@ -76,6 +77,7 @@ class Tower{
     range = 4;
     charge = 0;
     damage = 2;
+    extraDescription;
 
     _particleFirstRender = true;
 
@@ -88,6 +90,18 @@ class Tower{
         this.level = this.componentTowers.map(t => t[2]).reduce((a, b) => a + b, 0);
     }
 
+    _asHoverElResult;
+    asHoverEl() {
+        return this._asHoverElResult ??= div('',
+            this.constructor.pattern.makeElement(),
+            div('', `${this.displayName} (lvl ${this.level})`),
+            div('', `damage: ${this.damage}`),
+            div('', `charge time: ${this.chargeTime}`),
+            div('', `range: ${this.range}`),
+            div('', this.extraDescription),
+        );
+    }
+
     getColor() {
         return this.constructor.pattern.outerColor;
     }
@@ -97,7 +111,8 @@ class Tower{
         if(this.charge >= this.chargeTime) {
             const [x, y] = this.center;
             const possibleTargets = [...GameState.terrain.enemies].filter(
-                e => (e.pos[0] - x) ** 2 + (e.pos[1] - y) ** 2 < this.range ** 2,
+                e => (e.pos[0] - x) ** 2 + (e.pos[1] - y) ** 2 < this.range ** 2
+                    && e.pos[1] > 0,
             );
             if(possibleTargets.length) {
                 this.hit(possibleTargets);
@@ -162,10 +177,10 @@ const orderedTowerTypes = [
     class extends Tower{
         static pattern = TowerPattern('r');
         displayName = 'Red';
-        keywords = 'AoE';
+        extraDescription = 'AoE';
         // hits all enemies in range on each shot
         range = 3;
-        chargeTime = 4;
+        chargeTime = 5 - this.level;
         damage = 2;
 
         hit(targetsInRange) {
@@ -182,7 +197,7 @@ const orderedTowerTypes = [
         // simple bolt tower
         range = 3;
         chargeTime = 2;
-        damage = 3;
+        damage = 3 * this.level;
     },
 
     class extends Tower{
