@@ -8,7 +8,17 @@ function mainLoop() {
 }
 
 window.onload = () => {
-    let drawType = 1;
+    GameState.runeButtons = range(3).map(i => {
+        const button = sprites[i * 4 + 4].withColor(
+            normalizedTowerRgb(i == 0, i == 1, i == 2),
+        ).asImage;
+        button.addEventListener('click', _ => GameState.drawType = i + 1);
+        return div(
+            'C_runeButtonWrapper',
+            div('C_runeButtonCost'),
+            button,
+        );
+    });
 
     document.body.append(
         GameState.mainCanvas = styled('canvas', 'C_mainCanvas'),
@@ -20,16 +30,9 @@ window.onload = () => {
                     T.pattern.asElement,
                 ),
             ),
-            "Draw",
-            ...range(3).map(i => {
-                const button = styled('button', 'C_RuneDrawSelectButton', {},
-                    sprites[i * 4 + 4].withColor(
-                        normalizedTowerRgb(i == 0, i == 1, i == 2),
-                    ).asImage
-                );
-                button.addEventListener('click', _ => drawType = i + 1);
-                return button;
-            }),
+            div('', "Inscribe Rune"),
+            div('', "Mana: ", GameState.manaDisplay = styled('span')),
+            div('C_runeButtonRow', ...GameState.runeButtons),
         ),
     );
 
@@ -47,7 +50,7 @@ window.onload = () => {
     };
 
     GameState.mainCanvas.addEventListener('click', e => {
-        GameState.terrain.placeTower(GameState.terrain.eventToTile(e), drawType);
+        GameState.terrain.placeTower(GameState.terrain.eventToTile(e), GameState.drawType);
         recomputeHovering(e);
     });
     GameState.mainCanvas.addEventListener('mousemove', e => {

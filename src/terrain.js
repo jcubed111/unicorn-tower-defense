@@ -5,6 +5,7 @@ class Terrain{
     goalLocation = [0, 0];
     // raw towers stores primary color + level for each square.
     rawTowers = grid2d(this.size, [0, 0]); // [x][y] -> Tuple<0 | 1 (r) | 2 (g) | 3 (b), level: number = 0>
+    mana = 100;
 
     computedTowersArr = [];
     computedTowersByLocation = grid2d(this.size, 0);  // Grid2d<Tower>
@@ -15,12 +16,21 @@ class Terrain{
 
     enemies = new Set;
     actionQueue = [];  // Array<[delayTime, cb]>
+    manaPassiveClock = 0;
 
     constructor(goalLocation, terrainString) {
         terrainString.split('').forEach((c, i) => this.isGround[i % this.size][~~(i / this.size)] = c == '#');
         this.goalLocation = goalLocation;
 
         this.recomputeDerivedValues();
+    }
+
+    getDrawCost(towerType) {
+        let sum = 0;
+        mapGrid2d(this.rawTowers, ([type, level]) => {
+            if(type == towerType) sum += level;
+        });
+        return TOWER_BASE_COSTS[towerType] + sum * TOWER_INCREMENT_COSTS[towerType];
     }
 
     recomputeDerivedValues() {
@@ -101,18 +111,21 @@ class Terrain{
     }
 
     placeTower([x, y], towerType) {  // -> boolean, whether the tower could be placed
+        const cost = this.getDrawCost(towerType);
         const [current, currentLevel] = this.rawTowers[x][y];
         if(
             (current && current != towerType )
             || currentLevel >= MAX_TOWER_LEVEL
             || !this.isGround[x][y]
             || (x == this.goalLocation[0] && y == this.goalLocation[1])
+            || cost > this.mana
         ) {
             return false;
         }
         this.rawTowers[x][y] = [towerType, (currentLevel ?? 0) + 1];
         try{
             this.recomputeDerivedValues();
+            this.mana -= cost;
             return true;
         }catch{
             // recomputeDerivedValues throws if the map no longer has any valid paths.
@@ -125,6 +138,10 @@ class Terrain{
     }
 
     step(dt) {
+        this.manaPassiveClock += dt * MANA_PASSIVE_RATE;
+        this.mana += ~~this.manaPassiveClock;
+        this.manaPassiveClock %= 1;
+
         for(const t of this.computedTowersArr) {
             t.step(dt);
         }
