@@ -144,16 +144,19 @@ class Tower{
 
 const orderedTowerTypes = [
     // IMPORTANT: this needs to be ordered from highest priority -> lowest. Usually this means larger towers come first.
-    withTowerPattern('bbrbb', class extends Tower{
-        displayName = 'Fear';
-        // TODO
-    }),
+
+    // withTowerPattern('bbrbb', class extends Tower{
+    //     displayName = 'Fear';
+    //     // TODO
+    // }),
+
     withTowerPattern('gb|bb', class extends Tower{
         displayName = 'Sniper';
         chargeTime = 10;
-        /** @type {number} */ range = 5 + this.level;
+        /** @type {number} */ range = 3 + this.level;
         damage = 4 * this.level;
     }),
+
     withTowerPattern('bb|bb', class extends Tower{
         displayName = 'Slow';
         slowAmount = 3 / this.level;
@@ -167,14 +170,17 @@ const orderedTowerTypes = [
             });
         }
     }),
-    withTowerPattern('rgr', class extends Tower{
-        displayName = 'Fire';
-        // TODO
-    }),
-    withTowerPattern('ggr', class extends Tower{
-        displayName = 'Poison';
-        // TODO
-    }),
+
+    // withTowerPattern('rgr', class extends Tower{
+    //     displayName = 'Fire';
+    //     // TODO
+    // }),
+
+    // withTowerPattern('ggr', class extends Tower{
+    //     displayName = 'Poison';
+    //     // TODO
+    // }),
+
     withTowerPattern('rg', class extends Tower{
         displayName = 'Lightning';
         chain = this.level - 1;
@@ -200,14 +206,16 @@ const orderedTowerTypes = [
             }
         }
     }),
-    withTowerPattern('gb', class extends Tower{
-        displayName = 'Freeze';
-        // TODO
-    }),
-    withTowerPattern('rb', class extends Tower{
-        displayName = 'Magenta';
-        // TODO
-    }),
+
+    // withTowerPattern('gb', class extends Tower{
+    //     displayName = 'Freeze';
+    //     // TODO
+    // }),
+
+    // withTowerPattern('rb', class extends Tower{
+    //     displayName = 'Magenta';
+    //     // TODO
+    // }),
 
     withTowerPattern('r', class extends Tower{
         displayName = 'Red';
