@@ -42,6 +42,11 @@ body{
         height: 8rem;
     }
 
+    .C--scrollFlexC{
+        @extend %flexCol;
+        flex-shrink: 1;
+        overflow: auto;
+    }
     // .C--towerName{
     //     font-size: 0.6rem;
     // }

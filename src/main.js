@@ -30,11 +30,13 @@ window.onload = () => {
             GameState.sidebarEl = div('C--sidebar',
                 GameState.hoverInfoEl = div('C--hoverInfoArea'),
                 "Runebook",
-                ...orderedTowerTypes.map(T =>
-                    div(/*'C--runeListing'*/ '',
-                        div(/*'C--towerName',*/ '', new T([]).displayName),
-                        T.sourcePattern.makeElement(),
-                    ),
+                div('C--scrollFlexC',
+                    orderedTowerTypes.map(T =>
+                        div(/*'C--runeListing'*/ '',
+                            div(/*'C--towerName',*/ '', new T([]).displayName),
+                            T.sourcePattern.makeElement(),
+                        ),
+                    ).reverse(),
                 ),
                 div('', "Inscribe Rune"),
                 div('', "Mana: ", GameState.manaDisplay = styled('span')),
