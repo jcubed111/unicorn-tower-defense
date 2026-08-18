@@ -1,24 +1,35 @@
 const tileSize = 15;
 
 
+const makeSpriteCanvas = (ctxCb) => {
+    const canvas = styled('canvas');
+    canvas.width = canvas.height = tileSize;
+    canvas.style.width = '1rem';
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+    ctxCb(ctx);
+    return canvas;
+}
+
+const spriteListToEl = (...sprites) => makeSpriteCanvas(
+    ctx =>
+        sprites.forEach(s => ctx.drawImage(s.asImage, 0, 0))
+);
+
 class Sprite{
     constructor(data2d) {
         this.data2d = data2d;
         const height = data2d.length;
         const width = data2d[0].length;
 
-        this.asImage = (() => {
-            const canvas = styled('canvas');
-            canvas.width = width;
-            canvas.height = height;
-            canvas.getContext('2d').putImageData(
+        this.asImage = makeSpriteCanvas(
+            ctx => ctx.putImageData(
                 // flat(2) gives us a flat run of r,g,b,a,r,g,b,a,...
-                new ImageData(new Uint8ClampedArray(data2d.flat(2)), width),
+                new ImageData(new Uint8ClampedArray(data2d.flat(2)), tileSize),
                 0,
                 0,
-            );
-            return canvas;
-        })();
+            ),
+        );
         // as indexed drops transparent pixels
         this.asIndexed = grid2dToIndexed(data2d).filter(([x,y,c]) => c[3] > 0);
     }

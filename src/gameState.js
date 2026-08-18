@@ -1,7 +1,7 @@
 const GameState = {
     terrain: null,
     mainCanvas: null,
-    hoveringTile: null,
+    hoveringPos: null,
     hoveringTower: null,
     runeButtons: [],
     drawType: 0,

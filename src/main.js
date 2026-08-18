@@ -61,19 +61,20 @@ window.onload = () => {
     );
 
     const recomputeHovering = e => {
-        const [x, y] = GameState.hoveringTile = GameState.terrain.eventToTile(e);
-        GameState.hoveringTower = GameState.terrain.computedTowersByLocation[x]?.[y] ?? null;
+        const [x, y] = GameState.hoveringPos = GameState.terrain.eventToPos(e);
+        GameState.hoveringTower = GameState.terrain.computedTowersByLocation[~~x]?.[~~y] ?? null;
     };
 
     GameState.mainCanvas.addEventListener('click', e => {
-        GameState.terrain.placeTower(GameState.terrain.eventToTile(e), GameState.drawType);
+        const [x, y] = GameState.terrain.eventToPos(e);
+        GameState.terrain.placeTower([~~x, ~~y], GameState.drawType);
         recomputeHovering(e);
     });
     GameState.mainCanvas.addEventListener('mousemove', e => {
         recomputeHovering(e);
     });
     GameState.mainCanvas.addEventListener('mouseout', e => {
-        GameState.hoveringTile = GameState.hoveringTower = null;
+        GameState.hoveringPos = GameState.hoveringTower = null;
     });
 
     mainLoop();

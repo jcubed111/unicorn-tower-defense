@@ -7,13 +7,12 @@ TODO:
 - enemy types
     - enemy rainbow trails?
 - enemy status effects
+- enemy hover info
 
 - tower types
 - hide undiscovered runebook entires
 
 - animate sea waves
-
-- don't allow towers to hit off screen enemies
 
 
 # scaling notes

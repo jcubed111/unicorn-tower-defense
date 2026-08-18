@@ -1,13 +1,28 @@
 class Enemy{
-    targetLocation = null;
+    displayName = 'Unicorn';
     speed = 2;  // squares/sec
-    startingLocation;
+    armor = 0;
+    extraDescription;
+
+    targetLocation = null;
     facing = 3;
 
     constructor(pos, hp) {
         // Take the starting square, but place in center of square
-        this.startingLocation = this.pos = pos.map(v => v + 0.5);
+        this.pos = pos.map(v => v + 0.5);
         this.hp = this.maxHp = hp;
+    }
+
+    _asHoverElResult;
+    asHoverEl() {
+        return this._asHoverElResult ??= div('',
+            spriteListToEl(...this.getSprites()),
+            div('', `${this.displayName}`),
+            div('', `hp: ${this.hp} / ${this.maxHp}`),
+            div('', `speed: ${this.speed}`),
+            div('', `armor: ${this.armor}`),
+            div('', this.extraDescription),
+        );
     }
 
     getSquare() {
@@ -19,7 +34,7 @@ class Enemy{
     }
 
     takeDamage(amt) {
-        this.hp -= amt;
+        this.hp -= Math.max(0, amt - this.armor);
     }
 
     step(dt) {

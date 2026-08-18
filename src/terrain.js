@@ -104,11 +104,11 @@ class Terrain{
         }
     }
 
-    eventToTile(e) {  // -> [x, y]
+    eventToPos(e) {  // -> [x, y]
         const { x, y, width, height } = e.target.getBoundingClientRect();
         return [
-            ~~((e.clientX - x) / width * this.size),
-            ~~((e.clientY - y) / height * this.size),
+            (e.clientX - x) / width * this.size,
+            (e.clientY - y) / height * this.size,
         ];
     }
 

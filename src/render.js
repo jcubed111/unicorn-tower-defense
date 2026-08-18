@@ -101,8 +101,8 @@ function render(dt) {
     ParticleSystem.step(dt);
 
     // Draw hovered tower info
-    // We use `&& hoveringTile` here to distinguish from non-world towers (eg the runebook)
-    if(GameState.hoveringTower && GameState.hoveringTile) {
+    // We use `&& hoveringPos` here to distinguish from non-world towers (eg the runebook)
+    if(GameState.hoveringTower && GameState.hoveringPos) {
         const [x, y] = GameState.hoveringTower.center;
         renderCircleIndicator(
             ctx,
@@ -123,6 +123,14 @@ function render(dt) {
         GameState.hoverInfoEl.replaceChildren(
             GameState.hoveringTower.asHoverEl(),
         );
+
+    }else if(GameState.hoveringPos) {
+        const [x, y] = GameState.hoveringPos;
+        const dist2 = e => (e.pos[0] - x) ** 2 + (e.pos[1] - y) ** 2;
+        const inRange = [...terrain.enemies].filter(e => dist2(e) <= 0.25);
+        const maybeEnemy = inRange.length && minByTiesRand(inRange, dist2);
+        GameState.hoverInfoEl.replaceChildren(maybeEnemy ? maybeEnemy.asHoverEl() : '');
+
     }else{
         GameState.hoverInfoEl.replaceChildren();
     }
