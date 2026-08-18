@@ -32,7 +32,7 @@ window.onload = () => {
                 "Runebook",
                 ...orderedTowerTypes.map(T =>
                     div(/*'C--runeListing'*/ '',
-                        div(/*'C--towerName',*/ new T([]).displayName),
+                        div(/*'C--towerName',*/ '', new T([]).displayName),
                         T.sourcePattern.makeElement(),
                     ),
                 ),

@@ -150,7 +150,16 @@ const orderedTowerTypes = [
     }),
     withTowerPattern('bb|bb', class extends Tower{
         displayName = 'Slow';
-        // TODO
+        slowAmount = 3 / this.level;
+        chargeTime = 0.25;
+        range = 1 + this.level / 2;
+        extraDescription = `Slow ${~~(100 - this.slowAmount * 100)}%`;
+
+        hit(targetsInRange) {
+            targetsInRange.forEach(t => {
+                t.slowEffects.push([this.slowAmount, this.chargeTime * 1.1])
+            });
+        }
     }),
     withTowerPattern('rgr', class extends Tower{
         displayName = 'Fire';

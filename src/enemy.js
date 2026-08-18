@@ -7,15 +7,17 @@ class Enemy{
     targetLocation = null;
     facing = 3;
 
+    slowEffects = [];  // Array<[speedMult, remaining]>
+
     constructor(pos, hp) {
         // Take the starting square, but place in center of square
         this.pos = pos.map(v => v + 0.5);
         this.hp = this.maxHp = hp;
     }
 
-    _asHoverElResult;
     asHoverEl() {
-        return this._asHoverElResult ??= div('',
+        // can't cache since it changes with hp
+        return div('',
             spriteListToEl(...this.getSprites()),
             div('', `${this.displayName}`),
             div('', `hp: ${this.hp} / ${this.maxHp}`),
@@ -30,6 +32,9 @@ class Enemy{
     }
 
     *getSprites() {
+        if(this.slowEffects.length) {
+            yield sprites[20];
+        }
         yield sprites[16 + Math.floor(performance.now() / 200 * this.speed) % 4];
     }
 
@@ -51,11 +56,20 @@ class Enemy{
                 ([x, y]) => GameState.terrain.descentMap[x]?.[y] ?? 1e8,
             ).map(v => v + randFloat(0.4, 0.6));
         }
+
+        const speed = this.speed * Math.min(
+            1,
+            ...this.slowEffects.map(s => s[0]),
+        );
+        this.slowEffects = this.slowEffects
+            .map(([a, t]) => [a, t - dt])
+            .filter(s => s[1] > 0);
+
         const [x, y] = this.pos;
         const [tx, ty] = this.targetLocation;
         const dx = tx - x, dy = ty - y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        const moveAmount = this.speed * dt;
+        const moveAmount = speed * dt;
         if(dist <= moveAmount) {
             this.pos = [tx, ty];
             this.targetLocation = null;
