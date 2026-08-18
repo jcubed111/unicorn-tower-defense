@@ -96,8 +96,8 @@ class Tower{
             this.constructor.pattern.makeElement(),
             div('', `${this.displayName} (lvl ${this.level})`),
             div('', `damage: ${this.damage}`),
-            div('', `charge time: ${this.chargeTime}`),
             div('', `range: ${this.range}`),
+            div('', `rate: ${(1 / this.chargeTime).toFixed(2)}`),
             div('', this.extraDescription),
         );
     }
@@ -110,15 +110,20 @@ class Tower{
         this.charge = Math.min(this.charge + dt, this.chargeTime);
         if(this.charge >= this.chargeTime) {
             const [x, y] = this.center;
-            const possibleTargets = [...GameState.terrain.enemies].filter(
-                e => (e.pos[0] - x) ** 2 + (e.pos[1] - y) ** 2 < this.range ** 2
-                    && e.pos[1] > 0,
-            );
+            const possibleTargets = this.getTargetsInRange();
             if(possibleTargets.length) {
                 this.hit(possibleTargets);
                 this.charge = 0;
             }
         }
+    }
+
+    getTargetsInRange([x, y] = this.center) {
+        return [...GameState.terrain.enemies].filter(
+            e => (e.pos[0] - x) ** 2 + (e.pos[1] - y) ** 2 < this.range ** 2
+                && e.pos[1] > 0
+                && e.hp > 0
+        );
     }
 
     hit(targetsInRange) {
@@ -127,9 +132,9 @@ class Tower{
         this.boltAt(target);
     }
 
-    boltAt(target) {
+    boltAt(target, from = this.center) {
         ParticleSystem.spawnParticlePixelLine(
-            this.center,
+            from,
             target.pos,
             pos => new EnergyFadeParticle(pos, this.getColor(), 0.5),
         );
@@ -161,7 +166,28 @@ const orderedTowerTypes = [
     class extends Tower{
         static pattern = TowerPattern('rg');
         displayName = 'Lightning';
-        // TODO
+        chain = this.level - 1;
+        extraDescription = `Chain ${this.chain}`;
+        range = 2;
+        chargeTime = 2 / 3;
+        damage = 1;
+
+        hit(targetsInRange, i = 0, origin = this.center) {
+            const target = randChoice(targetsInRange);
+            target.takeDamage(this.damage);
+            this.boltAt(target, origin);
+            if(i < this.chain) {
+                const chainTargets = this.getTargetsInRange(target.pos)
+                    .filter(t => t != target);
+                if(chainTargets.length) {
+                    this.hit(
+                        chainTargets,
+                        i + 1,
+                        target.pos,
+                    );
+                }
+            }
+        }
     },
     class extends Tower{
         static pattern = TowerPattern('gb');

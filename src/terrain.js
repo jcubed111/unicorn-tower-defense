@@ -154,9 +154,6 @@ class Terrain{
         this.mana += ~~this.manaPassiveClock;
         this.manaPassiveClock %= 1;
 
-        for(const t of this.computedTowersArr) {
-            t.step(dt);
-        }
         for(const e of this.enemies) {
             e.step(dt);
             const [sx, sy] = e.getSquare();
@@ -172,6 +169,10 @@ class Terrain{
                 this.enemies.delete(e);
                 console.log('TODO: hit');
             }
+        }
+
+        for(const t of this.computedTowersArr) {
+            t.step(dt);
         }
     }
 
