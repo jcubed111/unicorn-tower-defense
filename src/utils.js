@@ -7,7 +7,7 @@
 // }
 
 const div = (className = '', ...children) => {
-    return styled("div", className, {}, ...children);
+    return styled("div", className,/* {},*/ ...children);
     // return styledDiv(className, {}, ...children);
 };
 
@@ -19,16 +19,16 @@ const div = (className = '', ...children) => {
 //     return styled("div", className, style, ...children);
 // }
 
-const styled = (tagName = "div", className = "", style = {}, ...children) => {
+const styled = (tagName = "div", className = "",/* style = {},*/ ...children) => {
     const el = document.createElement(tagName);
     el.className = className;
 
-    // This loop works for `-` properties
+    /*// This loop works for `-` properties
     for(const k in style) {
         el.style.setProperty(k, style[k]);
     }
     // This works for all other properties
-    Object.assign(el.style, style);
+    Object.assign(el.style, style);*/
 
     el.append(...children.flat().filter(c => c));
     return el;
