@@ -20,6 +20,10 @@ IMAGES_DEV := $(IMAGES:src/%.png=dev/%.webp)
 
 JS_DEV := $(JS_FILES:src/%=dev/%)
 
+# how many itertions to zip for. Less is faster; seems to max out after 10k
+# ZIP_ITERS := 10000
+ZIP_ITERS := 100
+
 
 .PHONY: all report clean
 
@@ -50,7 +54,7 @@ dev/index.html: build/index.html $(IMAGES_DEV) $(JS_DEV) scripts/combine-dev.py 
 	python3 scripts/combine-dev.py $(JS_DEV) > $@
 
 
-# we save 20 bytes replacing forEach with map
+# we save ~20 bytes replacing forEach with map
 build/main-max.js: $(JS_FILES)
 	@echo $@ "<-" $^
 	@cat $^ | sed 's/[.]forEach[(]/.map(/g' > build/main-max.js
@@ -108,7 +112,7 @@ to-be-titled.zip: dist/index.html $(IMAGES_DIST)
 	@rm -f $@ dist/@
 	@cd dist && 7z a -tzip -bd -bso0 -bsp0 -mx9 $@ $($^:dist/%=%)
 	@mv dist/$@ $@
-	@npx advzip --recompress --shrink-insane -q -i10000 $@
+	@npx advzip --recompress --shrink-insane -q -i$(ZIP_ITERS) $@
 	@rm -rf test_extract
 	@unzip to-be-titled.zip -d test_extract > /dev/null
 
