@@ -2,7 +2,7 @@ class Enemy{
     targetLocation = null;
     speed = 2;  // squares/sec
     startingLocation;
-    facing = 0;
+    facing = 3;
 
     constructor(pos, hp) {
         // Take the starting square, but place in center of square

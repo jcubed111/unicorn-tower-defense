@@ -6,6 +6,7 @@ class Terrain{
     // raw towers stores primary color + level for each square.
     rawTowers = grid2d(this.size, [0, 0]); // [x][y] -> Tuple<0 | 1 (r) | 2 (g) | 3 (b), level: number = 0>
     mana = 100;
+    waves = 0;
 
     computedTowersArr = [];
     computedTowersByLocation = grid2d(this.size, 0);  // Grid2d<Tower>
@@ -15,7 +16,8 @@ class Terrain{
     spawnLocations = [];
 
     enemies = new Set;
-    actionQueue = [];  // Array<[delayTime, cb]>
+    terrainTotalTime = 0;
+    actionQueue = new Set;  // Set<[delayTime, cb]>
     manaPassiveClock = 0;
 
     constructor(goalLocation, terrainString) {
@@ -111,6 +113,7 @@ class Terrain{
     }
 
     placeTower([x, y], towerType) {  // -> boolean, whether the tower could be placed
+        if(!towerType) return;
         const cost = this.getDrawCost(towerType);
         const [current, currentLevel] = this.rawTowers[x][y];
         if(
@@ -138,6 +141,15 @@ class Terrain{
     }
 
     step(dt) {
+        this.terrainTotalTime += dt;
+        for(const val of this.actionQueue) {
+            const [at, cb] = val;
+            if(at <= this.terrainTotalTime) {
+                this.actionQueue.delete(val);
+                cb();
+            }
+        }
+
         this.manaPassiveClock += dt * MANA_PASSIVE_RATE;
         this.mana += ~~this.manaPassiveClock;
         this.manaPassiveClock %= 1;
@@ -151,6 +163,7 @@ class Terrain{
             const [tx, ty] = this.goalLocation;
             if(e.hp <= 0) {
                 this.enemies.delete(e);
+                this.mana += e.maxHp;
                 ParticleSystem.explodeSpritesAt(
                     e.pos.map(v => v - 0.5),
                     ...e.getSprites(),
@@ -160,5 +173,52 @@ class Terrain{
                 console.log('TODO: hit');
             }
         }
+    }
+
+    nextWaveTime = -1;
+    startNextWaveNow() {
+        if(this.nextWaveTime < 0) return;
+        this.manaPassiveClock += (this.nextWaveTime - this.terrainTotalTime) * MANA_PASSIVE_RATE;
+        this.terrainTotalTime = this.nextWaveTime;
+        GameState.startNextWaveButton.style.display = 'none';
+    }
+
+    setWaves(...waves) {
+        GameState.startNextWaveButton.addEventListener('click', () => this.startNextWaveNow());
+        var prevEndTime = 0;
+        waves.forEach((
+            [atTime, enemyDelay, numEnemies, enemyGenCb],
+            i
+        ) => {
+            // Pre-wave countdown
+            range(atTime - prevEndTime).forEach(dt => {
+                this.actionQueue.add([atTime - dt, () => {
+                    GameState.topLeftDisplay.innerText =
+                        (i ? `Wave ${i}/${waves.length}\n` : '')
+                        + `Next wave in ${dt}...`;
+
+                    GameState.startNextWaveButton.style.display = 'block';
+                    this.nextWaveTime = atTime;
+                }]);
+            });
+
+            // Wave start
+            this.actionQueue.add([atTime, () => {
+                GameState.topLeftDisplay.innerText = `Wave ${i + 1}/${waves.length}`;
+
+                GameState.startNextWaveButton.style.display = 'none';
+                this.nextWaveTime = -1;
+            }]);
+
+            // Enemies
+            range(numEnemies).forEach(i => {
+                this.actionQueue.add([
+                    atTime + i * enemyDelay,
+                    () => this.enemies.add(enemyGenCb(randChoice(this.spawnLocations))),
+                ]);
+            });
+
+            prevEndTime = atTime + enemyDelay * numEnemies;
+        });
     }
 }

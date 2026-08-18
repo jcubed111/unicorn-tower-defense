@@ -1,12 +1,31 @@
-body{
-    margin: 0;
-    background: #000;
+%flexR {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+body{
+    @extend %flexR;
+    font-size: 0.5rem;
+    margin: 0;
+    background: #000;
     font-family: 'Iowan Old Style', 'Palatino Linotype', P052, serif;;
     height: 100vh;
     image-rendering: pixelated;
+    white-space: pre-wrap;
+}
+
+.C--mainWrapper{
+    @extend %flexR;
+    position: relative;
+}
+
+
+.C--topLeft{
+    position: absolute;
+    top: 0.25rem;
+    left: 0.25rem;
+    color: #fff;
 }
 
 .C--sidebar{
@@ -14,9 +33,9 @@ body{
     color: #eee;
 }
 
-.C--towerName{
-    font-size: 0.6rem;
-}
+// .C--towerName{
+//     font-size: 0.6rem;
+// }
 
 .C--runeButtonRow{
     display: flex;
@@ -27,7 +46,7 @@ body{
     display: flex;
     flex-direction: column;
     text-align: center;
-    font-size: 0.5rem;
+    // font-size: 0.5rem;
 
     canvas{
         width: 1.5rem;

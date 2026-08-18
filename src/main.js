@@ -21,28 +21,36 @@ window.onload = () => {
     });
 
     document.body.append(
-        GameState.mainCanvas = styled('canvas'),
-        GameState.sidebarEl = div('C--sidebar',
-            "Runebook",
-            ...orderedTowerTypes.map(T =>
-                div(/*'C--runeListing'*/ '',
-                    div('C--towerName', new T([]).displayName),
-                    T.pattern.asElement,
+        div('C--mainWrapper',
+            GameState.mainCanvas = styled('canvas'),
+            GameState.sidebarEl = div('C--sidebar',
+                "Runebook",
+                ...orderedTowerTypes.map(T =>
+                    div(/*'C--runeListing'*/ '',
+                        div('C--towerName', new T([]).displayName),
+                        T.pattern.asElement,
+                    ),
                 ),
+                div('', "Inscribe Rune"),
+                div('', "Mana: ", GameState.manaDisplay = styled('span')),
+                div('C--runeButtonRow', ...GameState.runeButtons),
             ),
-            div('', "Inscribe Rune"),
-            div('', "Mana: ", GameState.manaDisplay = styled('span')),
-            div('C--runeButtonRow', ...GameState.runeButtons),
-        ),
+            div('C--topLeft',
+                GameState.topLeftDisplay = div(),
+                GameState.startNextWaveButton = div('', 'Start Wave Now'),
+            ),
+        )
     );
 
     // GameState.terrain = new Terrain([7, 15], '....#########......#####.#####....#####...#####..#####..#..##########..###..########..#####..######..#####..########..###..##########..#..#####..#####...#####....#####.#####......#########........#######..........#####............###..............#........');
     GameState.terrain = new Terrain([7, 15], '..######..#####...#############...######..#####...######...##.....###.....##......####...#####.....####.#######.....###########......##.#######......#...######......#####.###.......########........#######.........######...........####.............#........');
     GameState.terrain.recomputeDerivedValues();
 
-    range(3).forEach(x => GameState.terrain.enemies.add(
-        new Enemy(randChoice(GameState.terrain.spawnLocations), 10),
-    ));
+    GameState.terrain.setWaves(
+        [10, 1, 5, pos => new Enemy(pos, 3)],
+        [30, 1, 5, pos => new Enemy(pos, 5)],
+        [50, 1, 5, pos => new Enemy(pos, 7)],
+    );
 
     const recomputeHovering = e => {
         const [x, y] = GameState.hoveringTile = GameState.terrain.eventToTile(e);

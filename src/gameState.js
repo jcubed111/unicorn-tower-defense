@@ -6,6 +6,8 @@ const GameState = {
     runeButtons: [],
     drawType: 0,
     manaDisplay: null,
+    topLeftDisplay: null,
+    startNextWaveButton: null,
 };
 
 const TOWER_BASE_COSTS =      [, 40, 25, 10];
