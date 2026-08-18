@@ -33,7 +33,7 @@ window.onload = () => {
                 ...orderedTowerTypes.map(T =>
                     div(/*'C--runeListing'*/ '',
                         div('C--towerName', new T([]).displayName),
-                        T.pattern.makeElement(),
+                        T.sourcePattern.makeElement(),
                     ),
                 ),
                 div('', "Inscribe Rune"),

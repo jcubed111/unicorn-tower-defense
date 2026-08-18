@@ -30,7 +30,7 @@ function * getTowerSprites(x, y, rawCell, outerColor, isSameAt) {
     }
 }
 
-function TowerPattern(stringRepr) {
+function withTowerPattern(stringRepr, Cls) {
     // NOTE: super important that stringRepr is a perfect grid with every row being
     // the same size. We don't check but the game will crash otherwise.
     const asGrid = stringRepr.split('|').map(row => row.split('').map(decodeTowerType));
@@ -44,10 +44,10 @@ function TowerPattern(stringRepr) {
     });
     const outerColor = normalizedTowerRgb(...values);
 
-    return {
+    Cls.sourcePattern = {
         outerColor,
         allFormsAsIndexed,
-        // the number of towers contained in this pattern
+        // the number of towers contained in this sourcePattern
         size: allFormsAsIndexed[0].length,
         makeElement: () => {
             const asElement = styled('canvas'/*, 'C--towerPattern'*/);
@@ -68,10 +68,11 @@ function TowerPattern(stringRepr) {
             return asElement;
         },
     };
+    return Cls;
 }
 
 class Tower{
-    static pattern;
+    static sourcePattern;
     displayName = '?';
     chargeTime = 2;
     range = 4;
@@ -93,7 +94,7 @@ class Tower{
     _asHoverElResult;
     asHoverEl() {
         return this._asHoverElResult ??= div('',
-            this.constructor.pattern.makeElement(),
+            this.constructor.sourcePattern.makeElement(),
             div('', `${this.displayName} (lvl ${this.level})`),
             div('', `damage: ${this.damage}`),
             div('', `range: ${this.range}`),
@@ -103,7 +104,7 @@ class Tower{
     }
 
     getColor() {
-        return this.constructor.pattern.outerColor;
+        return this.constructor.sourcePattern.outerColor;
     }
 
     step(dt) {
@@ -143,28 +144,23 @@ class Tower{
 
 const orderedTowerTypes = [
     // IMPORTANT: this needs to be ordered from highest priority -> lowest. Usually this means larger towers come first.
-    class extends Tower{
-        static pattern = TowerPattern('bbrbb');
+    withTowerPattern('bbrbb', class extends Tower{
         displayName = 'Fear';
         // TODO
-    },
-    class extends Tower{
-        static pattern = TowerPattern('bb|bb');
+    }),
+    withTowerPattern('bb|bb', class extends Tower{
         displayName = 'Slow';
         // TODO
-    },
-    class extends Tower{
-        static pattern = TowerPattern('rgr');
+    }),
+    withTowerPattern('rgr', class extends Tower{
         displayName = 'Fire';
         // TODO
-    },
-    class extends Tower{
-        static pattern = TowerPattern('ggr');
+    }),
+    withTowerPattern('ggr', class extends Tower{
         displayName = 'Poison';
         // TODO
-    },
-    class extends Tower{
-        static pattern = TowerPattern('rg');
+    }),
+    withTowerPattern('rg', class extends Tower{
         displayName = 'Lightning';
         chain = this.level - 1;
         extraDescription = `Chain ${this.chain}`;
@@ -188,20 +184,17 @@ const orderedTowerTypes = [
                 }
             }
         }
-    },
-    class extends Tower{
-        static pattern = TowerPattern('gb');
+    }),
+    withTowerPattern('gb', class extends Tower{
         displayName = 'Freeze';
         // TODO
-    },
-    class extends Tower{
-        static pattern = TowerPattern('rb');
+    }),
+    withTowerPattern('rb', class extends Tower{
         displayName = 'Magenta';
         // TODO
-    },
+    }),
 
-    class extends Tower{
-        static pattern = TowerPattern('r');
+    withTowerPattern('r', class extends Tower{
         displayName = 'Red';
         extraDescription = 'AoE';
         // hits all enemies in range on each shot
@@ -215,23 +208,21 @@ const orderedTowerTypes = [
                 this.boltAt(target);
             });
         }
-    },
+    }),
 
-    class extends Tower{
-        static pattern = TowerPattern('g');
+    withTowerPattern('g', class extends Tower{
         displayName = 'Green';
         // simple bolt tower
         range = 3;
         chargeTime = 2;
         damage = 3 * this.level;
-    },
+    }),
 
-    class extends Tower{
-        static pattern = TowerPattern('b');
+    withTowerPattern('b', class extends Tower{
         displayName = 'Blue';
         // Doesn't attack, just blocks
         chargeTime = 0;
         range = 0;
         damage = 0;
-    },
+    }),
 ];

@@ -80,12 +80,12 @@ class Terrain{
         for(const CandidateTower of orderedTowerTypes) {
             range(this.size).map(x => {
                 range(this.size).map(y => {
-                    CandidateTower.pattern.allFormsAsIndexed.forEach((patternForm, patternFormIndex) => {
+                    CandidateTower.sourcePattern.allFormsAsIndexed.forEach((sourcePatternForm, sourcePatternFormIndex) => {
                         // Try to blit this rotation of the tower onto this location.
-                        if(patternForm.some(([dx, dy, neededTowerType]) => unjoinedTowerColors[x + dx][y + dy] != neededTowerType)) {
+                        if(sourcePatternForm.some(([dx, dy, neededTowerType]) => unjoinedTowerColors[x + dx][y + dy] != neededTowerType)) {
                             return;
                         }
-                        const towerCells = patternForm.map(
+                        const towerCells = sourcePatternForm.map(
                             ([dx, dy, neededTowerType]) => [
                                 [x + dx, y + dy],
                                 ...this.rawTowers[x + dx][y + dy],
