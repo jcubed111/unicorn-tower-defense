@@ -30,6 +30,13 @@ TODO:
 - rhino-i-corn
 
 - make unicorns blockier
+- banished enemies should come back with a zombie effect (black, red eyes?) And show that they're banished in their hover info.
+- show damage an emeny does if it reaches the tower
+- screen shake
+- banish sound effect
+
+- allow hovering runebook entires
+- clicking start wave should spawn mana particles
 
 - mana gen tower (cyan? Or magenta?)
 

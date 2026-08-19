@@ -44,7 +44,7 @@ function render(dt) {
                 ? terrain.computedTowersByLocation[x][y]
                     ? sprites[3].withColor([200,200,200,255])
                     : sprites[(x + 3 * y) % 7 ? 3 : 2]
-                : sprites[terrain.isGround[x][y - 1] ? 7 : 11],
+                : sprites[terrain.isGround[x][y - 1] ? (performance.now() & 1024 ? 7 : 11) : 15],
         );
 
         // Tower
