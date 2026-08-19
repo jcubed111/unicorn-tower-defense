@@ -4,6 +4,7 @@ const randVec = mag => {
 };
 
 const MANA_POOL_POS = [16, 0];
+const HEART_POS = [19, 0]
 
 
 class Particle{
@@ -55,16 +56,18 @@ class EnergyFadeParticle extends Particle{
         ];
     }
 
-    render(ctx) {
+    getColor() {
         // for first 25% of life, fade from 50% white -> base color
         // then fade from base color -> transparent
         const normalizedAge = this.age / this.lifespan;
-        const color = colorAsString(
+        return colorAsString(
             normalizedAge < 0.25
             ? lerpColor([255,255,255,255], this.baseColor, normalizedAge * 2 + 0.5)
-            : lerpColor(this.baseColor, [...this.baseColor.slice(0, -1), 0], (normalizedAge - 0.25) / 0.75)
+            : [...this.baseColor.slice(0, -1), this.baseColor[3] * (1 - normalizedAge) / 0.75]
         );
+    }
 
+    render(ctx) {
         // asymptotic approach towards `dist = age`
         const dist = this.age - 0.25 * Math.log(1 + 3.6 * this.age);
 
@@ -72,7 +75,16 @@ class EnergyFadeParticle extends Particle{
             ctx,
             this.pos[0] + this.asymptoticVel[0] * dist,
             this.pos[1] + this.asymptoticVel[1] * dist,
-            color,
+            this.getColor(),
+        );
+    }
+}
+
+class ResetUnicornParticle extends EnergyFadeParticle{
+    v = ~~randFloat(0, 50);
+    getColor() {
+        return colorAsString(
+            [this.v, this.v, this.v, 255 * (1 - this.age / this.lifespan)],
         );
     }
 }

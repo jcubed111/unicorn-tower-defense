@@ -6,6 +6,7 @@ const GameState = {
     runeButtons: [],
     drawType: 0,
     manaDisplay: null,
+    heartDisplay: null,
     topLeftDisplay: null,
     startNextWaveButton: null,
     hoverInfoEl: null,

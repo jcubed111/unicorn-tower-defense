@@ -107,6 +107,9 @@ function render(dt) {
         ))
     });
 
+    // Draw heart
+    renderSprite(ctx, ...HEART_POS, sprites[29]);
+
     // Draw particles
     ParticleSystem.render(ctx);
     ParticleSystem.step(dt);
@@ -148,6 +151,7 @@ function render(dt) {
 
     // Update rune draw buttons
     GameState.manaDisplay.innerText = GameState.terrain.mana;
+    GameState.heartDisplay.innerText = GameState.terrain.health;
     GameState.runeButtons.forEach((el, i) => {
         const cost = GameState.terrain.getDrawCost(i + 1);
         const canAfford = cost <= GameState.terrain.mana;

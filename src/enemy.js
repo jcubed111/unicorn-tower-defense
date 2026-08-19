@@ -11,6 +11,8 @@ class Enemy extends AbcEnemy{
     speed = 2;  // squares/sec
     armor = 0;
     extraDescription;
+    banishDamage = 1;  // is doubled each banish
+    manaOnKillMult = 1;  // is set to 0 if banished
 
     targetLocation = null;
     facing = 3;
@@ -26,6 +28,11 @@ class Enemy extends AbcEnemy{
 
     constructor(level, pos) {
         super(level, pos);
+    }
+
+    setLocation(toPos) {
+        this.pos = toPos;
+        this.targetLocation = null;
     }
 
     asHoverEl() {
@@ -107,6 +114,7 @@ class SwarmEnemy extends Enemy{
 }
 
 class BossEnemy extends Enemy{
+    banishDamage = 5;
     maxHp = ~~(8 * 1.5 ** this.level);
     totalHpModifier = 0.1;  // ensure there's only 1 boss
 }

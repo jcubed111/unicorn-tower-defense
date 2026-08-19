@@ -42,12 +42,21 @@ canvas{
     inset: 0 0 0 auto;
     width: 60rem;
 }
-    .C--manaOrb{
+    .C--statBar{
+        @extend %flexRow;
+        justify-content: space-between;
         line-height: 1;
         font-size: 5rem;
         margin: 5rem 0 4rem 16rem;
-        color: #94d6ff;
     }
+        .C--manaOrb{
+            color: #94d6ff;
+        }
+        .C--heartNumber{
+            width: 15rem;
+            text-align: center;
+            color: #fff;
+        }
 
     .C--sidebarTitle{
         font-size: 7rem;

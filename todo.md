@@ -1,13 +1,13 @@
 TODO:
-- style the sidebar
-- show the wizard & hp
+- style the info hover box
+- style wave info & start now button
+- show the wizard
 
 - wave toast & sound effect
 - enemy armor
 - enemy types
     - enemy rainbow trails?
 - enemy status effects
-- enemy hover info
 
 - tower types
 - hide undiscovered runebook entires
@@ -15,26 +15,27 @@ TODO:
 - make towers stable
 
 - animate sea waves
+- add wave effects to ocean
 
+- add rainbow bridges to terrain
+
+- game flow:
+    - level select
+    - intro text
+    - win/loss screen
+    - transition animation
 
 ## Feature Ideas
 - narwal-i-corn (swims, gives large mana. Dark shadow in water)
 - rhino-i-corn
 
-- move mana indicator to terrain; sparkle.
-
-- add rainbow bridges to terrain
-- add wave effects to ocean
+- make unicorns blockier
 
 - mana gen tower (cyan? Or magenta?)
 
 - click to focus enemy
 - shift click to place multiple towers
 - spells: bomb, remove tower, ???
-
-- banish when reaching tower
-
-- make unicorns blockier
 
 - use audio tree for playing sounds
 - find a classical piece to "play" on piano. Each note is [time, freqIndex, vol, hold, INSTRUMENT] Where instrument defines the note quality, optional reverb, optional distortion

@@ -7,6 +7,7 @@ class Terrain{
     rawTowers = grid2d(this.size, [0, 0]); // [x][y] -> Tuple<0 | 1 (r) | 2 (g) | 3 (b), level: number = 0>
     mana = 150;
     waves = 0;
+    health = 10;  // hits you can take before dying
 
     computedTowersArr = [];
     computedTowersByLocation = grid2d(this.size, 0);  // Grid2d<Tower>
@@ -168,18 +169,35 @@ class Terrain{
             const [tx, ty] = this.goalLocation;
             if(e.hp <= 0) {
                 this.enemies.delete(e);
-                this.mana += e.maxHp;
+                this.mana += e.maxHp * e.manaOnKillMult;
                 ParticleSystem.explodeManaAt(
                     e.pos.map(v => v - 0.5),
-                    e.maxHp,
+                    e.maxHp * e.manaOnKillMult,
                 );
                 ParticleSystem.explodeSpritesAt(
                     e.pos.map(v => v - 0.5),
                     ...e.getSprites(),
                 );
+
             }else if(sx == tx && sy == ty) {
-                this.enemies.delete(e);
-                console.log('TODO: hit');
+                if(this.health >= e.banishDamage) {
+                    this.health -= e.banishDamage;
+                    const resetLocation = [randChoice(this.spawnLocations)[0] + 0.5, 0.5];
+                    ParticleSystem.spawnParticlePixelLine(
+                        e.pos,
+                        resetLocation,
+                        pos => new ResetUnicornParticle(pos, [], 2),
+                    );
+                    ParticleSystem.explodeSpritesAt(
+                        HEART_POS,
+                        sprites[29].withColor([20, 20, 20, 255]),
+                    );
+                    e.setLocation(resetLocation);
+                    e.manaOnKillMult = 0;
+                    e.banishDamage *= 2;
+                }else{
+                    console.log('You lose!');
+                }
             }
         }
     }
