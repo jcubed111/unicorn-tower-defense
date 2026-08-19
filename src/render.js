@@ -150,8 +150,16 @@ function render(dt) {
     GameState.manaDisplay.innerText = GameState.terrain.mana;
     GameState.runeButtons.forEach((el, i) => {
         const cost = GameState.terrain.getDrawCost(i + 1);
+        const canAfford = cost <= GameState.terrain.mana;
         el.classList.toggle('C--runeButtonActive', i + 1 == GameState.drawType);
-        el.classList.toggle('C--runeButtonTooExpensive', cost > GameState.terrain.mana);
+        el.classList.toggle('C--runeButtonTooExpensive', !canAfford);
         el.children[0].innerText = cost + ' ᚯ';
+        el.children[1].replaceChildren(
+            sprites[i * 4 + 4].withColor(
+                canAfford
+                    ? normalizedTowerRgb(i == 0, i == 1, i == 2)
+                    : [127, 127, 127, 255],
+            ).asImage
+        );
     });
 }

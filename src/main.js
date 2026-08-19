@@ -26,16 +26,26 @@ const scrollDiv = (...divArgs) => {
     return el;
 };
 
+const spellAreaBackImage = sprites[26].asImage.toDataURL();
+const spellAreaDiv = (...divArgs) => {
+    const el = div(...divArgs);
+    // 15 rem = 1 tile
+    // The magic numbers here are the result of dividing [sprite px] / 7.5 to get the rem values.
+    el.style.borderStyle = `solid`;
+    el.style.borderWidth = `5rem`;
+    el.style.borderImage = `url(${spellAreaBackImage}) 6 / 6rem / 0 round`;
+    // el.style.background = '#202020 padding-box';
+    return el;
+};
+
 window.onload = () => {
     GameState.runeButtons = range(3).map(i => {
-        const button = sprites[i * 4 + 4].withColor(
-            normalizedTowerRgb(i == 0, i == 1, i == 2),
-        ).asImage;
+        const button = div();
         button.addEventListener('click', _ => GameState.drawType = i + 1);
         return div(
             'C--runeButtonWrapper',
-            div(/*'C--runeButtonCost'*/),
-            button,
+            div(),  // cost
+            button,  // tower canvas wrapper
         );
     });
 
@@ -45,8 +55,10 @@ window.onload = () => {
             GameState.sidebarEl = div('C--sidebar',
                 div('C--manaOrb', "ᚯ ", GameState.manaDisplay = styled('span')),
 
-                div('', "Inscribe Rune"),
-                div('C--runeButtonRow', ...GameState.runeButtons),
+                spellAreaDiv('C--spellArea',
+                    div('', "Inscribe Rune"),
+                    div('C--runeButtonRow', ...GameState.runeButtons),
+                ),
 
                 GameState.hoverInfoEl = div('C--hoverInfoArea'),
 

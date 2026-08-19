@@ -72,35 +72,46 @@ body{
     //     font-size: 4.5rem;
     // }
 
-    .C--runeButtonRow{
-        display: flex;
-        justify-content: space-evenly;
-        color: #94d6ff;
+    .C--spellArea{
+        padding: 1rem 2rem 2rem;
+        @extend %flexCol;
+        gap: 1rem;
     }
 
-    .C--runeButtonWrapper{
-        @extend %flexCol;
-        text-align: center;
-        gap: 1rem;
+        .C--runeButtonRow{
+            @extend %flexRow;
+            justify-content: space-between;
+            color: #94d6ff;
+        }
 
-        canvas{
-            width: 12rem!important;
-            cursor: pointer;
-            border: 1px solid #444;
+        .C--runeButtonWrapper{
+            @extend %flexCol;
+            text-align: center;
+            gap: 1rem;
 
-            &:hover{
-                background: #fff2;
+            canvas{
+                width: 12rem!important;
+                cursor: pointer;
+                border: 0.5rem solid #202020;
+
+                &:hover{
+                    background: #0004;
+                }
             }
         }
-    }
 
-    .C--runeButtonActive canvas{
-        border: 1px solid #94d6ff;
-    }
+            .C--runeButtonActive canvas{
+                border: 0.5rem solid #94d6ff;
+                background: #0004;
+            }
 
-    .C--runeButtonTooExpensive {
-        color: #e00;
-    }
-    .C--runeButtonTooExpensive canvas{
-        filter: grayscale(1);
-    }
+            .C--runeButtonTooExpensive {
+                color: #888;
+            }
+
+            .C--runeButtonTooExpensive.C--runeButtonActive canvas{
+                border: 0.5rem solid #888;
+            }
+            // .C--runeButtonTooExpensive canvas{
+            //     filter: grayscale(1);
+            // }
