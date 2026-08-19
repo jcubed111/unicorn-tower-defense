@@ -21,12 +21,14 @@ body{
     color: #eee;
 }
 
+
 .C--mainWrapper{
-    // @extend %flexRow;
     position: relative;
     background: #273757;
 }
-
+canvas{
+    display: block;
+}
 
 .C--topLeft{
     position: absolute;
@@ -43,7 +45,7 @@ body{
     .C--manaOrb{
         line-height: 1;
         font-size: 5rem;
-        margin: 5rem 0 5rem 16rem;
+        margin: 5rem 0 4rem 16rem;
         color: #94d6ff;
     }
 
@@ -59,7 +61,7 @@ body{
         @extend %flexCol;
         flex: 1 1 0;
         overflow: auto;
-        padding: 1rem 2rem 1rem 3rem;
+        padding: 1rem 3rem 1rem 3rem;
         gap: 3rem;
         margin: 0 1rem 1rem 0;
     }
