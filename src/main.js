@@ -55,15 +55,15 @@ window.onload = () => {
     GameState.terrain.recomputeDerivedValues();
 
     GameState.terrain.setWaves(
-        [10,  1,     5, pos => new Enemy(pos, 3)],  // total hp ~= 15
-        [30,  1,     5, pos => new Enemy(pos, 4)],  // total hp ~= 22
-        [50,  0.5,  10, pos => new Enemy(pos, 3)],  // total hp ~= 33
-        [70,  1,     7, pos => new Enemy(pos, 8)],  // total hp ~= 50
-        [90,  1,     8, pos => new Enemy(pos, 9)], // total hp ~= 75
-        [110, 0.25, 20, pos => new Enemy(pos, 6)],  // total hp ~= 113
-        [130, 1,     9, pos => new Enemy(pos, 18)], // total hp ~= 170
-        [150, 1,    10, pos => new Enemy(pos, 26)], // total hp ~= 256
-        [170, 1,     1, pos => new Enemy(pos, 200)], // total hp ~= 384
+        Enemy,
+        Enemy,
+        SwarmEnemy,
+        Enemy,
+        Enemy,
+        SwarmEnemy,
+        Enemy,
+        Enemy,
+        BossEnemy,
     );
 
     const recomputeHovering = e => {

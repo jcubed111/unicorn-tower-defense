@@ -1,4 +1,12 @@
-class Enemy{
+class AbcEnemy{
+    // need a super class to force init order to put level first
+    constructor(level, pos) {
+        this.level = level;
+        this.pos = pos.map(v => v + 0.5);
+    }
+}
+
+class Enemy extends AbcEnemy{
     displayName = 'Unicorn';
     speed = 2;  // squares/sec
     armor = 0;
@@ -9,10 +17,14 @@ class Enemy{
 
     slowEffects = [];  // Array<[speedMult, remaining]>
 
-    constructor(pos, hp) {
-        // Take the starting square, but place in center of square
-        this.pos = pos.map(v => v + 0.5);
-        this.hp = this.maxHp = hp;
+    maxHp = ~~(3 * 1.35 ** this.level);
+    hp = 0;  // set by setWaves in Terrain
+
+    // used by wave generator
+    delayPerMonster = 1;
+
+    constructor(level, pos) {
+        super(level, pos);
     }
 
     asHoverEl() {
@@ -86,4 +98,13 @@ class Enemy{
         // moveAmount is speed * dt, so we stil lscale correctly with time step
         this.facing += (Math.atan2(dx, -dy) - this.facing) * (1 - 2 ** (-5 * moveAmount));
     }
+}
+
+class SwarmEnemy extends Enemy{
+    maxHp = ~~(1.5 * 1.35 ** this.level);
+    delayPerMonster = 0.5;
+}
+
+class BossEnemy extends Enemy{
+    maxHp = ~~(1.5 * 1.5 ** this.level);
 }
