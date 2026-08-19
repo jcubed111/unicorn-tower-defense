@@ -1,10 +1,11 @@
 const tileSize = 15;
 
 
-const makeSpriteCanvas = (ctxCb) => {
+const makeSpriteCanvas = (ctxCb, w = 1, h = 1) => {
     const canvas = styled('canvas');
-    canvas.width = canvas.height = tileSize;
-    canvas.style.width = '1rem';
+    canvas.width = w * tileSize;
+    canvas.height = h * tileSize;
+    canvas.style.width = w + 'rem';
     const ctx = canvas.getContext('2d');
     ctx.imageSmoothingEnabled = false;
     ctxCb(ctx);
@@ -62,3 +63,4 @@ function renderSprite(ctx, x, y, sprite, rot=0) {
     ctx.drawImage(sprite.asImage, -0.5, -0.5, 1, 1);
     ctx.restore();
 }
+

@@ -31,8 +31,11 @@ function * getTowerSprites(x, y, rawCell, outerColor, isSameAt) {
 }
 
 function withTowerPattern(stringRepr, Cls) {
+    // Decorates a Tower class to add it's pattern as a static.
+    // Used over `static` since that causes closure compler to freak.
     // NOTE: super important that stringRepr is a perfect grid with every row being
     // the same size. We don't check but the game will crash otherwise.
+
     const asGrid = stringRepr.split('|').map(row => row.split('').map(decodeTowerType));
     const allFormsAsIndexed = allFormsGrid2d(asGrid).map(
         g => grid2dToIndexed(g).filter(g => g[2])
@@ -50,22 +53,18 @@ function withTowerPattern(stringRepr, Cls) {
         // the number of towers contained in this sourcePattern
         size: allFormsAsIndexed[0].length,
         makeElement: () => {
-            const asElement = styled('canvas'/*, 'C--towerPattern'*/);
-            asElement.width = tileSize * asGrid[0].length;
-            asElement.height = tileSize * asGrid.length;
-            asElement.style.width = asGrid[0].length + 'rem';
-            const ctx = asElement.getContext('2d');
-            mapGrid2d(asGrid, (c, [y, x]) => {
-                for(const s of getTowerSprites(
-                    x, y,
-                    [c, 1],
-                    outerColor,
-                    (x, y) => asGrid[y]?.[x] > 0,
-                )) {
-                    renderSprite(ctx, x, y, s);
-                }
-            });
-            return asElement;
+            return makeSpriteCanvas(ctx => {
+                mapGrid2d(asGrid, (c, [y, x]) => {
+                    for(const s of getTowerSprites(
+                        x, y,
+                        [c, 1],
+                        outerColor,
+                        (x, y) => asGrid[y]?.[x] > 0,
+                    )) {
+                        renderSprite(ctx, x, y, s);
+                    }
+                });
+            }, asGrid[0].length, asGrid.length);
         },
     };
     return Cls;

@@ -11,6 +11,22 @@ function mainLoop() {
     window.requestAnimationFrame(mainLoop);
 }
 
+const scrollBackImage = makeSpriteCanvas(ctx => {
+    renderSprite(ctx, 0, 0, sprites[24]);
+    renderSprite(ctx, 1, 0, sprites[25]);
+    renderSprite(ctx, 0, 1, sprites[28]);
+    renderSprite(ctx, 1, 1, sprites[29]);
+}, 2, 2).toDataURL();
+const scrollDiv = (...divArgs) => {
+    const el = div(...divArgs);
+    // 2 rem = 1 tile
+    el.style.borderStyle = `solid`;
+    el.style.borderWidth = `1.87rem 0.93rem 0.8rem 1.07rem`;
+    el.style.borderImage = `url(${scrollBackImage}) 15 11 14 15 / 2rem 1.47rem 1.87rem 2rem / 0 round`;
+    el.style.marginLeft = `-0.93rem`;
+    return el;
+};
+
 window.onload = () => {
     GameState.runeButtons = range(3).map(i => {
         const button = sprites[i * 4 + 4].withColor(
@@ -30,7 +46,7 @@ window.onload = () => {
             GameState.sidebarEl = div('C--sidebar',
                 GameState.hoverInfoEl = div('C--hoverInfoArea'),
                 "Runebook",
-                div('C--scrollFlexC',
+                scrollDiv('C--scrollFlexC',
                     orderedTowerTypes.map(T =>
                         div(/*'C--runeListing'*/ '',
                             div(/*'C--towerName',*/ '', new T([]).displayName),
