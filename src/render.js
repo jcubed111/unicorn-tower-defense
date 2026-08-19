@@ -27,10 +27,12 @@ function render(dt) {
 
     // Set rem to 1/2 tile size
     document.documentElement.style.fontSize = pxSize / window.devicePixelRatio + 'px';
-    mainCanvas.width = mainCanvas.height = pxSize * tileSize * terrain.size;
-    const cssEdgeSize = mainCanvas.width / window.devicePixelRatio;
-    GameState.sidebarEl.style.height = mainCanvas.style.width = mainCanvas.style.height = cssEdgeSize + 'px';
-    GameState.sidebarEl.style.width = (cssEdgeSize >> 2) + 'px';
+    mainCanvas.width = 1.25 * pxSize * tileSize * terrain.size;
+    mainCanvas.height = pxSize * tileSize * terrain.size;
+    const cssEdgeSize = mainCanvas.height / window.devicePixelRatio;
+    mainCanvas.style.width = 1.25 * cssEdgeSize + 'px';
+    mainCanvas.style.height = cssEdgeSize + 'px';
+    // GameState.sidebarEl.style.width = (cssEdgeSize >> 2) + 'px';
 
     const ctx = mainCanvas.getContext('2d');
     ctx.setTransform(pxSize, 0, 0, pxSize, 0, 0);
@@ -97,10 +99,10 @@ function render(dt) {
     const rate = terrain.mana / (terrain.mana + 200);
     const colorRate = 255 * terrain.mana / (terrain.mana + 50);
     const col = [~~colorRate, ~~colorRate, ~~colorRate, 255];
-    renderSprite(ctx, 15, 15, sprites[25].withColor(col));
+    renderSprite(ctx, ...MANA_POOL_POS, sprites[25].withColor(col));
     sprites[25].toParticlesSparse(rate * dt).forEach(([fy, fx, color]) => {
         ParticleSystem.addParticle(new EnergyFadeParticle(
-            [225 + fx, 225 + fy],
+            [MANA_POOL_POS[0] * 15 + fx, MANA_POOL_POS[1] * 15 + fy],
             color,
         ))
     });
@@ -150,6 +152,6 @@ function render(dt) {
         const cost = GameState.terrain.getDrawCost(i + 1);
         el.classList.toggle('C--runeButtonActive', i + 1 == GameState.drawType);
         el.classList.toggle('C--runeButtonTooExpensive', cost > GameState.terrain.mana);
-        el.children[0].innerText = cost + 'ᚯ';
+        el.children[0].innerText = cost + ' ᚯ';
     });
 }

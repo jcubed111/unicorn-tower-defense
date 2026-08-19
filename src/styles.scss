@@ -18,11 +18,13 @@ body{
     height: 100vh;
     image-rendering: pixelated;
     white-space: pre-wrap;
+    color: #eee;
 }
 
 .C--mainWrapper{
-    @extend %flexRow;
+    // @extend %flexRow;
     position: relative;
+    background: #273757;
 }
 
 
@@ -30,14 +32,21 @@ body{
     position: absolute;
     top: 3rem;
     left: 3rem;
-    color: #fff;
 }
 
 .C--sidebar{
     @extend %flexCol;
-    background: #111;
-    color: #eee;
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: 60rem;
 }
+    .C--manaOrb{
+        line-height: 1;
+        font-size: 5rem;
+        margin: 5rem 0 5rem 16rem;
+        color: #94d6ff;
+    }
+
     .C--sidebarTitle{
         font-size: 7rem;
     }
@@ -48,10 +57,11 @@ body{
 
     .C--runeBook{
         @extend %flexCol;
-        flex-shrink: 1;
+        flex: 1 1 0;
         overflow: auto;
-        padding: 1rem 3rem;
+        padding: 1rem 2rem 1rem 3rem;
         gap: 3rem;
+        margin: 0 1rem 1rem 0;
     }
 
         .C--runeListing{
@@ -65,11 +75,13 @@ body{
     .C--runeButtonRow{
         display: flex;
         justify-content: space-evenly;
+        color: #94d6ff;
     }
 
     .C--runeButtonWrapper{
         @extend %flexCol;
         text-align: center;
+        gap: 1rem;
 
         canvas{
             width: 12rem!important;
@@ -83,7 +95,7 @@ body{
     }
 
     .C--runeButtonActive canvas{
-        border: 1px solid #ccc;
+        border: 1px solid #94d6ff;
     }
 
     .C--runeButtonTooExpensive {

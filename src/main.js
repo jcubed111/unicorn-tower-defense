@@ -43,7 +43,13 @@ window.onload = () => {
         div('C--mainWrapper',
             GameState.mainCanvas = styled('canvas'),
             GameState.sidebarEl = div('C--sidebar',
+                div('C--manaOrb', "ᚯ ", GameState.manaDisplay = styled('span')),
+
+                div('', "Inscribe Rune"),
+                div('C--runeButtonRow', ...GameState.runeButtons),
+
                 GameState.hoverInfoEl = div('C--hoverInfoArea'),
+
                 scrollDiv('C--runeBook',
                     div('C--sidebarTitle', "ᚱuneᛒooᛕ"),
                     orderedTowerTypes.map(T =>
@@ -53,9 +59,6 @@ window.onload = () => {
                         ),
                     ).reverse(),
                 ),
-                div('', "Inscribe Rune"),
-                div('', "Mana: ", GameState.manaDisplay = styled('span')),
-                div('C--runeButtonRow', ...GameState.runeButtons),
             ),
             div('C--topLeft',
                 GameState.topLeftDisplay = div(),

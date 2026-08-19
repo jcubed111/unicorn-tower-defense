@@ -105,9 +105,10 @@ class Terrain{
     }
 
     eventToPos(e) {  // -> [x, y]
-        const { x, y, width, height } = e.target.getBoundingClientRect();
+        const { x, y, height } = e.target.getBoundingClientRect();
         return [
-            (e.clientX - x) / width * this.size,
+            // this.size == the height, not the width.
+            (e.clientX - x) / height * this.size,
             (e.clientY - y) / height * this.size,
         ];
     }
@@ -195,25 +196,25 @@ class Terrain{
         GameState.startNextWaveButton.addEventListener('click', () => this.startNextWaveNow());
         var prevEndTime = 0;
 
-        const expandedWaves = enemyConstructors.map((WaveCls, i) => {
+        const expandedWaves = enemyConstructors.map((WaveCls, waveIndex) => {
             // Derive the wave metrics
-            const targetTotalHp = 15 * 1.5 ** i;
-            const sampleEnemy = new WaveCls(i, [0, 0]);
+            const targetTotalHp = 15 * 1.5 ** waveIndex;
+            const sampleEnemy = new WaveCls(waveIndex, [0, 0]);
 
             // wave start
-            const startTime = 10 + 20 * i;
+            const startTime = 10 + 20 * waveIndex;
             // delay per monster
             const enemyDelay = sampleEnemy.delayPerMonster;
             // number of enemies
             const numEnemies = Math.ceil(targetTotalHp * sampleEnemy.totalHpModifier / sampleEnemy.maxHp);
 
-            console.log('wave', i + 1, 'num enemies', numEnemies, 'hp', sampleEnemy.maxHp);
+            console.log('wave', waveIndex + 1, 'num enemies', numEnemies, 'hp', sampleEnemy.maxHp);
 
             // Pre-wave countdown
             range(startTime - prevEndTime).forEach(dt => {
                 this.actionQueue.add([startTime - dt, () => {
                     GameState.topLeftDisplay.innerText =
-                        (i ? `Wave ${i}/${enemyConstructors.length}\n` : '')
+                        (waveIndex ? `Wave ${waveIndex}/${enemyConstructors.length}\n` : '')
                         + `Next wave in ${dt}...`;
 
                     GameState.startNextWaveButton.style.display = 'block';
@@ -223,7 +224,7 @@ class Terrain{
 
             // Wave start
             this.actionQueue.add([startTime, () => {
-                GameState.topLeftDisplay.innerText = `Wave ${i + 1}/${enemyConstructors.length}`;
+                GameState.topLeftDisplay.innerText = `Wave ${waveIndex + 1}/${enemyConstructors.length}`;
 
                 GameState.startNextWaveButton.style.display = 'none';
                 this.nextWaveTime = -1;
@@ -234,7 +235,7 @@ class Terrain{
                 this.actionQueue.add([
                     startTime + i * enemyDelay,
                     () => {
-                        const e = new WaveCls(i, randChoice(this.spawnLocations));
+                        const e = new WaveCls(waveIndex, randChoice(this.spawnLocations));
                         e.hp = e.maxHp;
                         this.enemies.add(e);
                     },

@@ -3,6 +3,8 @@ const randVec = mag => {
     return [Math.cos(angle) * mag, Math.sin(angle) * mag];
 };
 
+const MANA_POOL_POS = [16, 0];
+
 
 class Particle{
     age = 0;
@@ -20,7 +22,8 @@ class Particle{
 }
 
 class ManaGainParticle extends Particle{
-    /** @type {number} */ lifespan = randFloat(1, 1.3);
+    /** @type {number} */
+    lifespan = randFloat(1, 1.3);
 
     constructor(pos) {
         super(pos);
@@ -33,8 +36,8 @@ class ManaGainParticle extends Particle{
         const [bx, by] = this.ctrlB;
         this._render(
             ctx,
-            x + t * t * (232.5 - x) + 2 * t * (1 - t) * bx,
-            y + t * t * (232.5 - y) + 2 * t * (1 - t) * by,
+            x + t * t * (MANA_POOL_POS[0] * 15 - x + 7) + 2 * t * (1 - t) * bx,
+            y + t * t * (MANA_POOL_POS[1] * 15 - y + 7) + 2 * t * (1 - t) * by,
             (performance.now() % 1000) < 300 ? '#fff' : '#7cf',
         );
     }
