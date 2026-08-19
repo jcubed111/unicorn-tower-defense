@@ -205,7 +205,9 @@ class Terrain{
             // delay per monster
             const enemyDelay = sampleEnemy.delayPerMonster;
             // number of enemies
-            const numEnemies = Math.ceil(targetTotalHp / sampleEnemy.maxHp);
+            const numEnemies = Math.ceil(targetTotalHp * sampleEnemy.totalHpModifier / sampleEnemy.maxHp);
+
+            console.log('wave', i + 1, 'num enemies', numEnemies, 'hp', sampleEnemy.maxHp);
 
             // Pre-wave countdown
             range(startTime - prevEndTime).forEach(dt => {

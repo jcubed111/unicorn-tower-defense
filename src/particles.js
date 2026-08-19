@@ -20,7 +20,7 @@ class Particle{
 }
 
 class ManaGainParticle extends Particle{
-    lifespan = randFloat(1, 1.3);
+    /** @type {number} */ lifespan = randFloat(1, 1.3);
 
     constructor(pos) {
         super(pos);

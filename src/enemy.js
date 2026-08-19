@@ -22,6 +22,7 @@ class Enemy extends AbcEnemy{
 
     // used by wave generator
     delayPerMonster = 1;
+    totalHpModifier = 1;
 
     constructor(level, pos) {
         super(level, pos);
@@ -106,5 +107,6 @@ class SwarmEnemy extends Enemy{
 }
 
 class BossEnemy extends Enemy{
-    maxHp = ~~(1.5 * 1.5 ** this.level);
+    maxHp = ~~(8 * 1.5 ** this.level);
+    totalHpModifier = 0.1;  // ensure there's only 1 boss
 }
