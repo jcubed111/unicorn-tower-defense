@@ -13,9 +13,7 @@ function mainLoop() {
 
 const scrollBackImage = makeSpriteCanvas(ctx => {
     renderSprite(ctx, 0, 0, sprites[24]);
-    // renderSprite(ctx, 1, 0, sprites[25]);
     renderSprite(ctx, 0, 1, sprites[28]);
-    // renderSprite(ctx, 1, 1, sprites[29]);
 }, 1, 2).toDataURL();
 const scrollDiv = (...divArgs) => {
     const el = div(...divArgs);
@@ -24,8 +22,7 @@ const scrollDiv = (...divArgs) => {
     el.style.borderStyle = `solid`;
     el.style.borderWidth = `14rem 5rem 14rem 1rem`;
     el.style.borderImage = `url(${scrollBackImage}) 14 5 14 8 / 14rem 5rem 14rem 8rem / 0 round`;
-    el.style.background = '#9f9f9f';
-    el.style.backgroundClip = 'content-box';
+    el.style.background = '#202020 padding-box';
     return el;
 };
 
@@ -47,10 +44,10 @@ window.onload = () => {
             GameState.mainCanvas = styled('canvas'),
             GameState.sidebarEl = div('C--sidebar',
                 GameState.hoverInfoEl = div('C--hoverInfoArea'),
-                "Runebook",
-                scrollDiv('C--scrollFlexC',
+                scrollDiv('C--runeBook',
+                    div('C--sidebarTitle', "ᚱuneᛒooᛕ"),
                     orderedTowerTypes.map(T =>
-                        div(/*'C--runeListing'*/ '',
+                        div('C--runeListing',
                             div(/*'C--towerName',*/ '', new T([]).displayName),
                             T.sourcePattern.makeElement(),
                         ),
