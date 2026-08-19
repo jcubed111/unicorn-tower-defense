@@ -26,7 +26,7 @@ function render(dt) {
     );
 
     // Set rem to 1/2 tile size
-    document.documentElement.style.fontSize = 0.5 * pxSize * tileSize / window.devicePixelRatio + 'px';
+    document.documentElement.style.fontSize = pxSize / window.devicePixelRatio + 'px';
     mainCanvas.width = mainCanvas.height = pxSize * tileSize * terrain.size;
     const cssEdgeSize = mainCanvas.width / window.devicePixelRatio;
     GameState.sidebarEl.style.height = mainCanvas.style.width = mainCanvas.style.height = cssEdgeSize + 'px';

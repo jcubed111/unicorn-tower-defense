@@ -13,17 +13,19 @@ function mainLoop() {
 
 const scrollBackImage = makeSpriteCanvas(ctx => {
     renderSprite(ctx, 0, 0, sprites[24]);
-    renderSprite(ctx, 1, 0, sprites[25]);
+    // renderSprite(ctx, 1, 0, sprites[25]);
     renderSprite(ctx, 0, 1, sprites[28]);
-    renderSprite(ctx, 1, 1, sprites[29]);
-}, 2, 2).toDataURL();
+    // renderSprite(ctx, 1, 1, sprites[29]);
+}, 1, 2).toDataURL();
 const scrollDiv = (...divArgs) => {
     const el = div(...divArgs);
-    // 2 rem = 1 tile
+    // 15 rem = 1 tile
+    // The magic numbers here are the result of dividing [sprite px] / 7.5 to get the rem values.
     el.style.borderStyle = `solid`;
-    el.style.borderWidth = `1.87rem 0.93rem 0.8rem 1.07rem`;
-    el.style.borderImage = `url(${scrollBackImage}) 15 11 14 15 / 2rem 1.47rem 1.87rem 2rem / 0 round`;
-    el.style.marginLeft = `-0.93rem`;
+    el.style.borderWidth = `14rem 5rem 14rem 1rem`;
+    el.style.borderImage = `url(${scrollBackImage}) 14 5 14 8 / 14rem 5rem 14rem 8rem / 0 round`;
+    el.style.background = '#9f9f9f';
+    el.style.backgroundClip = 'content-box';
     return el;
 };
 

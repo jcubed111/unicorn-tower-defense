@@ -5,7 +5,7 @@ const makeSpriteCanvas = (ctxCb, w = 1, h = 1) => {
     const canvas = styled('canvas');
     canvas.width = w * tileSize;
     canvas.height = h * tileSize;
-    canvas.style.width = w + 'rem';
+    canvas.style.width = w * 7.5 + 'rem';
     const ctx = canvas.getContext('2d');
     ctx.imageSmoothingEnabled = false;
     ctxCb(ctx);

@@ -10,7 +10,7 @@
 
 body{
     @extend %flexRow;
-    font-size: 0.5rem;
+    font-size: 3.75rem;
     margin: 0;
     background: #000;
     font-family: Avenir, Montserrat, Corbel, source-sans-pro, sans-serif;
@@ -28,8 +28,8 @@ body{
 
 .C--topLeft{
     position: absolute;
-    top: 0.25rem;
-    left: 0.25rem;
+    top: 3rem;
+    left: 3rem;
     color: #fff;
 }
 
@@ -39,7 +39,7 @@ body{
     color: #eee;
 }
     .C--hoverInfoArea{
-        height: 8rem;
+        height: 60rem;
     }
 
     .C--scrollFlexC{
@@ -48,7 +48,7 @@ body{
         overflow: auto;
     }
     // .C--towerName{
-    //     font-size: 0.6rem;
+    //     font-size: 4.5rem;
     // }
 
     .C--runeButtonRow{
@@ -59,10 +59,9 @@ body{
     .C--runeButtonWrapper{
         @extend %flexCol;
         text-align: center;
-        // font-size: 0.5rem;
 
         canvas{
-            width: 1.5rem!important;
+            width: 12rem!important;
             cursor: pointer;
             border: 1px solid #444;
 
