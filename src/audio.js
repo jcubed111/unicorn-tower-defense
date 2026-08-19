@@ -1,0 +1,49 @@
+
+// const PIANO = [0.005, 0.4,  0.15, 0.3];
+// const FLUTE = [0.08,  0.15, 0.85, 0.2];
+// const PLUCK = [0.002, 0.25, 0.05, 0.3];
+// const BELL =  [0.002, 1,    0,    2];
+const PING =  [0.007, 0.06, 0.42, 0.05];
+
+
+const AudioSystem = new class {
+    ctx = new window.AudioContext();
+
+    playTowerBolt(dNote) {
+        this.scheduleNote(
+            this.ctx.currentTime + randFloat(0, 0.1),
+            dNote + randFloat(64, 66),
+            0.05,
+            PING,
+            0.2,
+        );
+    }
+
+    // playNoteNow(...args) {
+    //     this.scheduleNote(this.ctx.currentTime, ...args);
+    // }
+
+    scheduleNote(atTime, midiNumber, noteLength, instrument, volume = 1) {
+        const [
+            attack,
+            decay,
+            sustain,
+            release,
+        ] = instrument;
+
+        const osc = new OscillatorNode(this.ctx, {
+            frequency: 440 * 2 ** ((midiNumber - 69) / 12),
+        });
+        const gain = this.ctx.createGain();
+
+        osc.connect(gain).connect(this.ctx.destination);
+
+        gain.gain.setValueAtTime(0, atTime);
+        gain.gain.linearRampToValueAtTime(volume, atTime + attack);
+        gain.gain.setTargetAtTime(sustain * volume, atTime + attack, decay / 4);
+        gain.gain.setTargetAtTime(0, atTime + noteLength, release / 4);
+
+        osc.start(atTime);
+        osc.stop(atTime + noteLength + release + 0.01);
+    }
+};

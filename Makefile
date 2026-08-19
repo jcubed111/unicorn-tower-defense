@@ -4,6 +4,7 @@ SPRITE_SIZE := 15
 
 JS_FILES := \
 	src/utils.js \
+	src/audio.js \
 	src/particles.js \
 	src/sprite.js \
 	dev/sprites.js \

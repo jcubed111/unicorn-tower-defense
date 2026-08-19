@@ -3,18 +3,49 @@
 <head>
 <meta charset="utf-8">
 <title>Audio Test</title>
+<style>
+  body { font: 14px/1.4 system-ui, sans-serif; margin: 16px; }
+  fieldset { border: 1px solid #ccc; margin: 0 0 12px; padding: 8px 12px; }
+  legend { font-weight: 600; }
+  .options { display: flex; flex-wrap: wrap; gap: 4px 12px; }
+  .options label { white-space: nowrap; }
+  #notes { max-height: 180px; overflow-y: auto; }
+  .slider { display: grid; grid-template-columns: 90px 1fr 60px; align-items: center; gap: 8px; margin: 4px 0; }
+  .slider output { font-variant-numeric: tabular-nums; }
+  #play, #steppes, #lightning { font-size: 18px; padding: 8px 24px; }
+  #graph { width: 100%; max-width: 620px; height: 220px; display: block; }
+</style>
 </head>
 <body>
-<button data-type="sine">sine</button>
-<button data-type="square">square</button>
-<button data-type="sawtooth">sawtooth</button>
-<button data-type="triangle">triangle</button>
-<br>
-<button data-octave="-2">-2</button>
-<button data-octave="-1">-1</button>
-<button data-octave="0">0</button>
-<button data-octave="1">+1</button>
-<button data-octave="2">+2</button>
+<fieldset>
+  <legend>Note</legend>
+  <div class="options" id="notes"></div>
+</fieldset>
+
+<fieldset>
+  <legend>Playback</legend>
+  <div class="slider"><label for="volume">volume</label><input type="range" id="volume" min="0" max="1" step="0.01" value="0.5"><output for="volume"></output></div>
+  <div class="slider"><label for="noteLength">note length</label><input type="range" id="noteLength" min="0.05" max="2" step="0.05" value="0.25"><output for="noteLength"></output></div>
+</fieldset>
+
+<fieldset>
+  <legend>Instrument</legend>
+  <div class="slider"><label>preset</label><div class="options" id="presets"></div></div>
+  <div class="slider"><label>wave</label><div class="options" id="waves"></div></div>
+  <div class="slider"><label for="attack">attack</label><input type="range" id="attack" min="0.001" max="0.5" step="0.001" value="0.005"><output for="attack"></output></div>
+  <div class="slider"><label for="decay">decay</label><input type="range" id="decay" min="0.01" max="1" step="0.01" value="0.1"><output for="decay"></output></div>
+  <div class="slider"><label for="sustain">sustain</label><input type="range" id="sustain" min="0" max="1" step="0.01" value="0.3"><output for="sustain"></output></div>
+  <div class="slider"><label for="release">release</label><input type="range" id="release" min="0" max="2" step="0.05" value="1"><output for="release"></output></div>
+</fieldset>
+
+<fieldset>
+  <legend>Gain envelope</legend>
+  <canvas id="graph"></canvas>
+</fieldset>
+
+<button id="play">▶ Play</button>
+<button id="steppes">♪ In the Steppes of Central Asia</button>
+<button id="lightning">⚡ Lightning</button>
 <script src="main.js"></script>
 </body>
 </html>

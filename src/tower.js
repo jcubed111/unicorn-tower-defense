@@ -139,6 +139,9 @@ class Tower{
             target.pos,
             pos => new EnergyFadeParticle(pos, this.getColor(), 0.5),
         );
+
+        const [r, g, b] = this.getColor();
+        AudioSystem.playTowerBolt(r / 64 - g / 64 + b / 32);
     }
 }
 
@@ -154,7 +157,7 @@ const orderedTowerTypes = [
         displayName = 'Sniper';
         chargeTime = 10;
         /** @type {number} */ range = 3 + this.level;
-        damage = 4 * this.level;
+        damage = 15 * this.level;
     }),
 
     withTowerPattern('bb|bb', class extends Tower{

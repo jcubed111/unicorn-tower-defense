@@ -11,6 +11,8 @@ TODO:
 
 - tower types
 - hide undiscovered runebook entires
+    - show them as shape only? With "???" names?
+- make towers stable
 
 - animate sea waves
 
