@@ -93,6 +93,18 @@ function render(dt) {
         }
     }
 
+    // Draw mana pool
+    const rate = terrain.mana / (terrain.mana + 200);
+    const colorRate = 255 * terrain.mana / (terrain.mana + 50);
+    const col = [~~colorRate, ~~colorRate, ~~colorRate, 255];
+    renderSprite(ctx, 15, 15, sprites[25].withColor(col));
+    sprites[25].toParticlesSparse(rate * dt).forEach(([fy, fx, color]) => {
+        ParticleSystem.addParticle(new EnergyFadeParticle(
+            [225 + fx, 225 + fy],
+            color,
+        ))
+    });
+
     // Draw particles
     ParticleSystem.render(ctx);
     ParticleSystem.step(dt);
@@ -138,6 +150,6 @@ function render(dt) {
         const cost = GameState.terrain.getDrawCost(i + 1);
         el.classList.toggle('C--runeButtonActive', i + 1 == GameState.drawType);
         el.classList.toggle('C--runeButtonTooExpensive', cost > GameState.terrain.mana);
-        el.children[0].innerText = cost;
+        el.children[0].innerText = cost + 'ᚯ';
     });
 }

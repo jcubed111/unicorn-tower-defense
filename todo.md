@@ -28,8 +28,6 @@ TODO:
 
 - mana gen tower (cyan? Or magenta?)
 
-- reusable scroll (the paper kind) box effect (dark on color? Color as a param?)
-
 - click to focus enemy
 - shift click to place multiple towers
 - spells: bomb, remove tower, ???
