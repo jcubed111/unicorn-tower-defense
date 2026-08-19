@@ -387,3 +387,182 @@ document.getElementById("lightning").addEventListener("click", () => {
   ctx.resume();
   lightning(ctx.currentTime + 0.02);
 });
+
+// --- Viking horn (lur) --------------------------------------------------------
+// Take one: saws through a lowpass sweep. That is a synth brass patch, and it
+// sounds like one. A real horn does not filter a rich wave down -- it GENERATES
+// harmonics as it gets loud, because the pressure wave steepens as it travels
+// the tube (loud enough and it is literally a shock wave). So the harmonics are
+// made by a nonlinearity whose drive follows the breath, not by a filter.
+//
+// Hence: a plain triangle pushed into a waveshaper, drive riding the envelope.
+// Soft blow = nearly a sine. Hard blow = the brass blat. The curve is
+// ASYMMETRIC because lips open and close differently, and that asymmetry is
+// what puts the even harmonics in.
+//
+// After that the fakeness that is left is regularity, so nothing here is
+// allowed to be periodic or exact: the vibrato is three LFOs at unrelated
+// rates, the attack pitch is unstable, and the room is a real (generated)
+// impulse response instead of a slap delay.
+
+let brassCurve = null;
+function getBrassCurve() {
+  if (!brassCurve) {
+    const n = 2048, k = 3.2, bias = 0.28;
+    brassCurve = new Float32Array(n);
+    const norm = Math.tanh(k + bias);
+    for (let i = 0; i < n; i++) {
+      const x = (i / (n - 1)) * 2 - 1;
+      brassCurve[i] = (Math.tanh(k * x + bias) - Math.tanh(bias)) / norm;
+    }
+  }
+  return brassCurve;
+}
+
+// Stone hall / valley: decaying noise, lowpassed as it decays, two independent
+// channels so the tail is not a point source. Cheaper in bytes than it sounds.
+let hallIR = null;
+function getHall() {
+  if (!hallIR) {
+    const len = Math.floor(ctx.sampleRate * 2.4);
+    hallIR = ctx.createBuffer(2, len, ctx.sampleRate);
+    for (let ch = 0; ch < 2; ch++) {
+      const d = hallIR.getChannelData(ch);
+      let lp = 0;
+      for (let i = 0; i < len; i++) {
+        lp += 0.18 * (Math.random() * 2 - 1 - lp); // one-pole: dark tail
+        d[i] = lp * (1 - i / len) ** 2.4;
+      }
+    }
+  }
+  return hallIR;
+}
+
+let hallBus = null;
+function getHallBus() {
+  if (!hallBus) {
+    hallBus = ctx.createGain();
+    const pre = ctx.createDelay(0.1);
+    pre.delayTime.value = 0.022; // predelay: puts the walls at a distance
+    const conv = ctx.createConvolver();
+    conv.buffer = getHall();
+    const wet = ctx.createGain();
+    wet.gain.value = 0.55;
+    hallBus.connect(pre).connect(conv).connect(wet).connect(ctx.destination);
+  }
+  return hallBus;
+}
+
+function horn(t, freq = 110, dur = 2.2, vol = 0.4) {
+  const A = 0.13;             // attack: a big tube takes time to speak
+  const REL = 0.34;           // the hall carries the rest of the tail
+  const end = t + dur + REL;
+
+  const out = ctx.createGain();
+  out.connect(ctx.destination);
+  out.connect(getHallBus());
+
+  // Signal path: osc -> drive -> shaper -> bell resonance -> dc/mud trim -> out
+  const drive = ctx.createGain();
+  const shaper = ctx.createWaveShaper();
+  shaper.curve = getBrassCurve();
+  shaper.oversample = "4x";   // without this the blat aliases into grit
+  const bell = ctx.createBiquadFilter();
+  bell.type = "peaking";      // the flare's resonance, fixed in Hz, not tracking pitch
+  bell.frequency.value = 900;
+  bell.Q.value = 1.1;
+  bell.gain.value = 7;
+  const trim = ctx.createBiquadFilter();
+  trim.type = "highpass";     // kills the DC the asymmetric curve leaves behind
+  trim.frequency.value = 65;
+  const tame = ctx.createBiquadFilter();
+  tame.type = "lowpass";      // just the tube's own top limit, barely moving
+  tame.frequency.setValueAtTime(freq * 6, t);
+  tame.frequency.exponentialRampToValueAtTime(freq * 26, t + A);
+  tame.frequency.exponentialRampToValueAtTime(freq * 10, end);
+  drive.connect(shaper).connect(bell).connect(trim).connect(tame).connect(out);
+
+  // THE effect: how hard the wave is driven into the nonlinearity. This is the
+  // timbre envelope, and it is deliberately not the same shape as the volume --
+  // the note blooms brighter a moment after it starts, then backs off.
+  drive.gain.setValueAtTime(0.06, t);
+  drive.gain.exponentialRampToValueAtTime(0.95, t + A * 1.4);
+  drive.gain.exponentialRampToValueAtTime(0.55, t + A + 0.45);
+  drive.gain.setValueAtTime(0.55, t + dur * 0.75);
+  drive.gain.exponentialRampToValueAtTime(0.12, end); // darkens as it dies
+
+  out.gain.setValueAtTime(0.0001, t);
+  out.gain.exponentialRampToValueAtTime(vol, t + A);
+  out.gain.exponentialRampToValueAtTime(vol * 0.72, t + A + 0.4);
+  out.gain.setValueAtTime(vol * 0.72, t + dur);
+  out.gain.exponentialRampToValueAtTime(0.0001, end);
+
+  // Instability, summed in cents. Three unrelated rates never line up, so the
+  // wobble never repeats; the slow one is the player drifting, not vibrato.
+  const wobble = ctx.createGain();
+  for (const [rate, cents, fadeIn] of [[5.3, 6, 0.75], [7.1, 2.5, 1.1], [0.63, 5, 0]]) {
+    const lfo = ctx.createOscillator();
+    const depth = ctx.createGain();
+    lfo.frequency.value = rate;
+    if (fadeIn) {
+      depth.gain.setValueAtTime(0, t);
+      depth.gain.linearRampToValueAtTime(cents, t + fadeIn);
+    } else {
+      depth.gain.value = cents;
+    }
+    lfo.connect(depth).connect(wobble);
+    lfo.start(t);
+    lfo.stop(end);
+  }
+  // Breath is uneven too: the same wobble nudges the volume a little.
+  const breath = ctx.createGain();
+  breath.gain.value = vol * 0.004; // wobble is in cents, so scale way down
+  wobble.connect(breath).connect(out.gain);
+
+  // Two voices, barely apart. Not a chorus -- just enough that the phase
+  // between them crawls, which is what stops it sounding like one oscillator.
+  for (const [cents, level, mult] of [[0, 1, 1], [4, 0.75, 1], [-3, 0.32, 2]]) {
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.type = "triangle";     // the shaper supplies the harmonics, not the wave
+    g.gain.value = level * 0.5;
+    wobble.connect(osc.detune);
+    // Attack pitch: lands fast and slightly randomly, the lips catching the
+    // harmonic. A slow clean glide is a synth portamento and reads as fake.
+    const off = 55 + Math.random() * 35;
+    osc.detune.setValueAtTime(-off, t);
+    osc.detune.linearRampToValueAtTime(cents + 3, t + 0.055);
+    osc.detune.linearRampToValueAtTime(cents, t + 0.11);
+    osc.frequency.value = freq * mult;
+    osc.connect(g).connect(drive);
+    osc.start(t);
+    osc.stop(end);
+    track(osc, g);
+  }
+
+  // Air, mixed in BEFORE the shaper so the nonlinearity chews on it too --
+  // that is what welds it to the tone instead of laying hiss on top.
+  const air = ctx.createBufferSource();
+  air.buffer = getNoise();
+  air.loop = true;
+  const airBp = ctx.createBiquadFilter();
+  airBp.type = "bandpass";
+  airBp.frequency.value = 1100;
+  airBp.Q.value = 0.6;
+  const airGain = ctx.createGain();
+  air.connect(airBp).connect(airGain).connect(drive);
+  airGain.gain.setValueAtTime(0.0001, t);
+  airGain.gain.exponentialRampToValueAtTime(0.22, t + 0.035); // the chiff
+  airGain.gain.exponentialRampToValueAtTime(0.025, t + 0.28); // then just breath
+  airGain.gain.exponentialRampToValueAtTime(0.0001, end);
+  air.start(t);
+  air.stop(end);
+  track(air, airGain);
+
+  return out;
+}
+
+document.getElementById("horn").addEventListener("click", () => {
+  ctx.resume();
+  horn(ctx.currentTime + 0.02);
+});
