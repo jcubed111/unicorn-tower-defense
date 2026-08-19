@@ -168,6 +168,10 @@ class Terrain{
             if(e.hp <= 0) {
                 this.enemies.delete(e);
                 this.mana += e.maxHp;
+                ParticleSystem.explodeManaAt(
+                    e.pos.map(v => v - 0.5),
+                    e.maxHp,
+                );
                 ParticleSystem.explodeSpritesAt(
                     e.pos.map(v => v - 0.5),
                     ...e.getSprites(),

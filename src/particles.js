@@ -1,3 +1,9 @@
+const randVec = mag => {
+    const angle = randFloat(0, Math.PI * 2);
+    return [Math.cos(angle) * mag, Math.sin(angle) * mag];
+};
+
+
 class Particle{
     age = 0;
     lifespan = 2;
@@ -10,6 +16,27 @@ class Particle{
     _render(ctx, x, y, color) {
         ctx.fillStyle = color;
         ctx.fillRect(x, y, 1, 1);
+    }
+}
+
+class ManaGainParticle extends Particle{
+    lifespan = randFloat(1, 1.3);
+
+    constructor(pos) {
+        super(pos);
+        this.ctrlB = randVec(randFloat(30, 75));
+    }
+
+    render(ctx) {
+        const t = this.age / this.lifespan;
+        const [x, y] = this.pos;
+        const [bx, by] = this.ctrlB;
+        this._render(
+            ctx,
+            x + t * t * (232.5 - x) + 2 * t * (1 - t) * bx,
+            y + t * t * (232.5 - y) + 2 * t * (1 - t) * by,
+            (performance.now() % 1000) < 300 ? '#fff' : '#7cf',
+        );
     }
 }
 
@@ -51,8 +78,7 @@ class ExplodeFadeParticle extends Particle{
     constructor(pos, color, speed = randFloat(20, 25)) {
         super(pos);
         this.color = color;
-        const angle = randFloat(0, Math.PI * 2);
-        this.vel = [Math.cos(angle) * speed, Math.sin(angle) * speed];
+        this.vel = randVec(speed);
     }
 
     render(ctx) {
@@ -108,5 +134,11 @@ const ParticleSystem = new class{
                 ));
             })
         );
+    }
+
+    explodeManaAt([x, y], num) {
+        range(num).forEach(_ => {
+            this.addParticle(new ManaGainParticle([x * 15, y * 15]));
+        });
     }
 }
