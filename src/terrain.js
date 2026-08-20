@@ -102,7 +102,7 @@ class Terrain{
                             if(prevTower) {
                                 usedPrevTowerCounts.set(
                                     prevTower,
-                                    usedPrevTowerCounts.getOrInsert(prevTower, 0) - 1,
+                                    usedPrevTowerCounts.getOrInsert(prevTower, 0) + 1,
                                 );
                             }
                             return [
