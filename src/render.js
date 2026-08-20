@@ -37,6 +37,12 @@ function render(dt) {
     const ctx = mainCanvas.getContext('2d');
     ctx.setTransform(pxSize, 0, 0, pxSize, 0, 0);
 
+    if(terrain.screenShake > 0.1) {
+        ctx.translate(randFloat(-terrain.screenShake, terrain.screenShake), randFloat(-terrain.screenShake, terrain.screenShake))
+        // decay with half life of 2s
+    }
+    terrain.screenShake *= 0.5 ** (4 * dt);
+
     // Render terrain & towers
     mapGrid2d(terrain.isGround, (isGround, [x, y]) => {
         renderSprite(ctx, x, y,

@@ -35,8 +35,6 @@ TODO:
 - make unicorns blockier
 - banished enemies should come back with a zombie effect (black, red eyes?) And show that they're banished in their hover info.
 - show damage an emeny does if it reaches the tower
-- screen shake
-- banish sound effect
 
 - make mana gain delay till particle arrival?
 - allow hovering runebook entires

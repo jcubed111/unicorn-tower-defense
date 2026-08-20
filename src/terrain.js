@@ -21,6 +21,8 @@ class Terrain{
     actionQueue = new Set;  // Set<[delayTime, cb]>
     manaPassiveClock = 0;
 
+    screenShake = 0;  // px; decays over time in render
+
     constructor(goalLocation, terrainString) {
         terrainString.split('').forEach((c, i) => this.isGround[i % this.size][~~(i / this.size)] = c == '#');
         this.goalLocation = goalLocation;
@@ -207,6 +209,7 @@ class Terrain{
                     e.manaOnKillMult = 0;
                     e.banishDamage *= 2;
                     AudioSystem.playRespawn();
+                    this.screenShake += 2;
                 }else{
                     console.log('You lose!');
                 }
