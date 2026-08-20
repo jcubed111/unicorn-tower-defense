@@ -132,4 +132,5 @@ window.onload = () => {
     });
 
     mainLoop();
+    window.addEventListener('click', () => AudioSystem.playMainMusic(), {once: true});
 }

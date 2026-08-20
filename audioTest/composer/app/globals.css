@@ -1,0 +1,207 @@
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font: 13px/1.4 system-ui, -apple-system, sans-serif;
+    color: #222;
+    background: #fafafa;
+}
+
+button {
+    font: inherit;
+    padding: 3px 8px;
+    background: #fff;
+    border: 1px solid #bbb;
+    border-radius: 3px;
+    cursor: pointer;
+}
+button:hover { background: #f0f0f0; }
+button:active { background: #e4e4e4; }
+
+input, select {
+    font: inherit;
+    padding: 2px 4px;
+    border: 1px solid #bbb;
+    border-radius: 3px;
+    background: #fff;
+}
+
+/* ---- settings bar ---- */
+
+.settingsBar, .bottomBar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 12px;
+    background: #f0f0f0;
+    border-bottom: 1px solid #ccc;
+}
+
+.field { display: flex; align-items: center; gap: 5px; }
+.field > label { color: #555; }
+
+/* ---- horizontally scrolling staff area ---- */
+
+.hscroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    background: #fafafa;
+}
+
+.hinner { display: flex; flex-direction: column; }
+
+.rulerRow { display: flex; }
+
+.ruler {
+    display: flex;
+    height: 20px;
+    align-items: flex-end;
+}
+
+.measure {
+    border-left: 1px solid #bbb;
+    color: #888;
+    font-size: 10px;
+    padding-left: 3px;
+    line-height: 12px;
+}
+
+.instRow {
+    display: flex;
+    border-top: 1px solid #ccc;
+    background: #fafafa;
+}
+
+.stickyPanel {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    display: flex;
+    background: #f5f5f5;
+    border-right: 1px solid #999;
+}
+
+.instSettings {
+    width: 236px;
+    padding: 6px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow-y: auto;
+}
+
+.instSettings .field > label { width: 48px; flex: none; }
+.instSettings .field.slider { gap: 4px; }
+.instSettings input[type=range] {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    accent-color: #14509b;
+}
+.instSettings .value {
+    width: 40px;
+    flex: none;
+    text-align: right;
+    font: 10px ui-monospace, Menlo, monospace;
+    color: #666;
+}
+.instSettings .head { display: flex; gap: 6px; align-items: center; }
+.instSettings .head input { width: 100%; min-width: 0; }
+
+.labels {
+    width: 40px;
+    overflow: hidden;
+    border-left: 1px solid #ddd;
+    background: #f5f5f5;
+}
+
+.label {
+    font-size: 9px;
+    color: #888;
+    text-align: right;
+    padding-right: 3px;
+    border-bottom: 1px solid rgba(0, 0, 0, .06);
+}
+.label.root { color: #333; font-weight: 600; }
+
+.staffScroll {
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-gutter: stable;
+}
+
+.staffInner {
+    position: relative;
+    cursor: crosshair;
+    user-select: none;
+}
+
+.rowsLayer, .gridLayer, .notesLayer {
+    position: absolute;
+    inset: 0;
+}
+
+.gridLayer, .notesLayer { pointer-events: none; }
+
+.staffRow { border-bottom: 1px solid rgba(0, 0, 0, .06); }
+
+.colhl {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background: #fca;
+    display: none;
+}
+.colhl.on { display: block; }
+
+.note {
+    position: absolute;
+    display: flex;
+    font: 700 11px/1 ui-monospace, Menlo, monospace;
+    color: #14509b;
+}
+
+.note > span {
+    text-align: center;
+    letter-spacing: -1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.note.preview { color: #b34; }
+
+.addRow {
+    display: flex;
+    border-top: 1px solid #ccc;
+    padding: 6px 8px;
+    background: #fafafa;
+}
+.addRow > * { position: sticky; left: 8px; }
+
+/* ---- bottom bar ---- */
+
+.bottomBar {
+    align-items: flex-start;
+    border-top: 1px solid #ccc;
+    border-bottom: none;
+}
+
+.playback { display: flex; flex-direction: column; gap: 6px; width: 200px; }
+.playback .row { display: flex; gap: 6px; align-items: center; }
+.pos { color: #666; font: 11px ui-monospace, Menlo, monospace; }
+
+.bottomBar textarea {
+    flex: 1;
+    height: 96px;
+    font: 11px/1.4 ui-monospace, Menlo, monospace;
+    padding: 6px;
+    border: 1px solid #bbb;
+    border-radius: 3px;
+    resize: vertical;
+}
+
+.hint { color: #999; font-size: 11px; }
