@@ -187,9 +187,9 @@ const orderedTowerTypes = [
         displayName = 'Lightning';
         chain = this.level - 1;
         extraDescription = `Chain ${this.chain}`;
-        range = 2;
-        chargeTime = 2 / 3;
-        damage = 1;
+        range = 2.5;
+        chargeTime = 1;
+        damage = 2;
 
         hit(targetsInRange, i = 0, origin = this.center) {
             const target = randChoice(targetsInRange);

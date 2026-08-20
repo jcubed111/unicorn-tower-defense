@@ -79,6 +79,10 @@ function render(dt) {
     // Unmark towers as new
     mapGrid2d(terrain.computedTowersByLocation, t => t._particleFirstRender = false);
 
+    // Draw wizard
+    renderSprite(ctx, ...terrain.goalLocation, sprites[30]);
+    renderSprite(ctx, ...terrain.goalLocation, sprites[27]);
+
     // Draw enemies
     for(const e of terrain.enemies) {
         for(const s of e.getSprites()) {
