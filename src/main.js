@@ -117,8 +117,11 @@ window.onload = () => {
     };
 
     GameState.mainCanvas.addEventListener('click', e => {
-        const [x, y] = GameState.terrain.eventToPos(e);
-        GameState.terrain.placeTower([~~x, ~~y], GameState.drawType);
+        if(GameState.drawType) {
+            const [x, y] = GameState.terrain.eventToPos(e);
+            GameState.terrain.placeTower([~~x, ~~y], GameState.drawType)
+                || AudioSystem.playInvalidAction();
+        }
         recomputeHovering(e);
     });
     GameState.mainCanvas.addEventListener('mousemove', e => {

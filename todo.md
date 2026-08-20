@@ -7,10 +7,11 @@ TODO:
     - armored
 
 - tower types
-    - enemy status effects
-        - fire
-        - poison
-        - fear
+    - mana gen tower (cyan? Or magenta?)
+    - fire
+    - poison
+    - fear
+    - rapid fire
 
 - animate sea waves
 - add wave effects to ocean
@@ -38,8 +39,6 @@ TODO:
 - make mana gain delay till particle arrival?
 - allow hovering runebook entires
 - clicking start wave should spawn mana particles
-
-- mana gen tower (cyan? Or magenta?)
 
 - click to focus enemy
 - shift click to place multiple towers

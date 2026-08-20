@@ -7,6 +7,8 @@ const PLUCK_BAD_SLOW = [0.002, 0.75, 0.05, 0.3, 'sawtooth'];
 // const BELL =  [0.002, 1,    0,    2];
 const PING =  [0.007, 0.06, 0.42, 0.05];
 
+const ERROR = [.01, .01, 1, .1, 'sawtooth'];
+
 
 const AudioSystem = new class {
     ctx = new window.AudioContext();
@@ -35,6 +37,16 @@ const AudioSystem = new class {
             0.2,
             PLUCK_BAD_SLOW,
             0.5,
+        );
+    }
+
+    playInvalidAction() {
+        this.scheduleNote(
+            this.ctx.currentTime,
+            33,
+            0.05,
+            ERROR,
+            0.4,
         );
     }
 
