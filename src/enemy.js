@@ -73,7 +73,7 @@ class Enemy extends AbcEnemy{
 
     *getSprites() {
         if(this.slowEffects.length) {
-            yield sprites[20];
+            yield sprites[20].withColor([59, 124, 255, 255]);
         }
         yield sprites[16 + Math.floor(performance.now() / 200 * this.speed) % 4];
     }

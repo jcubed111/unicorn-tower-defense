@@ -3,18 +3,35 @@ TODO:
 
 - wave toast & sound effect
 - enemy types
-    - enemy rainbow trails?
     - armored
+
+    - narwal-i-corn (swims, gives large mana. Dark shadow in water)
+    - rhino-i-corn
+    - dash-i-corn (dashes every n seconds, starting on first damage, using a rainbow trail effect)
+
+- enemy graphics
+    - make unicorns blockier
+    - unicorns should sparkle
+        - rainbow trails?
+    - banished enemies should come back with a zombie effect (black, red eyes?) And show that they're banished in their hover info.
 
 - tower types
     - mana gen tower (cyan? Or magenta?)
     - fire
+        - AoE
+        - deals damage over time
+        - can't stack
+        - ignores armor
     - poison
+        - single target
+        - damage over time
+        - stacks
+        - ignores armor
     - fear
+    - anti armor
+        - reduces enemy armor
     - rapid fire
-
-- animate sea waves
-- add wave effects to ocean
+    - charge tower (gain up to `n` charges, can fire them in quick succession)
 
 - add rainbow bridges to terrain
 
@@ -22,19 +39,19 @@ TODO:
     - level select
     - intro text
     - win/loss screen
+        - special win screen if perfect (no enemies reach tower)
+        - maybe mark perfected levels on the level select?
     - transition animation
     - delay first wave till user clicks
 
-- speed up mode
+- speed up, pause?
+
+- animate sea waves
+- add wave effects to ocean
 
 ## Feature Ideas
-- narwal-i-corn (swims, gives large mana. Dark shadow in water)
-- rhino-i-corn
 
-- make unicorns blockier
-- banished enemies should come back with a zombie effect (black, red eyes?) And show that they're banished in their hover info.
-
-- play noise when a tower can't be placed
+- show ghost tower symbol when placing a tower
 
 - make mana gain delay till particle arrival?
 - allow hovering runebook entires
@@ -42,7 +59,9 @@ TODO:
 
 - click to focus enemy
 - shift click to place multiple towers
-- spells: bomb, remove tower, ???
+- spells: remove rune, meteor (damage + fire, get stronger each cast), freeze
+    - what if remove tower could also create new land?
+- set tower target mode??
 
 - use audio tree for playing sounds
 - find a classical piece to "play" on piano. Each note is [time, freqIndex, vol, hold, INSTRUMENT] Where instrument defines the note quality, optional reverb, optional distortion

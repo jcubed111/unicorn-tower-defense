@@ -193,14 +193,6 @@ const orderedTowerTypes = [
     //     // TODO
     // }),
 
-    withTowerPattern(' b |bbb| b ', class extends Tower{
-        displayName = 'Blue Plus';
-        chargeTime = 10;
-        /** @type {number} */ range = 3 + this.level;
-        damage = 15 * this.level;
-        extraDescription = `Largest tower in the game?`;
-    }),
-
     withTowerPattern('gb|bb', class extends Tower{
         displayName = 'Sniper';
         chargeTime = 10;
