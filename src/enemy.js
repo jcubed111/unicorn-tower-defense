@@ -113,6 +113,12 @@ class SwarmEnemy extends Enemy{
     delayPerMonster = 0.5;
 }
 
+class RunnerEnemy extends Enemy{
+    speed = 4;
+    maxHp = ~~(1.5 * 1.25 ** this.level);
+    delayPerMonster = 0.25;
+}
+
 class BossEnemy extends Enemy{
     banishDamage = 5;
     maxHp = ~~(8 * 1.5 ** this.level);

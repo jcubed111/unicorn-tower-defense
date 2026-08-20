@@ -95,7 +95,7 @@ window.onload = () => {
         Enemy,
         Enemy,
         SwarmEnemy,
-        Enemy,
+        RunnerEnemy,
         Enemy,
         BossEnemy,
     );

@@ -24,6 +24,9 @@ TODO:
     - intro text
     - win/loss screen
     - transition animation
+    - delay first wave till user clicks
+
+- speed up mode
 
 ## Feature Ideas
 - narwal-i-corn (swims, gives large mana. Dark shadow in water)
@@ -35,6 +38,7 @@ TODO:
 - screen shake
 - banish sound effect
 
+- make mana gain delay till particle arrival?
 - allow hovering runebook entires
 - clicking start wave should spawn mana particles
 
