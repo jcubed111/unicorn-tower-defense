@@ -133,6 +133,10 @@ class Tower{
         );
     }
 
+    renderSpecialEffects(dt, ctx) {
+        // pass
+    }
+
     isDiscovered() {
         return getLocalStorageItem(this.displayName);
     }
@@ -214,10 +218,24 @@ const orderedTowerTypes = [
         }
     }),
 
-    // withTowerPattern('rgr', class extends Tower{
-    //     displayName = 'Fire';
-    //     // TODO
-    // }),
+    withTowerPattern('rgr', class extends Tower{
+        displayName = 'Fire';
+
+        renderSpecialEffects(dt, ctx) {
+            // Put a ring of fire at this tower's range
+            range(probRound(dt * this.range * 15 * 6)).forEach(i => {
+                const [cx, cy] = this.center;
+                const [rx, ry] = randVec(this.range);
+                const px = cx + rx, py = cy + ry;
+                if(GameState.terrain.isGround[~~px]?.[~~py]) {
+                    ParticleSystem.addParticle(new EnergyFadeParticle(
+                        [~~((cx + rx) * 15), ~~((cy + ry) * 15)],
+                        this.getColor(),
+                    ))
+                }
+            });
+        }
+    }),
 
     // withTowerPattern('ggr', class extends Tower{
     //     displayName = 'Poison';

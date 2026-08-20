@@ -41,7 +41,10 @@ const probRound = v => ~~v + (Math.random() < v % 1);
 // const randInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;
 const randChoice = arr => arr[~~(Math.random() * arr.length)];
 const randFloat = (a, b) => Math.random() * (b - a) + a;
-
+const randVec = mag => {
+    const angle = randFloat(0, Math.PI * 2);
+    return [Math.cos(angle) * mag, Math.sin(angle) * mag];
+};
 
 /* Array Helpers */
 const range = end => [...Array(end).keys()];

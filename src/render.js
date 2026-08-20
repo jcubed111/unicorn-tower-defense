@@ -82,6 +82,9 @@ function render(dt) {
         // ctx.fillText(terrain.descentMap[x][y], x * tileSize + 2, y * tileSize + 2);
     });
 
+    // Render tower special effects
+    terrain.computedTowersArr.forEach(t => t.renderSpecialEffects(dt, ctx));
+
     // Unmark towers as new
     mapGrid2d(terrain.computedTowersByLocation, t => t._particleFirstRender = false);
 

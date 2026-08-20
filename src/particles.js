@@ -1,8 +1,3 @@
-const randVec = mag => {
-    const angle = randFloat(0, Math.PI * 2);
-    return [Math.cos(angle) * mag, Math.sin(angle) * mag];
-};
-
 const MANA_POOL_POS = [16, 0];
 const HEART_POS = [19, 0]
 
