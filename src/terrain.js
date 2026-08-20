@@ -195,6 +195,7 @@ class Terrain{
                     e.setLocation(resetLocation);
                     e.manaOnKillMult = 0;
                     e.banishDamage *= 2;
+                    AudioSystem.playRespawn();
                 }else{
                     console.log('You lose!');
                 }

@@ -2,6 +2,8 @@
 // const PIANO = [0.005, 0.4,  0.15, 0.3];
 // const FLUTE = [0.08,  0.15, 0.85, 0.2];
 // const PLUCK = [0.002, 0.25, 0.05, 0.3];
+const PLUCK_BAD = [0.002, 0.25, 0.05, 0.3, 'sawtooth'];
+const PLUCK_BAD_SLOW = [0.002, 0.75, 0.05, 0.3, 'sawtooth'];
 // const BELL =  [0.002, 1,    0,    2];
 const PING =  [0.007, 0.06, 0.42, 0.05];
 
@@ -19,6 +21,23 @@ const AudioSystem = new class {
         );
     }
 
+    playRespawn() {
+        this.scheduleNote(
+            this.ctx.currentTime,
+            randFloat(12, 14),
+            0.2,
+            PLUCK_BAD,
+            0.5,
+        );
+        this.scheduleNote(
+            this.ctx.currentTime,
+            randFloat(6, 8),
+            0.2,
+            PLUCK_BAD_SLOW,
+            0.5,
+        );
+    }
+
     // playNoteNow(...args) {
     //     this.scheduleNote(this.ctx.currentTime, ...args);
     // }
@@ -29,10 +48,12 @@ const AudioSystem = new class {
             decay,
             sustain,
             release,
+            shape = 'sine',
         ] = instrument;
 
         const osc = new OscillatorNode(this.ctx, {
             frequency: 440 * 2 ** ((midiNumber - 69) / 12),
+            type: shape,
         });
         const gain = this.ctx.createGain();
 
