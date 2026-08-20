@@ -56,7 +56,7 @@ window.onload = () => {
             GameState.mainCanvas = styled('canvas'),
             GameState.sidebarEl = div('C--sidebar',
                 div('C--statBar',
-                    div('C--manaOrb', GameState.manaDisplay = styled('span'), " ᚯ"),
+                    div('C--manaColor', GameState.manaDisplay = styled('span'), " ᚯ"),
                     div('C--heartNumber', GameState.heartDisplay = styled('span', '', 10)),
                 ),
 

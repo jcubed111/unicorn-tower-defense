@@ -46,12 +46,22 @@ class Enemy extends AbcEnemy{
             div('C--infoGrid',
                 `${this.hp} / ${this.maxHp}`,
                 styled('span', 'C--secondary', 'hp'),
+
                 this.speed,
                 styled('span', 'C--secondary', 'speed'),
+
                 this.armor > 0 && [
                     this.armor,
                     styled('span', 'C--secondary', 'armor'),
                 ],
+
+                this.manaOnKillMult
+                    ? styled('span', 'C--manaColor', this.maxHp * this.manaOnKillMult + ' ᚯ')
+                    : styled('span', '', '0 ᚯ'),
+                styled('span', 'C--secondary', 'reward'),
+
+                styled('span', '', this.banishDamage + ' ♥'),
+                styled('span', 'C--secondary', 'banish cost'),
             ),
             div('', this.extraDescription),
         );
