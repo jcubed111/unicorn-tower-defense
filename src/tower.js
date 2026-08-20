@@ -11,13 +11,18 @@ const normalizedTowerRgb = (r, g, b) => {
 
 function * getTowerSprites(x, y, rawCell, outerColor, isSameAt) {
     const [rawTowerType, rawTowerLevel] = rawCell;
-    const innerSprite = sprites[rawTowerType * 4 + rawTowerLevel - 1];
-    const innerColor = lerpColor(
-        outerColor,
-        normalizedTowerRgb(rawTowerType == 1, rawTowerType == 2, rawTowerType == 3),
-        0.5,
-    );
-    yield innerSprite.withColor(innerColor);
+    if(rawTowerType == 4) {
+        yield sprites[32];
+
+    }else{
+        const innerSprite = sprites[rawTowerType * 4 + rawTowerLevel - 1];
+        const innerColor = lerpColor(
+            outerColor,
+            normalizedTowerRgb(rawTowerType == 1, rawTowerType == 2, rawTowerType == 3),
+            0.5,
+        );
+        yield innerSprite.withColor(innerColor);
+    }
 
     for(const [sideRot, isSameTower] of [
         [0, isSameAt(x,     y - 1)],
@@ -52,20 +57,21 @@ function withTowerPattern(stringRepr, Cls) {
     Cls.sourcePattern = {
         outerColor,
         allForms,
-        makeElement: () => towerGridToElement(asGrid, outerColor),
+        makeElement: isDiscovered => towerGridToElement(asGrid, outerColor, isDiscovered),
     };
     return Cls;
 }
 
-function towerGridToElement(towerGrid, outerColor) {
+function towerGridToElement(towerGrid, outerColor, isDiscovered = true) {
     // towerGrid: Grid2d<[towerType, level] | null>
+    // If not discovered, renders as `?`s
     return makeSpriteCanvas(ctx => {
         mapGrid2d(towerGrid, (tower, [x, y]) => {
             if(tower) {
                 for(const s of getTowerSprites(
                     x, y,
-                    tower,
-                    outerColor,
+                    isDiscovered ? tower : [4, 1],
+                    isDiscovered ? outerColor : [150, 150, 150, 255],
                     (x, y) => towerGrid[x]?.[y]?.[0] > 0,
                 )) {
                     renderSprite(ctx, x, y, s);
@@ -125,6 +131,16 @@ class Tower{
             ),
             div('', this.extraDescription),
         );
+    }
+
+    isDiscovered() {
+        return getLocalStorageItem(this.displayName);
+    }
+    setDiscovered() {
+        if(!this.isDiscovered()) {
+            setLocalStorageItem(this.displayName, 1);
+            GameState.rerenderRunebook();
+        }
     }
 
     getColor() {
@@ -266,6 +282,7 @@ const orderedTowerTypes = [
                 this.boltAt(target);
             });
         }
+        isDiscovered() { return true; }
     }),
 
     withTowerPattern('g', class extends Tower{
@@ -274,6 +291,7 @@ const orderedTowerTypes = [
         range = 3;
         chargeTime = 2;
         damage = 3 * this.level;
+        isDiscovered() { return true; }
     }),
 
     withTowerPattern('b', class extends Tower{
@@ -282,5 +300,6 @@ const orderedTowerTypes = [
         chargeTime = 0;
         range = 0;
         damage = 0;
+        isDiscovered() { return true; }
     }),
 ];

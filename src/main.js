@@ -40,6 +40,20 @@ const runeBorderDiv = (color, ...divArgs) => {
     return el;
 };
 
+GameState.rerenderRunebook = () => {
+    GameState.runebook.replaceChildren(
+        div('C--sidebarTitle', "ᚱuneᛒooᛕ"),
+        ...orderedTowerTypes.map(T => {
+            const isDiscovered = new T([]).isDiscovered();
+            return div('C--runeListing ' + (!isDiscovered && 'C--secondary'),
+                div(/*'C--towerName',*/ '', isDiscovered ? new T([]).displayName : '???'),
+                T.sourcePattern.makeElement(isDiscovered),
+            );
+        }).reverse(),
+    );
+};
+
+
 window.onload = () => {
     GameState.runeButtons = range(3).map(i => {
         const button = div();
@@ -69,15 +83,7 @@ window.onload = () => {
                     GameState.hoverInfoEl = div('C--hoverInfoArea'),
                 ),
 
-                scrollDiv('C--runeBook',
-                    div('C--sidebarTitle', "ᚱuneᛒooᛕ"),
-                    orderedTowerTypes.map(T =>
-                        div('C--runeListing',
-                            div(/*'C--towerName',*/ '', new T([]).displayName),
-                            T.sourcePattern.makeElement(),
-                        ),
-                    ).reverse(),
-                ),
+                GameState.runebook = scrollDiv('C--runeBook'),
             ),
             div('C--topLeft',
                 GameState.topLeftDisplay = div(),
@@ -85,6 +91,7 @@ window.onload = () => {
             ),
         )
     );
+    GameState.rerenderRunebook();
 
     // GameState.terrain = new Terrain([7, 15], '....#########......#####.#####....#####...#####..#####..#..##########..###..########..#####..######..#####..########..###..##########..#..#####..#####...#####....#####.#####......#########........#######..........#####............###..............#........');
     // GameState.terrain = new Terrain([7, 15], '..######..#####...#############...######..#####...######...##.....###.....##......####...#####.....####.#######.....###########......##.#######......#...######......#####.###.......########........#######.........######...........####.............#........');

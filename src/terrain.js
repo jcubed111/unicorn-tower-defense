@@ -112,6 +112,7 @@ class Terrain{
                             this.computedTowersByLocation[x][y] = tower;
                         });
                         this.computedTowersArr.push(tower);
+                        tower.setDiscovered();
                     })
                 })
             });

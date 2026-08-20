@@ -1,17 +1,16 @@
 TODO:
-- style the info hover box
 - style wave info & start now button
-- show the wizard
 
 - wave toast & sound effect
-- enemy armor
 - enemy types
     - enemy rainbow trails?
-- enemy status effects
+    - armored
 
 - tower types
-- hide undiscovered runebook entires
-    - show them as shape only? With "???" names?
+    - enemy status effects
+        - fire
+        - poison
+        - fear
 - make towers stable
 
 - animate sea waves
@@ -34,7 +33,6 @@ TODO:
 
 - make unicorns blockier
 - banished enemies should come back with a zombie effect (black, red eyes?) And show that they're banished in their hover info.
-- show damage an emeny does if it reaches the tower
 
 - make mana gain delay till particle arrival?
 - allow hovering runebook entires
