@@ -1,7 +1,6 @@
 
 const MAX_TOWER_LEVEL = 3;
 
-const decodeTowerType = n => 'rgb'.indexOf(n) + 1;
 
 const normalizedTowerRgb = (r, g, b) => {
     const m = Math.max(r, g, b);
@@ -36,38 +35,44 @@ function withTowerPattern(stringRepr, Cls) {
     // NOTE: super important that stringRepr is a perfect grid with every row being
     // the same size. We don't check but the game will crash otherwise.
 
-    const asGrid = stringRepr.split('|').map(row => row.split('').map(decodeTowerType));
-    const allFormsAsIndexed = allFormsGrid2d(asGrid).map(
-        g => grid2dToIndexed(g).filter(g => g[2])
+    // Grid<null | [towerType, 1]>
+    const asGrid = transposeGrid2d(
+        stringRepr.split('|').map(row => row.split('').map(
+            t => ({'r': [1, 1], 'g': [2, 1], 'b': [3, 1]})[t] ?? null,
+        )),
     );
+    const allForms = allFormsGrid2d(asGrid)
 
     const values = range(3).fill(0);
     mapGrid2d(asGrid, c => {
-        if(c) values[c - 1]++;
+        if(c) values[c[0] - 1]++;
     });
     const outerColor = normalizedTowerRgb(...values);
 
     Cls.sourcePattern = {
         outerColor,
-        allFormsAsIndexed,
-        // the number of towers contained in this sourcePattern
-        size: allFormsAsIndexed[0].length,
-        makeElement: () => {
-            return makeSpriteCanvas(ctx => {
-                mapGrid2d(asGrid, (c, [y, x]) => {
-                    for(const s of getTowerSprites(
-                        x, y,
-                        [c, 1],
-                        outerColor,
-                        (x, y) => asGrid[y]?.[x] > 0,
-                    )) {
-                        renderSprite(ctx, x, y, s);
-                    }
-                });
-            }, asGrid[0].length, asGrid.length);
-        },
+        allForms,
+        makeElement: () => towerGridToElement(asGrid, outerColor),
     };
     return Cls;
+}
+
+function towerGridToElement(towerGrid, outerColor) {
+    // towerGrid: Grid2d<[towerType, level] | null>
+    return makeSpriteCanvas(ctx => {
+        mapGrid2d(towerGrid, (tower, [x, y]) => {
+            if(tower) {
+                for(const s of getTowerSprites(
+                    x, y,
+                    tower,
+                    outerColor,
+                    (x, y) => towerGrid[x]?.[y]?.[0] > 0,
+                )) {
+                    renderSprite(ctx, x, y, s);
+                }
+            }
+        });
+    }, towerGrid.length, towerGrid[0].length);
 }
 
 class Tower{
@@ -82,22 +87,42 @@ class Tower{
     _particleFirstRender = true;
 
     constructor(componentTowers) {
-        this.componentTowers = componentTowers; // Array<[[x, y], type, level]>
-        this.center = [
-            this.componentTowers.reduce((acc, [pos]) => acc + pos[0], 0) / this.componentTowers.length + 0.5,
-            this.componentTowers.reduce((acc, [pos]) => acc + pos[1], 0) / this.componentTowers.length + 0.5,
-        ];
-        this.level = this.componentTowers.map(t => t[2]).reduce((a, b) => a + b, 0);
+        this.componentTowers = componentTowers; // Grid2d<[type, level, x, y]>
+        this.center = [0, 0];
+        this.level = 0;
+        var size = 0;
+        mapGrid2d(componentTowers, maybeTower => {
+            this.level += maybeTower?.[1] ?? 0;
+            this.center[0] += maybeTower?.[2] ?? 0;
+            this.center[1] += maybeTower?.[3] ?? 0;
+            size += !!maybeTower;
+        });
+        this.center = this.center.map(c => c / size + 0.5);
     }
 
     _asHoverElResult;
     asHoverEl() {
         return this._asHoverElResult ??= div('',
-            this.constructor.sourcePattern.makeElement(),
-            div('', `${this.displayName} (lvl ${this.level})`),
-            div('', `damage: ${this.damage}`),
-            div('', `range: ${this.range}`),
-            div('', `rate: ${(1 / this.chargeTime).toFixed(2)}`),
+            div('C--floatRight', towerGridToElement(
+                this.componentTowers,
+                this.getColor(),
+            )),
+            div('C--infoTitle', `${this.displayName}`),
+            div('C--secondary', `Level ${this.level}`),
+            div('C--infoGrid',
+                this.damage > 0 && [
+                    this.damage,
+                    styled('span', 'C--secondary', 'damage'),
+                ],
+                this.range > 0 && [
+                    this.range,
+                    styled('span', 'C--secondary', 'range'),
+                ],
+                this.chargeTime > 0 && [
+                    (1 / this.chargeTime).toFixed(2),
+                    styled('span', 'C--secondary', '/sec'),
+                ],
+            ),
             div('', this.extraDescription),
         );
     }
@@ -151,6 +176,14 @@ const orderedTowerTypes = [
     //     displayName = 'Fear';
     //     // TODO
     // }),
+
+    withTowerPattern(' b |bbb| b ', class extends Tower{
+        displayName = 'Blue Plus';
+        chargeTime = 10;
+        /** @type {number} */ range = 3 + this.level;
+        damage = 15 * this.level;
+        extraDescription = `Largest tower in the game?`;
+    }),
 
     withTowerPattern('gb|bb', class extends Tower{
         displayName = 'Sniper';

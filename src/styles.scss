@@ -63,8 +63,24 @@ canvas{
     }
 
     .C--hoverInfoArea{
-        height: 60rem;
+        height: 45rem;
+        padding: 2rem;
     }
+        .C--floatRight{
+            float: right;
+        }
+        .C--infoTitle{
+            font-size: 4rem;
+            padding: 1rem 0;
+        }
+        .C--secondary{
+            opacity: 0.6;
+        }
+        .C--infoGrid{
+            display: grid;
+            gap: 0 1ch;
+            grid-template-columns: auto 1fr;
+        }
 
     .C--runeBook{
         @extend %flexCol;

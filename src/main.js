@@ -26,14 +26,16 @@ const scrollDiv = (...divArgs) => {
     return el;
 };
 
-const spellAreaBackImage = sprites[26].asImage.toDataURL();
-const spellAreaDiv = (...divArgs) => {
+const runeBorderBackImageCache = {};
+const runeBorderDiv = (color, ...divArgs) => {
+    runeBorderBackImageCache[colorAsString(color)]
+        ??= sprites[26].withColor(color).asImage.toDataURL();
     const el = div(...divArgs);
     // 15 rem = 1 tile
     // The magic numbers here are the result of dividing [sprite px] / 7.5 to get the rem values.
     el.style.borderStyle = `solid`;
     el.style.borderWidth = `5rem`;
-    el.style.borderImage = `url(${spellAreaBackImage}) 6 / 6rem / 0 round`;
+    el.style.borderImage = `url(${runeBorderBackImageCache[colorAsString(color)]}) 6 / 6rem / 0 round`;
     // el.style.background = '#202020 padding-box';
     return el;
 };
@@ -58,12 +60,14 @@ window.onload = () => {
                     div('C--heartNumber', GameState.heartDisplay = styled('span', '', 10)),
                 ),
 
-                spellAreaDiv('C--spellArea',
+                runeBorderDiv([32, 32, 32, 255], 'C--spellArea',
                     div('', "Inscribe Rune"),
                     div('C--runeButtonRow', ...GameState.runeButtons),
                 ),
 
-                GameState.hoverInfoEl = div('C--hoverInfoArea'),
+                runeBorderDiv([32, 32, 32, 255], '',
+                    GameState.hoverInfoEl = div('C--hoverInfoArea'),
+                ),
 
                 scrollDiv('C--runeBook',
                     div('C--sidebarTitle', "ᚱuneᛒooᛕ"),

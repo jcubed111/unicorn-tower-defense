@@ -81,23 +81,34 @@ class Terrain{
         for(const CandidateTower of orderedTowerTypes) {
             range(this.size).map(x => {
                 range(this.size).map(y => {
-                    CandidateTower.sourcePattern.allFormsAsIndexed.forEach((sourcePatternForm, sourcePatternFormIndex) => {
-                        // Try to blit this rotation of the tower onto this location.
-                        if(sourcePatternForm.some(([dx, dy, neededTowerType]) => unjoinedTowerColors[x + dx][y + dy] != neededTowerType)) {
-                            return;
-                        }
-                        const towerCells = sourcePatternForm.map(
-                            ([dx, dy, neededTowerType]) => [
-                                [x + dx, y + dy],
+                    CandidateTower.sourcePattern.allForms.forEach(sourcePatternForm => {
+
+                        // Do the whole test/gen op as one map
+                        var fits = true;
+                        // towerCells: Grid2d<[type, level, x, y]>
+                        // typed as such so it fits nicely into `towerGridToElement`
+                        const towerCells = mapGrid2d(sourcePatternForm, (maybeNeededTower, [dx, dy]) => {
+                            if(!maybeNeededTower) return null;
+                            if(maybeNeededTower[0] != unjoinedTowerColors[x + dx]?.[y + dy]) {
+                                fits = false;
+                                return null;
+                            }
+                            return [
                                 ...this.rawTowers[x + dx][y + dy],
-                            ],
-                        )
+                                x + dx,
+                                y + dy,
+                            ];
+                        });
+                        if(!fits) return;
+
                         const key = JSON.stringify(towerCells);
                         const tower = this.computedTowerCache[key] ??= new CandidateTower(towerCells);
-                        for(const [[x, y]] of towerCells) {
+                        mapGrid2d(towerCells, maybeTower => {
+                            if(!maybeTower) return;
+                            const [t, l, x, y] = maybeTower;
                             unjoinedTowerColors[x][y] = 0;
                             this.computedTowersByLocation[x][y] = tower;
-                        }
+                        });
                         this.computedTowersArr.push(tower);
                     })
                 })

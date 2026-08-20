@@ -38,11 +38,21 @@ class Enemy extends AbcEnemy{
     asHoverEl() {
         // can't cache since it changes with hp
         return div('',
-            spriteListToEl(...this.getSprites()),
-            div('', `${this.displayName}`),
-            div('', `hp: ${this.hp} / ${this.maxHp}`),
-            div('', `speed: ${this.speed}`),
-            div('', `armor: ${this.armor}`),
+            div('C--floatRight',
+                spriteListToEl(...this.getSprites()),
+            ),
+            div('C--infoTitle', `${this.displayName}`),
+            div('C--secondary', `Wave ${this.level + 1}`),
+            div('C--infoGrid',
+                `${this.hp} / ${this.maxHp}`,
+                styled('span', 'C--secondary', 'hp'),
+                this.speed,
+                styled('span', 'C--secondary', 'speed'),
+                this.armor > 0 && [
+                    this.armor,
+                    styled('span', 'C--secondary', 'armor'),
+                ],
+            ),
             div('', this.extraDescription),
         );
     }

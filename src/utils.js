@@ -72,6 +72,16 @@ const allFormsGrid2d = grid => {
 
 // T[][] => [x, y, T][]
 const grid2dToIndexed = grid => grid.flatMap((col, x) => col.map((cell, y) => [x, y, cell]));
+// const gridDeindexed = indexedGrid => {
+//     const mX = Math.min(...indexedGrid.map(g => g[0]));
+//     const mY = Math.min(...indexedGrid.map(g => g[1]));
+//     const result = [];
+//     indexedGrid.forEach(([x, y, cell]) => {
+//         result[x - mX] ??= [];
+//         result[x - mX][y - mY] = cell;
+//     });
+//     return result;
+// };
 
 
 /* Color helpers */
