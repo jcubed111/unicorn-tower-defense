@@ -90,20 +90,20 @@ class Tower{
     damage = 2;
     extraDescription;
 
+    size = 0;
     _particleFirstRender = true;
 
     constructor(componentTowers) {
         this.componentTowers = componentTowers; // Grid2d<[type, level, x, y]>
         this.center = [0, 0];
         this.level = 0;
-        var size = 0;
         mapGrid2d(componentTowers, maybeTower => {
             this.level += maybeTower?.[1] ?? 0;
             this.center[0] += maybeTower?.[2] ?? 0;
             this.center[1] += maybeTower?.[3] ?? 0;
-            size += !!maybeTower;
+            this.size += !!maybeTower;
         });
-        this.center = this.center.map(c => c / size + 0.5);
+        this.center = this.center.map(c => c / this.size + 0.5);
     }
 
     _asHoverElResult;
@@ -232,7 +232,7 @@ const orderedTowerTypes = [
     //     // TODO
     // }),
 
-    withTowerPattern('rg', class extends Tower{
+    withTowerPattern('gr', class extends Tower{
         displayName = 'Lightning';
         chain = this.level - 1;
         extraDescription = `Chain ${this.chain}`;

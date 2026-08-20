@@ -77,6 +77,7 @@ class Terrain{
 
         /* joined towers */
         const unjoinedTowerColors = mapGrid2d(this.rawTowers, t => t[0]);
+        const prevComputedTowersByLocation = this.computedTowersByLocation;
         this.computedTowersByLocation = grid2d(this.size, 0);
         this.computedTowersArr = [];
 
@@ -87,6 +88,7 @@ class Terrain{
 
                         // Do the whole test/gen op as one map
                         var fits = true;
+                        const usedPrevTowerCounts = new Map();  // Map[Tower, usedCells: number]
                         // towerCells: Grid2d<[type, level, x, y]>
                         // typed as such so it fits nicely into `towerGridToElement`
                         const towerCells = mapGrid2d(sourcePatternForm, (maybeNeededTower, [dx, dy]) => {
@@ -95,6 +97,14 @@ class Terrain{
                                 fits = false;
                                 return null;
                             }
+                            // count how many cells of each previous tower we used
+                            const prevTower = prevComputedTowersByLocation[x + dx][y + dy];
+                            if(prevTower) {
+                                usedPrevTowerCounts.set(
+                                    prevTower,
+                                    usedPrevTowerCounts.getOrInsert(prevTower, 0) - 1,
+                                );
+                            }
                             return [
                                 ...this.rawTowers[x + dx][y + dy],
                                 x + dx,
@@ -102,6 +112,11 @@ class Terrain{
                             ];
                         });
                         if(!fits) return;
+                        // We don't allow breaking towers during re-joining, so a new tower is
+                        // only valid if it uses every piece of each of the previous towers.
+                        if([...usedPrevTowerCounts].some(([tower, count]) => count != tower.size)) {
+                            return;
+                        }
 
                         const key = JSON.stringify(towerCells);
                         const tower = this.computedTowerCache[key] ??= new CandidateTower(towerCells);

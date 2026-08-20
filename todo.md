@@ -11,7 +11,6 @@ TODO:
         - fire
         - poison
         - fear
-- make towers stable
 
 - animate sea waves
 - add wave effects to ocean
@@ -33,6 +32,8 @@ TODO:
 
 - make unicorns blockier
 - banished enemies should come back with a zombie effect (black, red eyes?) And show that they're banished in their hover info.
+
+- play noise when a tower can't be placed
 
 - make mana gain delay till particle arrival?
 - allow hovering runebook entires
