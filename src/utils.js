@@ -97,8 +97,8 @@ const lerpGrad = (grad, f) => {
     const steps = grad.length - 1;
     const stepIndex = ~~(steps * f);
     return lerpColor(
-        grad[stepIndex],
-        grad[stepIndex + 1],
+        grad[stepIndex] ?? grad[0],
+        grad[stepIndex + 1] ?? grad.at(-1),
         f * steps - stepIndex,
     );
 }

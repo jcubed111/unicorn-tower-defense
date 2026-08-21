@@ -74,6 +74,13 @@ class ResetUnicornParticle extends EnergyFadeParticle{
     }
 }
 
+class FireParticle extends Particle{
+    grad = [
+        [255, 211, 101, 255], [255, 102, 0, 255], [185, 34, 0, 255],
+        [75, 75, 75, 255], [49, 49, 49, 255], [5, 5, 5, 0]
+    ];
+}
+
 class ExplodeFadeParticle extends Particle{
     constructor(pos, color, speed = randFloat(20, 25)) {
         super(pos);

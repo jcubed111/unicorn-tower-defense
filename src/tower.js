@@ -228,9 +228,8 @@ const orderedTowerTypes = [
                 const [rx, ry] = randVec(this.range);
                 const px = cx + rx, py = cy + ry;
                 if(GameState.terrain.isGround[~~px]?.[~~py]) {
-                    ParticleSystem.addParticle(new EnergyFadeParticle(
+                    ParticleSystem.addParticle(new FireParticle(
                         [~~((cx + rx) * 15), ~~((cy + ry) * 15)],
-                        this.getColor(),
                     ))
                 }
             });
