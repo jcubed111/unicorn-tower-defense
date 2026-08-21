@@ -96,6 +96,14 @@ function render(dt) {
     for(const e of terrain.enemies) {
         for(const s of e.getSprites()) {
             renderSprite(ctx, e.pos[0] - 0.5, e.pos[1] - 0.5, s, e.facing);
+            if(e.fireEffects.length) {
+                s.toParticlesSparse(dt / 2).map(([fx, fy]) =>
+                    ParticleSystem.addParticle(new FireParticle([
+                        e.pos[0] * 15 - 7.5 + fx,
+                        e.pos[1] * 15 - 7.5 + fy,
+                    ]))
+                );
+            }
         }
     }
     // Draw enemy hp

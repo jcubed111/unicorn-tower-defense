@@ -206,6 +206,7 @@ const orderedTowerTypes = [
 
     withTowerPattern('bb|bb', class extends Tower{
         displayName = 'Slow';
+        damage = 0;
         slowAmount = 3 / this.level;
         chargeTime = 0.25;
         range = 1 + this.level / 2;
@@ -220,6 +221,20 @@ const orderedTowerTypes = [
 
     withTowerPattern('rgr', class extends Tower{
         displayName = 'Fire';
+        damage = 0;
+        fireDamagePerSec = this.level / 3;
+        chargeTime = 0.25;
+        range = 2.5;
+        extraDescription = `Fire ${this.fireDamagePerSec.toFixed(2)} / sec`;
+
+        hit(targetsInRange) {
+            targetsInRange.forEach(t => {
+                t.fireEffects.push([
+                    this.fireDamagePerSec,
+                    this.chargeTime * 1.1,
+                ])
+            });
+        }
 
         renderSpecialEffects(dt, ctx) {
             // Put a ring of fire at this tower's range

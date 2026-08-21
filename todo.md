@@ -17,11 +17,6 @@ TODO:
 
 - tower types
     - mana gen tower (cyan? Or magenta?)
-    - fire
-        - AoE
-        - deals damage over time
-        - can't stack
-        - ignores armor
     - poison
         - single target
         - damage over time
@@ -48,6 +43,8 @@ TODO:
 
 - animate sea waves
 - add wave effects to ocean
+
+- sound / screenshake on enemy death
 
 ## Feature Ideas
 
