@@ -142,8 +142,5 @@ report: to-be-titled.zip
 		echo "      $$FILE_SIZE / 13,312  =  $$PERCENT%  $$MESSAGE"; \
 		echo "Prev: $$FILE_SIZE / 13,312  =  $$PERCENT%  $$MESSAGE  (from last committed)" > zipinfo.txt;
 	-@git show HEAD:zipinfo.txt
-	@FILE_SIZE=$$(stat -c%s dist/c.webp 2>/dev/null || stat -f%z dist/c.webp); \
-		PERCENT=$$(awk -v f="$$FILE_SIZE" -v t="13312" 'BEGIN { printf "%.3f", (f/t)*100 }'); \
-		echo "        * c.webp: $$FILE_SIZE (pre-zip)"
 	@echo;
 	@echo '------------------------------------';

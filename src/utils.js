@@ -93,3 +93,14 @@ const lerpColor = (a, b, f) => a.map((v, i) => v * (1 - f) + b[i] * f);
 const clampColorComponent = v => v < 0 ? 0 : v > 255 ? 255 : ~~v;
 const colorAsString = c => `#` + c.map(v => clampColorComponent(v).toString(16).padStart(2, '0')).join('');
 const multiplyColor = (a, b) => a.map((v, i) => v * b[i] / 255);
+const lerpGrad = (grad, f) => {
+    const steps = grad.length - 1;
+    const stepIndex = ~~(steps * f);
+    return lerpColor(
+        grad[stepIndex],
+        grad[stepIndex + 1],
+        f * steps - stepIndex,
+    );
+}
+const withAlpha = (color, a) => [...color.slice(0, 3), a];
+const WHITE = [255, 255, 255, 255];

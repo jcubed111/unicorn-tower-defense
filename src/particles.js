@@ -5,106 +5,87 @@ const HEART_POS = [19, 0]
 class Particle{
     age = 0;
     lifespan = 2;
-    constructor(pos) {
-        this.pos = pos;
+
+    grad = [];
+    colorFn() {
+        return lerpGrad(this.grad, this.age / this.lifespan);
+    }
+    posFn() {
+        const dist = this.age - 0.25 * Math.log(1 + 3.6 * this.age);
+        return [
+            this.pos[0] + this.asymptoticDriftVel[0] * dist,
+            this.pos[1] + this.asymptoticDriftVel[1] * dist,
+        ];
     }
 
-    // render(ctx)  // implement in derived classes
+    constructor(pos) {
+        const [x, y] = this.pos = pos;
+        this.asymptoticDriftVel = [
+            3 * Math.sin(y * 0.10 + x * 0.01) + randFloat(-1, 1),
+            1 * Math.sin(y * 0.01 + x * 0.05) + randFloat(-1, 1),
+        ];
+    }
 
-    _render(ctx, x, y, color) {
-        ctx.fillStyle = color;
-        ctx.fillRect(x, y, 1, 1);
+    render(ctx) {
+        ctx.fillStyle = colorAsString(this.colorFn());
+        ctx.fillRect(...this.posFn(), 1, 1);
     }
 }
+
 
 class ManaGainParticle extends Particle{
     /** @type {number} */
     lifespan = randFloat(1, 1.3);
+    /** @type {!Array<number>} */
+    ctrlB = randVec(randFloat(30, 75));
 
-    constructor(pos) {
-        super(pos);
-        this.ctrlB = randVec(randFloat(30, 75));
-    }
-
-    render(ctx) {
+    posFn() {
         const t = this.age / this.lifespan;
         const [x, y] = this.pos;
         const [bx, by] = this.ctrlB;
-        this._render(
-            ctx,
+        return [
             x + t * t * (MANA_POOL_POS[0] * 15 - x + 7) + 2 * t * (1 - t) * bx,
             y + t * t * (MANA_POOL_POS[1] * 15 - y + 7) + 2 * t * (1 - t) * by,
-            (performance.now() % 1000) < 300 ? '#fff' : '#7cf',
-        );
+        ];
+    }
+
+    colorFn() {
+        return (performance.now() % 1000) < 300 ? WHITE : [119, 204, 255, 255];
     }
 }
 
 class EnergyFadeParticle extends Particle{
     constructor(pos, baseColor, lifespan = 2) {
         super(pos);
-        this.lifespan = lifespan;
-        const [x, y] = pos;
-        this.baseColor = baseColor;
-        this.asymptoticVel = [
-            3 * Math.sin(y * 0.10 + x * 0.01) + randFloat(-1, 1),
-            1 * Math.sin(y * 0.01 + x * 0.05) + randFloat(-1, 1),
+        this.grad = [
+            lerpColor(WHITE, baseColor, 0.5),
+            baseColor,
+            withAlpha(baseColor, 0),
         ];
-    }
-
-    getColor() {
-        // for first 25% of life, fade from 50% white -> base color
-        // then fade from base color -> transparent
-        const normalizedAge = this.age / this.lifespan;
-        return colorAsString(
-            normalizedAge < 0.25
-            ? lerpColor([255,255,255,255], this.baseColor, normalizedAge * 2 + 0.5)
-            : [...this.baseColor.slice(0, -1), this.baseColor[3] * (1 - normalizedAge) / 0.75]
-        );
-    }
-
-    render(ctx) {
-        // asymptotic approach towards `dist = age`
-        const dist = this.age - 0.25 * Math.log(1 + 3.6 * this.age);
-
-        this._render(
-            ctx,
-            this.pos[0] + this.asymptoticVel[0] * dist,
-            this.pos[1] + this.asymptoticVel[1] * dist,
-            this.getColor(),
-        );
+        this.lifespan = lifespan;
     }
 }
 
 class ResetUnicornParticle extends EnergyFadeParticle{
-    v = ~~randFloat(0, 50);
-    getColor() {
-        return colorAsString(
-            [this.v, this.v, this.v, 255 * (1 - this.age / this.lifespan)],
-        );
+    constructor(...args) {
+        super(...args);
+        const c = ~~randFloat(0, 50);
+        this.grad = [[c, c, c, 255], [c, c, c, 0]];
     }
 }
 
 class ExplodeFadeParticle extends Particle{
     constructor(pos, color, speed = randFloat(20, 25)) {
         super(pos);
-        this.color = color;
+        this.grad = [color, withAlpha(color, 0)];
         this.vel = randVec(speed);
     }
 
-    render(ctx) {
-        // fade from base color -> transparent
-        const color = colorAsString(lerpColor(
-            this.color,
-            [...this.color.slice(0, -1), 0],
-            this.age / this.lifespan,
-        ));
-
-        this._render(
-            ctx,
+    posFn() {
+        return [
             this.pos[0] + this.vel[0] * this.age,
             this.pos[1] + this.vel[1] * this.age,
-            color,
-        );
+        ];
     }
 }
 
