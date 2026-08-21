@@ -99,6 +99,11 @@ function render(dt) {
 
     // Draw enemies
     for(const e of terrain.enemies) {
+        // enemy armor
+        if(e.armor) {
+            renderCircleIndicator(ctx, ...e.pos, 0.4, Math.log2(e.armor + 1), '#b3ea', 1);
+        }
+
         for(const s of e.getSprites()) {
             renderSprite(ctx, e.pos[0] - 0.5, e.pos[1] - 0.5, s, e.facing);
             if(e.fireEffects.length) {

@@ -18,8 +18,9 @@ const spriteListToEl = (...sprites) => makeSpriteCanvas(
 );
 
 class Sprite{
-    constructor(data2d) {
+    constructor(data2d, scale=1) {
         this.data2d = data2d;
+        this.scale = scale;
         const height = data2d.length;
         const width = data2d[0].length;
 
@@ -38,13 +39,21 @@ class Sprite{
     _withColorCache = {};
     withColor(c) {
         return this._withColorCache[colorAsString(c)] ??= new Sprite(
-            mapGrid2d(this.data2d, v => multiplyColor(v, c))
+            mapGrid2d(this.data2d, v => multiplyColor(v, c)),
+            this.scale,
         );
     }
 
     _withRotCache = {};
     withRot(n) {
-        return this._withRotCache[n] ??= new Sprite(rotGrid2dMulti(this.data2d, n));
+        return this._withRotCache[n] ??= new Sprite(
+            rotGrid2dMulti(this.data2d, n),
+            this.scale,
+        );
+    }
+
+    withScale(n) {
+        return new Sprite(this.data2d, n);
     }
 
     toParticlesSparse(chance) {  // -> [y, x, color] (note the y-first order)
@@ -60,6 +69,7 @@ function renderSprite(ctx, x, y, sprite, rot=0) {
     ctx.scale(tileSize, tileSize);
     ctx.translate(x + 0.5, y + 0.5);
     ctx.rotate(rot);
+    ctx.scale(sprite.scale, sprite.scale);
     ctx.drawImage(sprite.asImage, -0.5, -0.5, 1, 1);
     ctx.restore();
 }

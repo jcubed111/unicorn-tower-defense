@@ -89,6 +89,7 @@ class Tower{
     charge = 0;
     damage = 2;
     extraDescription;
+    /** @type {number} */ level;
 
     size = 0;
     _particleFirstRender = true;
@@ -229,12 +230,31 @@ const orderedTowerTypes = [
         isDiscovered() { return true; }
     }),
 
+    withTowerPattern('rg|bb', class extends Tower{
+        displayName = 'Anti-Armor';
+        range = 4;
+        chargeTime = 8 / this.level;
+        damage = 0;
+        armorReduction = 1;
+        extraDescription = `Removes ${this.armorReduction} armor. (Does no damage)`;
+
+        getTargetsInRange() {
+            return super.getTargetsInRange().filter(t => t.armor > 0);
+        }
+
+        hit(targetsInRange) {
+            const target = randChoice(targetsInRange);
+            target.armor = Math.max(0, target.armor - this.armorReduction);
+            this.boltAt(target);
+        }
+    }),
+
     withTowerPattern('rgr', class extends Tower{
         displayName = 'Fire';
         damage = 0;
         fireDamagePerSec = this.level / 3;
         chargeTime = 0.25;
-        range = 2.5;
+        range = 1.75 + this.level / 4;
         extraDescription = `Fire ${this.fireDamagePerSec.toFixed(2)} / sec`;
 
         hit(targetsInRange) {

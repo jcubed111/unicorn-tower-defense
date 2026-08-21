@@ -1,5 +1,6 @@
 class AbcEnemy{
     // need a super class to force init order to put level first
+    level = 0;
     constructor(level, pos) {
         this.level = level;
         this.pos = pos.map(v => v + 0.5);
@@ -9,7 +10,7 @@ class AbcEnemy{
 class Enemy extends AbcEnemy{
     displayName = 'Unicorn';
     speed = 2;  // squares/sec
-    armor = 0;
+    armor = this.level >> 2;
     extraDescription;
     banishDamage = 1;  // is doubled each banish
     manaOnKillMult = 1;  // is set to 0 if banished
@@ -29,9 +30,9 @@ class Enemy extends AbcEnemy{
     delayPerMonster = 1;
     totalHpModifier = 1;
 
-    constructor(level, pos) {
-        super(level, pos);
-    }
+    // constructor(level, pos) {
+    //     super(level, pos);
+    // }
 
     setLocation(toPos) {
         this.pos = toPos;
@@ -153,18 +154,29 @@ class Enemy extends AbcEnemy{
 }
 
 class SwarmEnemy extends Enemy{
+    displayName = 'Minicorn';
     maxHp = ~~(1.5 * 1.35 ** this.level);
     delayPerMonster = 0.5;
+    armor = 0;
+    *getSprites() {
+        for(const s of super.getSprites()) {
+            yield s.withScale(0.7);
+        }
+    }
 }
 
 class RunnerEnemy extends Enemy{
+    displayName = 'Dash-i-corn';
     speed = 4;
     maxHp = ~~(1.5 * 1.25 ** this.level);
     delayPerMonster = 0.25;
+    armor = 0;
 }
 
 class BossEnemy extends Enemy{
+    displayName = 'Bossy Corn';
     banishDamage = 5;
     maxHp = ~~(8 * 1.5 ** this.level);
     totalHpModifier = 0.1;  // ensure there's only 1 boss
+    armor = this.level >> 1;
 }

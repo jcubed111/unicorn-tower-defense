@@ -3,8 +3,6 @@ TODO:
 
 - wave toast & sound effect
 - enemy types
-    - armored
-
     - narwal-i-corn (swims, gives large mana. Dark shadow in water)
     - rhino-i-corn
     - dash-i-corn (dashes every n seconds, starting on first damage, using a rainbow trail effect)
@@ -16,9 +14,6 @@ TODO:
 
 - tower types
     - fear
-    - anti armor
-        - reduces enemy armor
-    - rapid fire
 
 - add rainbow bridges to terrain
 
@@ -43,6 +38,7 @@ TODO:
 - allow enemies to move diagonal?
 
 - show ghost tower symbol when placing a tower
+- it'd be nice to know which stats will get boosted when a tower is upgraded
 
 - make mana gain delay till particle arrival?
 - allow hovering runebook entires

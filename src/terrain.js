@@ -7,7 +7,7 @@ class Terrain{
     rawTowers = grid2d(this.size, [0, 0]); // [x][y] -> Tuple<0 | 1 (r) | 2 (g) | 3 (b), level: number = 0>
     mana = 150;
     waves = 0;
-    health = 10;  // hits you can take before dying
+    health = 15;  // hits you can take before dying
 
     computedTowersArr = [];
     computedTowersByLocation = grid2d(this.size, 0);  // Grid2d<Tower | 0>
