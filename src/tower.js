@@ -242,7 +242,10 @@ const orderedTowerTypes = [
                 const [cx, cy] = this.center;
                 const [rx, ry] = randVec(this.range);
                 const px = cx + rx, py = cy + ry;
-                if(GameState.terrain.isGround[~~px]?.[~~py]) {
+                if(
+                    GameState.terrain.isGround[~~px]?.[~~py]
+                    && !GameState.terrain.computedTowersByLocation[~~px]?.[~~py]
+                ) {
                     ParticleSystem.addParticle(new FireParticle(
                         [~~((cx + rx) * 15), ~~((cy + ry) * 15)],
                     ))

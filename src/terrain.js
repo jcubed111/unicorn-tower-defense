@@ -10,7 +10,7 @@ class Terrain{
     health = 10;  // hits you can take before dying
 
     computedTowersArr = [];
-    computedTowersByLocation = grid2d(this.size, 0);  // Grid2d<Tower>
+    computedTowersByLocation = grid2d(this.size, 0);  // Grid2d<Tower | 0>
     computedTowerCache = {};  // Record<key, Tower>
 
     descentMap = [];  // Grid2d<number>
