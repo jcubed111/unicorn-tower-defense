@@ -8,7 +8,12 @@ function renderCircleIndicator(
 ) {
     ctx.lineWidth = lineWidth;
     ctx.strokeStyle = lineColor;
+    ctx.lineCap = 'butt';
     ctx.beginPath();
+    // pct % 1, except 0 -> 0, and whole numbers -> 1.
+    // allows us to show, eg 1.5 as 0.5, while still working for 0-1
+    // Used by charge tower
+    pct -= ~~(pct - .0001);
     ctx.arc(x * 15, y * 15, radius * 15, 0, Math.PI * 2 * pct);
     ctx.stroke();
 }

@@ -93,10 +93,11 @@ class Tower{
     size = 0;
     _particleFirstRender = true;
 
-    constructor(componentTowers) {
+    constructor(componentTowers, startingCharge = 0) {
         this.componentTowers = componentTowers; // Grid2d<[type, level, x, y]>
         this.center = [0, 0];
         this.level = 0;
+        this.charge = startingCharge;
         mapGrid2d(componentTowers, maybeTower => {
             this.level += maybeTower?.[1] ?? 0;
             this.center[0] += maybeTower?.[2] ?? 0;
@@ -296,7 +297,7 @@ const orderedTowerTypes = [
 
         hit(targetsInRange) {
             const target = randChoice(targetsInRange);
-            if(target.hp > 0 && target.manaOnKillMult > 0) {
+            if(target.manaOnKillMult > 0) {
                 ParticleSystem.explodeManaAt(target.pos, this.manaLeech);
                 GameState.terrain.mana += this.manaLeech;
             }
@@ -305,10 +306,52 @@ const orderedTowerTypes = [
         }
     }),
 
-    // withTowerPattern('rb', class extends Tower{
-    //     displayName = 'Magenta';
-    //     // TODO
-    // }),
+    withTowerPattern('rb', class extends Tower{
+        displayName = 'Charge';
+        range = 2;
+        chargeTime = 3;
+        damage = 2 * this.level;
+        /** @type {number} */
+        maxCharge = this.level + 1;
+
+        extraDescription = `Capacity ${this.maxCharge}`;
+
+        step(dt) {
+            this.charge = Math.min(this.charge + dt, this.chargeTime * this.maxCharge);
+            while(this.charge >= this.chargeTime) {
+                const [x, y] = this.center;
+                const possibleTargets = this.getTargetsInRange();
+                const i = ~~(this.charge / this.chargeTime) - 1;
+                if(possibleTargets.length) {
+                    const target = randChoice(possibleTargets);
+                    target.takeDamage(this.damage);
+                    this.boltAt(target, this.getChargeOrbLocation(i));
+
+                    this.charge -= this.chargeTime;
+                }else{
+                    break;
+                }
+            }
+        }
+
+        getChargeOrbLocation(i) {
+            const [x, y] = this.center;
+            return [
+                x + Math.cos(performance.now() / 6e3 + i * Math.PI * 2 / this.maxCharge) * 0.7,
+                y + Math.sin(performance.now() / 6e3 + i * Math.PI * 2 / this.maxCharge) * 0.7,
+            ];
+        }
+
+        renderSpecialEffects(dt, ctx) {
+            range(~~(this.charge / this.chargeTime)).map(i => {
+                const [x, y] = this.getChargeOrbLocation(i);
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.arc(x * 15, y * 15, 1.5, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+    }),
 
     withTowerPattern('r', class extends Tower{
         displayName = 'Red';

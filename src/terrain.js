@@ -88,6 +88,7 @@ class Terrain{
 
                         // Do the whole test/gen op as one map
                         var fits = true;
+                        var prevTower;  // outside closure so we can use it for charge retention
                         const usedPrevTowerCounts = new Map();  // Map[Tower, usedCells: number]
                         // towerCells: Grid2d<[type, level, x, y]>
                         // typed as such so it fits nicely into `towerGridToElement`
@@ -98,7 +99,7 @@ class Terrain{
                                 return null;
                             }
                             // count how many cells of each previous tower we used
-                            const prevTower = prevComputedTowersByLocation[x + dx][y + dy];
+                            prevTower = prevComputedTowersByLocation[x + dx][y + dy];
                             if(prevTower) {
                                 usedPrevTowerCounts.set(
                                     prevTower,
@@ -119,7 +120,13 @@ class Terrain{
                         }
 
                         const key = JSON.stringify(towerCells);
-                        const tower = this.computedTowerCache[key] ??= new CandidateTower(towerCells);
+                        const tower = this.computedTowerCache[key] ??= new CandidateTower(
+                            towerCells,
+                            // Keep charge when upgrading to a higher level of the same tower.
+                            // This works because prevTower will have a deterministic value in this
+                            // case, and will be a different type if this isn't a level upgrade.
+                            prevTower.constructor === CandidateTower ? prevTower.charge : 0,
+                        );
                         mapGrid2d(towerCells, maybeTower => {
                             if(!maybeTower) return;
                             const [t, l, x, y] = maybeTower;
