@@ -10,13 +10,11 @@ TODO:
     - dash-i-corn (dashes every n seconds, starting on first damage, using a rainbow trail effect)
 
 - enemy graphics
-    - make unicorns blockier
     - unicorns should sparkle
         - rainbow trails?
     - banished enemies should come back with a zombie effect (black, red eyes?) And show that they're banished in their hover info.
 
 - tower types
-    - mana gen tower (cyan? Or magenta?)
     - poison
         - single target
         - damage over time
@@ -26,7 +24,6 @@ TODO:
     - anti armor
         - reduces enemy armor
     - rapid fire
-    - charge tower (gain up to `n` charges, can fire them in quick succession)
 
 - add rainbow bridges to terrain
 
@@ -47,6 +44,8 @@ TODO:
 - sound / screenshake on enemy death
 
 ## Feature Ideas
+
+- allow enemies to move diagonal?
 
 - show ghost tower symbol when placing a tower
 

@@ -255,10 +255,24 @@ const orderedTowerTypes = [
         }
     }),
 
-    // withTowerPattern('ggr', class extends Tower{
-    //     displayName = 'Poison';
-    //     // TODO
-    // }),
+    withTowerPattern('gg| b', class extends Tower{
+        displayName = 'Poison';
+        range = 3;
+        chargeTime = 2;
+        damage = 4 * this.level;
+        /** @type {number} */
+        over = 2 * this.level;
+        extraDescription = `Damage dealt over ${this.over}s`;
+
+        hit(targetsInRange) {
+            const target = randChoice(targetsInRange);
+            target.poisonEffects.push([
+                this.damage / this.over,
+                this.over,
+            ]);
+            this.boltAt(target);
+        }
+    }),
 
     withTowerPattern('gr', class extends Tower{
         displayName = 'Lightning';

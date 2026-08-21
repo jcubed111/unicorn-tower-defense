@@ -19,7 +19,8 @@ class Enemy extends AbcEnemy{
 
     slowEffects = [];  // Array<[speedMult, remaining]>
     fireEffects = [];  // Array<[damagePerSec, timeRemaining]>
-    _fireAcc = 0;  // fire accumulates += dt * max(fireEffects), then damages upon hitting 1
+    poisonEffects = [];  // Array<[damagePerSec, timeRemaining]>
+    _dotAcc = 0;  // fire accumulates += dt * max(fireEffects), then damages upon hitting 1
 
     maxHp = ~~(3 * 1.35 ** this.level);
     hp = 0;  // set by setWaves in Terrain
@@ -77,7 +78,12 @@ class Enemy extends AbcEnemy{
         if(this.slowEffects.length) {
             yield sprites[20].withColor([59, 124, 255, 255]);
         }
-        yield sprites[16 + Math.floor(performance.now() / 200 * this.speed) % 4];
+        const s = sprites[16 + Math.floor(performance.now() / 200 * this.speed) % 4];
+        if(this.poisonEffects.length) {
+            yield s.withColor([150, 255, 150, 255]);
+        }else{
+            yield s;
+        }
     }
 
     takeDamage(amt) {
@@ -87,11 +93,18 @@ class Enemy extends AbcEnemy{
     step(dt) {
         // Damage over time
         // Technically there can be rounding errors in the fire calc, but they're in favor
-        // of the player (eg, a fire effect might get applied for slightly too long)
-        this._fireAcc += dt * Math.max(0, ...this.fireEffects.map(f => f[0]));
-        this.fireEffects = this.fireEffects.map(([rate, dur]) => [rate, dur - dt]).filter(([rate, dur]) => dur > 0);
-        this.hp -= ~~this._fireAcc;
-        this._fireAcc %= 1;
+        // of the player (eg, a fire effect might get applied for `dt` when it only has `dt / 2`s remaining)
+        this._dotAcc += dt * Math.max(0, ...this.fireEffects.map(f => f[0]));
+        this._dotAcc += dt * this.poisonEffects.map(f => f[0]).reduce((a, b) => a + b, 0);
+        this.hp -= ~~this._dotAcc;
+        this._dotAcc %= 1;
+
+        this.fireEffects = this.fireEffects
+            .map(([rate, dur]) => [rate, dur - dt])
+            .filter(([rate, dur]) => dur > 0);
+        this.poisonEffects = this.poisonEffects
+            .map(([rate, dur]) => [rate, dur - dt])
+            .filter(([rate, dur]) => dur > 0);
 
         // Movement
         if(!this.targetLocation) {
