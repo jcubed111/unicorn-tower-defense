@@ -82,7 +82,7 @@ class FireParticle extends Particle{
 }
 
 class ExplodeFadeParticle extends Particle{
-    constructor(pos, color, speed = randFloat(20, 25)) {
+    constructor(pos, color, speed = randFloat(15, 25)) {
         super(pos);
         this.grad = [color, withAlpha(color, 0)];
         this.vel = randVec(speed);

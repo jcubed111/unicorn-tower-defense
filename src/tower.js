@@ -285,10 +285,25 @@ const orderedTowerTypes = [
         }
     }),
 
-    // withTowerPattern('gb', class extends Tower{
-    //     displayName = 'Freeze';
-    //     // TODO
-    // }),
+    withTowerPattern('gb', class extends Tower{
+        displayName = 'Mana Leech';
+        range = 2;
+        chargeTime = 2;
+        damage = 2 * this.level;
+        manaLeech = this.level - 1;
+
+        extraDescription = `+${this.manaLeech} ᚯ /hit`;
+
+        hit(targetsInRange) {
+            const target = randChoice(targetsInRange);
+            if(target.hp > 0 && target.manaOnKillMult > 0) {
+                ParticleSystem.explodeManaAt(target.pos, this.manaLeech);
+                GameState.terrain.mana += this.manaLeech;
+            }
+            target.takeDamage(this.damage);
+            this.boltAt(target);
+        }
+    }),
 
     // withTowerPattern('rb', class extends Tower{
     //     displayName = 'Magenta';
