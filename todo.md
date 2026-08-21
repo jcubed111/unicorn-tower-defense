@@ -15,11 +15,6 @@ TODO:
     - banished enemies should come back with a zombie effect (black, red eyes?) And show that they're banished in their hover info.
 
 - tower types
-    - poison
-        - single target
-        - damage over time
-        - stacks
-        - ignores armor
     - fear
     - anti armor
         - reduces enemy armor

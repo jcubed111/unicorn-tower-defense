@@ -220,6 +220,15 @@ const orderedTowerTypes = [
         }
     }),
 
+    withTowerPattern('g |gg| g', class extends Tower{
+        displayName = 'Allegro';
+        // simple bolt tower
+        range = 3.5;
+        chargeTime = 2 / this.level;
+        damage = 3;
+        isDiscovered() { return true; }
+    }),
+
     withTowerPattern('rgr', class extends Tower{
         displayName = 'Fire';
         damage = 0;
