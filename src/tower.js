@@ -58,6 +58,7 @@ function withTowerPattern(stringRepr, Cls) {
         outerColor,
         allForms,
         makeElement: isDiscovered => towerGridToElement(asGrid, outerColor, isDiscovered),
+        asGrid,
     };
     return Cls;
 }
@@ -128,7 +129,7 @@ class Tower{
                 ],
                 this.chargeTime > 0 && [
                     (1 / this.chargeTime).toFixed(2),
-                    styled('span', 'C--secondary', '/sec'),
+                    styled('span', 'C--secondary', 'hits / sec'),
                 ],
                 this.extraDescription?.pop && [  // using .pop as proxy for "isArray"
                     wrapEl(styled('span', '', this.extraDescription[0]), el => el.style.color = colorAsString(this.getColor())),
@@ -350,7 +351,7 @@ const orderedTowerTypes = [
         damage = 2 * this.level;
         manaLeech = this.level - 1;
 
-        extraDescription = [`+${this.manaLeech} ᚯ`, `/hit`];
+        extraDescription = [`+${this.manaLeech} ᚯ`, `/ hit`];
 
         hit(targetsInRange) {
             const target = randChoice(targetsInRange);
@@ -442,6 +443,7 @@ const orderedTowerTypes = [
         chargeTime = 0;
         range = 0;
         damage = 0;
+        extraDescription = 'Cannot attack';
         isDiscovered() { return true; }
     }),
 ];

@@ -87,13 +87,13 @@ canvas{
         flex: 1 1 0;
         overflow: auto;
         padding: 1rem 3rem 1rem 3rem;
-        gap: 3rem;
         margin: 0 1rem 1rem 0;
     }
 
         .C--runeListing{
             @extend %flexRow;
             justify-content: space-between;
+            padding: 1.5rem 0;
         }
     // .C--towerName{
     //     font-size: 4.5rem;

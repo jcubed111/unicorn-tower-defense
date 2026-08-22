@@ -45,9 +45,17 @@ GameState.rerenderRunebook = () => {
         div('C--sidebarTitle', "ᚱuneᛒooᛕ"),
         ...orderedTowerTypes.map(T => {
             const isDiscovered = new T([]).isDiscovered();
-            return div('C--runeListing ' + (!isDiscovered && 'C--secondary'),
-                div(/*'C--towerName',*/ '', isDiscovered ? new T([]).displayName : '???'),
-                T.sourcePattern.makeElement(isDiscovered),
+            return withHoverInfo(
+                div('C--runeListing ' + (!isDiscovered && 'C--secondary'),
+                    div(/*'C--towerName',*/ '', isDiscovered ? new T([]).displayName : '???'),
+                    T.sourcePattern.makeElement(isDiscovered),
+                ),
+                isDiscovered
+                    ? new T(T.sourcePattern.asGrid).asHoverEl()
+                    : div('',
+                        div('C--infoTitle', '???'),
+                        div('C--secondary', 'Build this pattern to reveal its details'),
+                    ),
             );
         }).reverse(),
     );

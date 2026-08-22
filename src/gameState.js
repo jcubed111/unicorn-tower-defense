@@ -3,6 +3,8 @@ const GameState = {
     mainCanvas: null,
     hoveringPos: null,
     hoveringTower: null,
+    // forces hovering el to resolve to this value; used to allow hovering ui elements
+    hoveringElOverride: null,
     runeButtons: [],
     drawType: 0,
     manaDisplay: null,
@@ -21,3 +23,9 @@ const MANA_PASSIVE_RATE = 1;
 const LS_PREFIX = 'com.jstimac.26.';
 const getLocalStorageItem = key => JSON.parse(window.localStorage[LS_PREFIX + key] ?? 'null');
 const setLocalStorageItem = (key, value) => window.localStorage[LS_PREFIX + key] = JSON.stringify(value);
+
+const withHoverInfo = (el, hoverInfoEl) => {
+    el.addEventListener('mouseover', () => GameState.hoveringElOverride = hoverInfoEl);
+    el.addEventListener('mouseout', () => GameState.hoveringElOverride = null);
+    return el;
+};
