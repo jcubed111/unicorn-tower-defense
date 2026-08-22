@@ -63,13 +63,17 @@ GameState.rerenderRunebook = () => {
 
 
 window.onload = () => {
-    GameState.runeButtons = range(3).map(i => {
-        const button = div();
-        button.addEventListener('click', _ => GameState.drawType = i + 1);
+    GameState.runeButtons = orderedTowerTypes.slice(-3).map((T, i) => {
         return div(
             'C--runeButtonWrapper',
             div(),  // cost
-            button,  // tower canvas wrapper
+            withHoverInfo(
+                wrapEl(
+                    div(),  // tower canvas wrapper
+                    el => el.addEventListener('click', _ => GameState.drawType = i + 1)
+                ),
+                new T(T.sourcePattern.asGrid).asHoverEl(),
+            ),
         );
     });
 

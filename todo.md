@@ -39,7 +39,6 @@ TODO:
 - it'd be nice to know which stats will get boosted when a tower is upgraded
 
 - make mana gain delay till particle arrival?
-- allow hovering runebook entires
 - clicking start wave should spawn mana particles
 
 - click to focus enemy
