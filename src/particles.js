@@ -7,8 +7,10 @@ class Particle{
     lifespan = 2;
 
     grad = [];
-    colorFn() {
-        return lerpGrad(this.grad, this.age / this.lifespan);
+    _colorCache;
+
+    colorFn(agePct, ageSec) {
+        return lerpGrad(this.grad, agePct);
     }
     posFn() {
         const dist = this.age - 0.25 * Math.log(1 + 3.6 * this.age);
@@ -27,7 +29,10 @@ class Particle{
     }
 
     render(ctx) {
-        ctx.fillStyle = colorAsString(this.colorFn());
+        this._colorCache ??= range(256).map(
+            i => colorAsString(this.colorFn(i / 255, i / 255 * this.lifespan))
+        );
+        ctx.fillStyle = this._colorCache[~~(this.age / this.lifespan * 256)];
         ctx.fillRect(...this.posFn(), 1, 1);
     }
 }
@@ -49,8 +54,8 @@ class ManaGainParticle extends Particle{
         ];
     }
 
-    colorFn() {
-        return (performance.now() % 1000) < 300 ? WHITE : [119, 204, 255, 255];
+    colorFn(agePct, ageSec) {
+        return (ageSec % 1) < 0.3 ? WHITE : [119, 204, 255, 255];
     }
 }
 
