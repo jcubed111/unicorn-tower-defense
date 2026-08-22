@@ -50,13 +50,20 @@ function render(dt) {
 
     // Render terrain & towers
     mapGrid2d(terrain.isGround, (isGround, [x, y]) => {
-        renderSprite(ctx, x, y,
-            isGround
-                ? terrain.computedTowersByLocation[x][y]
-                    ? sprites[3].withColor([200,200,200,255])
-                    : sprites[(x + 3 * y) % 7 ? 3 : 2]
-                : sprites[terrain.isGround[x][y - 1] ? (performance.now() & 1024 ? 7 : 11) : 15],
-        );
+        // ground edge
+        if(isGround != 1 && terrain.isGround[x][y - 1] == 1) {
+            renderSprite(ctx, x, y, sprites[performance.now() & 1024 ? 7 : 11]);
+        }
+        if(isGround) {
+            renderSprite(ctx, x, y,
+                isGround == 1
+                    ? terrain.computedTowersByLocation[x][y]
+                        ? sprites[3].withColor([200,200,200,255])
+                        : sprites[(x + 3 * y) % 7 ? 3 : 2]
+                    // rainbow
+                    : sprites[33 + ((isGround - 2) >> 2)].withRot((isGround - 2) & 3)
+            );
+        }
 
         // Tower
         const maybeComputedTower = terrain.computedTowersByLocation[x][y];

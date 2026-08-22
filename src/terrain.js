@@ -24,7 +24,7 @@ class Terrain{
     screenShake = 0;  // px; decays over time in render
 
     constructor(goalLocation, terrainString) {
-        terrainString.split('').forEach((c, i) => this.isGround[i % this.size][~~(i / this.size)] = c == '#');
+        terrainString.split('').forEach((c, i) => this.isGround[i % this.size][~~(i / this.size)] = c.charCodeAt(0) - 46);
         this.goalLocation = goalLocation;
 
         this.recomputeDerivedValues();
@@ -157,7 +157,7 @@ class Terrain{
         if(
             (current && current != towerType )
             || currentLevel >= MAX_TOWER_LEVEL
-            || !this.isGround[x][y]
+            || this.isGround[x][y] != 1
             || (x == this.goalLocation[0] && y == this.goalLocation[1])
             || cost > this.mana
         ) {

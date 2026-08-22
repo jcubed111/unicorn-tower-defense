@@ -34,32 +34,64 @@
     user-select: none;
   }
 
-  .cell.filled {
+  .cell.white {
     background: #eee;
   }
 
-  .cell input {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
+  /* Path tiles paint their own surface in the svg, so a turn can taper
+     instead of filling its whole square. */
+
+  .cell svg {
+    display: block;
   }
 
-  .encoded-row {
+  .palette {
     display: flex;
     gap: 8px;
     align-items: center;
   }
 
-  #encoded,
-  #base64 {
-    font-family: monospace;
-    font-size: 14px;
-    width: 420px;
-    padding: 4px 6px;
+  .swatch {
+    width: 28px;
+    height: 28px;
+    border: 2px solid #555;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .swatch.selected {
+    border-color: #fff;
+  }
+
+  .swatch.white {
+    background: #eee;
+  }
+
+  .swatch.path {
+    background: #2f4364;
+    background-image: linear-gradient(#e0453c 0 3px, transparent 3px calc(100% - 3px), #4b9cf5 calc(100% - 3px) 100%);
+  }
+
+  .hint {
+    font-size: 12px;
+    color: #888;
+  }
+
+  #reverse {
+    font: inherit;
+    font-size: 13px;
+    padding: 4px 10px;
+    background: #333;
+    color: #eee;
+    border: 1px solid #555;
+    border-radius: 4px;
+    cursor: pointer;
   }
 
   .ascii-row {
+    display: flex;
+    gap: 8px;
     align-items: flex-start;
   }
 
@@ -80,8 +112,6 @@
     border: 1px solid #555;
   }
 
-  #byte-count,
-  #base64-byte-count,
   #ascii-byte-count {
     font-size: 12px;
     color: #aaa;
@@ -92,21 +122,17 @@
 <body>
   <h1>Level Editor</h1>
 
+  <div class="palette">
+    <span>Paint:</span>
+    <button class="swatch white selected" data-value="1" title="White (/)"></button>
+    <button class="swatch path" data-value="2" title="Path"></button>
+    <button id="reverse">Reverse all paths</button>
+    <span class="hint">right-click a path to reverse just that one</span>
+  </div>
+
   <div id="grid"></div>
 
-  <div class="encoded-row">
-    <label for="encoded">Encoded:</label>
-    <input id="encoded" type="text" spellcheck="false" autocomplete="off">
-    <span id="byte-count"></span>
-  </div>
-
-  <div class="encoded-row">
-    <label for="base64">Base64:</label>
-    <input id="base64" type="text" spellcheck="false" autocomplete="off">
-    <span id="base64-byte-count"></span>
-  </div>
-
-  <div class="encoded-row ascii-row">
+  <div class="ascii-row">
     <label for="ascii">ASCII:</label>
     <textarea id="ascii" rows="16" spellcheck="false" autocomplete="off"></textarea>
     <span id="ascii-byte-count"></span>
