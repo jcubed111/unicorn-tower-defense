@@ -13,6 +13,7 @@ JS_FILES := \
 	src/tower.js \
 	src/terrain.js \
 	src/render.js \
+	src/htmlRender.js \
 	src/main.js
 
 IMAGES := $(wildcard src/*.png)

@@ -217,8 +217,8 @@ const orderedTowerTypes = [
     withTowerPattern('gb|bb', class extends Tower{
         displayName = 'Sniper';
         chargeTime = 10;
-        /** @type {number} */ range = 3 + this.level;
-        damage = 15 * this.level;
+        /** @type {number} */ range = 2 + this.level;
+        damage = 16 * this.level;
     }),
 
     withTowerPattern('bb|bb', class extends Tower{

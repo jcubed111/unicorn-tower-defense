@@ -24,9 +24,11 @@ class Terrain{
 
     screenShake = 0;  // px; decays over time in render
 
-    constructor(goalLocation, terrainString) {
+    constructor(goalLocation, terrainString, waves, onEndCb) {
         terrainString.split('').forEach((c, i) => this.isGround[i % this.size][~~(i / this.size)] = c.charCodeAt(0) - 46);
         this.goalLocation = goalLocation;
+        this.onEndCb = onEndCb;
+        this._setWaves(waves);
 
         this.recomputeDerivedValues();
     }
@@ -242,7 +244,7 @@ class Terrain{
         GameState.startNextWaveButton.style.display = 'none';
     }
 
-    setWaves(...enemyConstructors) {
+    _setWaves(enemyConstructors) {
         GameState.startNextWaveButton.addEventListener('click', () => this.startNextWaveNow());
         var prevEndTime = 0;
 
@@ -294,5 +296,12 @@ class Terrain{
 
             prevEndTime = Math.ceil(startTime + enemyDelay * numEnemies);
         });
+    }
+}
+
+// Used for bg, level select, etc.
+class MockTerrain extends Terrain{
+    recomputeDerivedValues() {
+        // pass
     }
 }

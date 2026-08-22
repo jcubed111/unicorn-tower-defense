@@ -88,15 +88,21 @@ function onBorder(index) {
   return r === 0 || c === 0 || r === N - 1 || c === N - 1;
 }
 
+function neighborAt(index, dir) {
+  const c = colOf(index) + DIRS[dir][0];
+  const r = rowOf(index) + DIRS[dir][1];
+  return c < 0 || c >= N || r < 0 || r >= N ? null : r * N + c;
+}
+
+function neighborIs(index, dir, value) {
+  const n = neighborAt(index, dir);
+  return n !== null && values[n] === value;
+}
+
 function blueNeighbors(index) {
-  const r = rowOf(index), c = colOf(index);
   const out = [];
   for (let d = 0; d < 4; d++) {
-    const nc = c + DIRS[d][0];
-    const nr = r + DIRS[d][1];
-    if (nr < 0 || nr >= N || nc < 0 || nc >= N) continue;
-    const ni = nr * N + nc;
-    if (values[ni] === BLUE) out.push({ dir: d, index: ni });
+    if (neighborIs(index, d, BLUE)) out.push({ dir: d, index: neighborAt(index, d) });
   }
   return out;
 }
@@ -190,6 +196,20 @@ function pruneReversed() {
   }
 }
 
+// The two ends of a path have only one path neighbour, so nothing says which
+// way the tile continues. If a white cell is sitting against one of those ends,
+// the path runs into it -- carrying straight on into the white if it can, else
+// turning towards it, which makes the end tile a curve. Cells with two path
+// neighbours already know both directions, so this never touches them.
+function openEnd(index, towardsPath) {
+  const straightOn = (towardsPath + 2) % 4;
+  if (neighborIs(index, straightOn, WHITE)) return straightOn;
+  for (let d = 0; d < 4; d++) {
+    if (d !== towardsPath && neighborIs(index, d, WHITE)) return d;
+  }
+  return null;
+}
+
 function assignShapes(shapes, walk, flip) {
   const { loop } = walk;
   const order = flip ? [...walk.order].reverse() : walk.order;
@@ -197,8 +217,18 @@ function assignShapes(shapes, walk, flip) {
     const index = order[k];
     const before = k > 0 ? order[k - 1] : loop ? order[order.length - 1] : null;
     const after = k < order.length - 1 ? order[k + 1] : loop ? order[0] : null;
-    const inDir = before !== null ? dirBetween(before, index) : dirBetween(index, after);
-    const outDir = after !== null ? dirBetween(index, after) : inDir;
+    let inDir, outDir;
+    if (before === null) {
+      // Start of the path: it is entered from the white cell it backs onto.
+      outDir = dirBetween(index, after);
+      const white = openEnd(index, outDir);
+      inDir = white === null ? outDir : (white + 2) % 4;
+    } else {
+      inDir = dirBetween(before, index);
+      // End of the path: it carries on into the white cell ahead of it.
+      const white = after !== null ? null : openEnd(index, (inDir + 2) % 4);
+      outDir = after !== null ? dirBetween(index, after) : white === null ? inDir : white;
+    }
     shapes[index] = inDir === outDir
       ? { kind: 'straight', rot: inDir }
       : { kind: 'corner', rot: inDir, right: (outDir - inDir + 4) % 4 === 1 };
@@ -210,12 +240,7 @@ function assignShapes(shapes, walk, flip) {
 // along whichever axis keeps red and blue off the white cells, preferring
 // vertical when both axes work or neither does.
 function loneShape(index, flip) {
-  const isWhite = dir => {
-    const c = colOf(index) + DIRS[dir][0];
-    const r = rowOf(index) + DIRS[dir][1];
-    return c >= 0 && c < N && r >= 0 && r < N && values[r * N + c] === WHITE;
-  };
-  const clear = (a, b) => !isWhite(a) && !isWhite(b);
+  const clear = (a, b) => !neighborIs(index, a, WHITE) && !neighborIs(index, b, WHITE);
   // Heading north colours the west and east edges; heading east colours north and south.
   const rot = clear(E, W) || !clear(Nn, S) ? Nn : E;
   return { kind: 'straight', rot: flip ? (rot + 2) % 4 : rot };

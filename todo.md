@@ -13,7 +13,9 @@ TODO:
     - banished enemies should come back with a zombie effect (black, red eyes?) And show that they're banished in their hover info.
 
 - tower types
-    - fear
+    - fear?
+    - zombie? -> turns unicorns to allies on death
+    - a better big hitter tower besides sniper
 
 - game flow:
     - level select
