@@ -15,8 +15,6 @@ TODO:
 - tower types
     - fear
 
-- add rainbow bridges to terrain
-
 - game flow:
     - level select
     - intro text

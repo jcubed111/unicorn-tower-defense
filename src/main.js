@@ -36,7 +36,7 @@ const runeBorderDiv = (color, ...divArgs) => {
     el.style.borderStyle = `solid`;
     el.style.borderWidth = `5rem`;
     el.style.borderImage = `url(${runeBorderBackImageCache[colorAsString(color)]}) 6 / 6rem / 0 round`;
-    // el.style.background = '#202020 padding-box';
+    el.style.background = '#20202066 padding-box';
     return el;
 };
 
