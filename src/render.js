@@ -49,7 +49,7 @@ function render(dt) {
     terrain.screenShake *= 0.5 ** (4 * dt);
 
     // Render terrain & towers
-    mapGrid2d(terrain.isGround, (isGround, [x, y]) => {
+    forEachGrid2d(terrain.isGround, (isGround, [x, y]) => {
         // ground edge
         if(isGround != 1 && terrain.isGround[x][y - 1] == 1) {
             renderSprite(ctx, x, y, sprites[performance.now() & 1024 ? 7 : 11]);
@@ -98,7 +98,7 @@ function render(dt) {
     terrain.computedTowersArr.forEach(t => t.renderSpecialEffects(dt, ctx));
 
     // Unmark towers as new
-    mapGrid2d(terrain.computedTowersByLocation, t => t._particleFirstRender = false);
+    forEachGrid2d(terrain.computedTowersByLocation, t => t._particleFirstRender = false);
 
     // Draw wizard
     renderSprite(ctx, ...terrain.goalLocation, sprites[30]);
@@ -195,17 +195,19 @@ function render(dt) {
     GameState.manaDisplay.innerText = GameState.terrain.mana;
     GameState.heartDisplay.innerText = GameState.terrain.health;
     GameState.runeButtons.forEach((el, i) => {
-        const cost = GameState.terrain.getDrawCost(i + 1);
+        const cost = GameState.terrain.towerDrawCosts[i + 1];
         const canAfford = cost <= GameState.terrain.mana;
         el.classList.toggle('C--runeButtonActive', i + 1 == GameState.drawType);
         el.classList.toggle('C--runeButtonTooExpensive', !canAfford);
         el.children[0].innerText = cost + ' ᚯ';
-        el.children[1].replaceChildren(
-            sprites[i * 4 + 4].withColor(
-                canAfford
-                    ? normalizedTowerRgb(i == 0, i == 1, i == 2)
-                    : [127, 127, 127, 255],
-            ).asImage
-        );
+        const displayEl = sprites[i * 4 + 4].withColor(
+            canAfford
+                ? normalizedTowerRgb(i == 0, i == 1, i == 2)
+                : [127, 127, 127, 255],
+        ).asImage;
+        // Chrome needs this line to function; its `replaceChildren` isn't stable
+        if(el.children[1].children[0] != displayEl) {
+            el.children[1].replaceChildren(displayEl);
+        }
     });
 }

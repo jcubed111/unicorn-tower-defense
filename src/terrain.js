@@ -12,6 +12,7 @@ class Terrain{
     computedTowersArr = [];
     computedTowersByLocation = grid2d(this.size, 0);  // Grid2d<Tower | 0>
     computedTowerCache = {};  // Record<key, Tower>
+    towerDrawCosts = TOWER_BASE_COSTS.slice();
 
     descentMap = [];  // Grid2d<number>
     spawnLocations = [];
@@ -28,14 +29,6 @@ class Terrain{
         this.goalLocation = goalLocation;
 
         this.recomputeDerivedValues();
-    }
-
-    getDrawCost(towerType) {
-        let sum = 0;
-        mapGrid2d(this.rawTowers, ([type, level]) => {
-            if(type == towerType) sum += level;
-        });
-        return TOWER_BASE_COSTS[towerType] + sum * TOWER_INCREMENT_COSTS[towerType];
     }
 
     recomputeDerivedValues() {
@@ -127,7 +120,7 @@ class Terrain{
                             // case, and will be a different type if this isn't a level upgrade.
                             prevTower.constructor === CandidateTower ? prevTower.charge : 0,
                         );
-                        mapGrid2d(towerCells, maybeTower => {
+                        forEachGrid2d(towerCells, maybeTower => {
                             if(!maybeTower) return;
                             const [t, l, x, y] = maybeTower;
                             unjoinedTowerColors[x][y] = 0;
@@ -152,7 +145,7 @@ class Terrain{
 
     placeTower([x, y], towerType) {  // -> boolean, whether the tower could be placed
         if(!towerType) return;
-        const cost = this.getDrawCost(towerType);
+        const cost = this.towerDrawCosts[towerType];
         const [current, currentLevel] = this.rawTowers[x][y];
         if(
             (current && current != towerType )
@@ -167,6 +160,7 @@ class Terrain{
         try{
             this.recomputeDerivedValues();
             this.mana -= cost;
+            this.towerDrawCosts[towerType] += TOWER_INCREMENT_COSTS[towerType];
             return true;
         }catch{
             // recomputeDerivedValues throws if the map no longer has any valid paths.

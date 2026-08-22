@@ -60,7 +60,9 @@ const minByTiesRand = (arr, cb) => {
 
 /* 2d Grid Helpers */
 const grid2d = (size, fill) => range(size).map(i => range(size).fill(fill));
+// this is really memory expensive :( Don't use if you don't need the output; use forEachGrid2d instead
 const mapGrid2d = (grid, cb) => grid.map((row, i) => row.map((cell, j) => cb(cell, [i, j], grid)));
+const forEachGrid2d = (grid, cb) => grid.forEach((row, i) => row.forEach((cell, j) => cb(cell, [i, j], grid)));
 
 const transposeGrid2d = grid => grid[0].map((_, i) => grid.map(row => row[i]));
 const rotGrid2d = grid => transposeGrid2d(grid).reverse();
@@ -93,7 +95,7 @@ const grid2dToIndexed = grid => grid.flatMap((col, x) => col.map((cell, y) => [x
 // All the color helpers assume colors are 4 components, with EVERY component in [0, 255]
 const lerpColor = (a, b, f) => a.map((v, i) => v * (1 - f) + b[i] * f);
 const clampColorComponent = v => v < 0 ? 0 : v > 255 ? 255 : ~~v;
-const colorAsString = c => `#` + c.map(v => clampColorComponent(v).toString(16).padStart(2, '0')).join('');
+const colorAsString = c => c['s'] ??= `#` + c.map(v => clampColorComponent(v).toString(16).padStart(2, '0')).join('');
 const multiplyColor = (a, b) => a.map((v, i) => v * b[i] / 255);
 const lerpGrad = (grad, f) => {
     const steps = grad.length - 1;

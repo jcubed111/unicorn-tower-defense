@@ -49,7 +49,7 @@ function withTowerPattern(stringRepr, Cls) {
     const allForms = allFormsGrid2d(asGrid)
 
     const values = range(3).fill(0);
-    mapGrid2d(asGrid, c => {
+    forEachGrid2d(asGrid, c => {
         if(c) values[c[0] - 1]++;
     });
     const outerColor = normalizedTowerRgb(...values);
@@ -67,7 +67,7 @@ function towerGridToElement(towerGrid, outerColor, isDiscovered = true) {
     // towerGrid: Grid2d<[towerType, level] | null>
     // If not discovered, renders as `?`s
     return makeSpriteCanvas(ctx => {
-        mapGrid2d(towerGrid, (tower, [x, y]) => {
+        forEachGrid2d(towerGrid, (tower, [x, y]) => {
             if(tower) {
                 for(const s of getTowerSprites(
                     x, y,
@@ -100,7 +100,7 @@ class Tower{
         this.center = [0, 0];
         this.level = 0;
         this.charge = startingCharge;
-        mapGrid2d(componentTowers, maybeTower => {
+        forEachGrid2d(componentTowers, maybeTower => {
             this.level += maybeTower?.[1] ?? 0;
             this.center[0] += maybeTower?.[2] ?? 0;
             this.center[1] += maybeTower?.[3] ?? 0;
@@ -323,8 +323,8 @@ const orderedTowerTypes = [
         chain = this.level - 1;
         extraDescription = [this.chain, 'chain'];
         range = 2.5;
-        chargeTime = 1;
-        damage = 2;
+        chargeTime = this.level / 2;
+        damage = this.level;
 
         hit(targetsInRange, i = 0, origin = this.center) {
             const target = randChoice(targetsInRange);
