@@ -309,7 +309,22 @@ class Terrain{
         this.actionQueue.add([prevEndTime + 1, () => this.wavesComplete = true]);
     }
 
-    renderSpecialEffects(dt, ctx) {}
+    renderSpecialEffects(dt, ctx) {
+        // Draw mana pool
+        const rate = this.mana / (this.mana + 200);
+        const colorRate = 255 * this.mana / (this.mana + 50);
+        const col = [~~colorRate, ~~colorRate, ~~colorRate, 255];
+        renderSprite(ctx, ...MANA_POOL_POS, sprites[25].withColor(col));
+        sprites[25].toParticlesSparse(rate * dt).forEach(([fy, fx, color]) => {
+            ParticleSystem.addParticle(new EnergyFadeParticle(
+                [MANA_POOL_POS[0] * 15 + fx, MANA_POOL_POS[1] * 15 + fy],
+                color,
+            ))
+        });
+
+        // Draw heart
+        renderSprite(ctx, ...HEART_POS, sprites[29]);
+    }
 }
 
 
