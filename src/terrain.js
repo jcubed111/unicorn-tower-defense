@@ -6,8 +6,8 @@ class Terrain{
     // raw towers stores primary color + level for each square.
     rawTowers = grid2d(this.size, [0, 0]); // [x][y] -> Tuple<0 | 1 (r) | 2 (g) | 3 (b), level: number = 0>
     mana = 150;
-    waves = 0;
     health = 15;  // hits you can take before dying
+    wavesComplete = false;
 
     computedTowersArr = [];
     computedTowersByLocation = grid2d(this.size, 0);  // Grid2d<Tower | 0>
@@ -146,7 +146,7 @@ class Terrain{
     }
 
     placeTower([x, y], towerType) {  // -> boolean, whether the tower could be placed
-        if(!towerType) return;
+        if(!towerType) return true;  // so we don't make an error noise
         const cost = this.towerDrawCosts[towerType];
         const [current, currentLevel] = this.rawTowers[x][y];
         if(
@@ -175,6 +175,11 @@ class Terrain{
     }
 
     step(dt) {
+        if(this.wavesComplete && this.enemies.size == 0) {
+            this.onEndCb(true);
+            this.onEndCb = () => 0;
+        }
+
         this.terrainTotalTime += dt;
         for(const val of this.actionQueue) {
             const [at, cb] = val;
@@ -212,6 +217,12 @@ class Terrain{
                 );
 
             }else if(sx == tx && sy == ty) {
+                if(this.health > 0) {
+                    ParticleSystem.explodeSpritesAt(
+                        HEART_POS,
+                        sprites[29].withColor([20, 20, 20, 255]),
+                    );
+                }
                 if(this.health >= e.banishDamage) {
                     this.health -= e.banishDamage;
                     const resetLocation = [randChoice(this.spawnLocations)[0] + 0.5, 0.5];
@@ -220,17 +231,15 @@ class Terrain{
                         resetLocation,
                         pos => new ResetUnicornParticle(pos, [], 2),
                     );
-                    ParticleSystem.explodeSpritesAt(
-                        HEART_POS,
-                        sprites[29].withColor([20, 20, 20, 255]),
-                    );
-                    e.setLocation(resetLocation);
+                    this.screenShake += 2;
                     e.manaOnKillMult = 0;
                     e.banishDamage *= 2;
+                    e.setLocation(resetLocation);
                     AudioSystem.playRespawn();
-                    this.screenShake += 2;
                 }else{
-                    console.log('You lose!');
+                    this.screenShake += 7;
+                    this.onEndCb(false);
+                    this.onEndCb = () => 0;
                 }
             }
         }
@@ -296,12 +305,52 @@ class Terrain{
 
             prevEndTime = Math.ceil(startTime + enemyDelay * numEnemies);
         });
+
+        this.actionQueue.add([prevEndTime + 1, () => this.wavesComplete = true]);
     }
+
+    renderSpecialEffects(dt, ctx) {}
 }
 
-// Used for bg, level select, etc.
-class MockTerrain extends Terrain{
-    recomputeDerivedValues() {
-        // pass
+
+class LevelSelectTerrain extends Terrain{
+    levelIndices = grid2d(this.size, 0);
+    levelIsUnlocked = [];
+
+    constructor(terrainString, levelIndexString, onEndCb, levelIsUnlocked) {
+        super([-1, -1], terrainString, [], onEndCb);
+        levelIndexString.split('').forEach((c, i) => {
+            this.levelIndices[i % this.size][~~(i / this.size)] =
+                c == '.' ? 0 : c.charCodeAt(0) - 96
+        });
+        this.levelIsUnlocked = levelIsUnlocked;
     }
+
+    renderSpecialEffects(dt, ctx) {
+        ctx.font = '8px sans-serif';
+        ctx.fillStyle = '#fff';
+        ctx.textAlign = 'center';
+        forEachGrid2d(this.levelIndices, (i, [x, y]) => {
+            if(!i) return;
+            if(this.levelIsUnlocked[i]) {
+                ctx.fillText(i, x * 15 + 7.5, y * 15 + 10);
+            }else{
+                renderSprite(ctx, x, y, sprites[32].withColor([10, 56, 10, 255]));
+            }
+        });
+    }
+
+    placeTower([x, y]) {
+        // this just gets called on click, so we can use it for
+        // level select.
+        // Return false to make an error noise.
+        const level = this.levelIndices[x][y];
+        if(!level || !this.levelIsUnlocked[level]) return false;
+        this.onEndCb(level);
+        return true;
+    }
+
+    // override the methods we don't want to use
+    recomputeDerivedValues() {}
+    step() {}
 }

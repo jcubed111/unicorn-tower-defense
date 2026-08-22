@@ -14,6 +14,7 @@ JS_FILES := \
 	src/terrain.js \
 	src/render.js \
 	src/htmlRender.js \
+	src/levelData.js \
 	src/main.js
 
 IMAGES := $(wildcard src/*.png)

@@ -148,6 +148,9 @@ function render(dt) {
     // Draw heart
     renderSprite(ctx, ...HEART_POS, sprites[29]);
 
+    // Terrain specific effects
+    GameState.terrain.renderSpecialEffects(dt, ctx);
+
     // Draw particles
     ParticleSystem.render(ctx);
     ParticleSystem.step(dt);

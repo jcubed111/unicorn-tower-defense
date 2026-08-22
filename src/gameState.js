@@ -1,6 +1,7 @@
 const GameState = {
     terrain: null,
     mainCanvas: null,
+    cloudBlocker: null,
     hoveringPos: null,
     hoveringTower: null,
     // forces hovering el to resolve to this value; used to allow hovering ui elements
@@ -21,7 +22,7 @@ const TOWER_INCREMENT_COSTS = [,  5,  5,  5];
 const MANA_PASSIVE_RATE = 1;
 
 const LS_PREFIX = 'com.jstimac.26.';
-const getLocalStorageItem = key => JSON.parse(window.localStorage[LS_PREFIX + key] ?? 'null');
+const getLocalStorageItem = (key, def=null) => JSON.parse(window.localStorage[LS_PREFIX + key] ?? 'null') ?? def;
 const setLocalStorageItem = (key, value) => window.localStorage[LS_PREFIX + key] = JSON.stringify(value);
 
 const withHoverInfo = (el, hoverInfoEl) => {

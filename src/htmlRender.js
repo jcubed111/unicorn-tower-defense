@@ -88,6 +88,7 @@ const initHtml = () => {
                 GameState.topLeftDisplay = div(),
                 GameState.startNextWaveButton = div('', 'Start Wave Now'),
             ),
+            GameState.cloudBlocker = div('C--cloudBlocker'),
         )
     );
     GameState.rerenderRunebook();
@@ -99,11 +100,9 @@ const initHtml = () => {
     };
 
     GameState.mainCanvas.addEventListener('click', e => {
-        if(GameState.drawType) {
-            const [x, y] = GameState.terrain.eventToPos(e);
-            GameState.terrain.placeTower([~~x, ~~y], GameState.drawType)
-                || AudioSystem.playInvalidAction();
-        }
+        const [x, y] = GameState.terrain.eventToPos(e);
+        GameState.terrain.placeTower([~~x, ~~y], GameState.drawType)
+            || AudioSystem.playInvalidAction();
         recomputeHovering(e);
     });
     GameState.mainCanvas.addEventListener('mousemove', e => {

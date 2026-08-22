@@ -30,6 +30,18 @@ canvas{
     display: block;
 }
 
+.C--cloudBlocker{
+    position: absolute;
+    inset: 0;
+    background: #ccc;
+    opacity: 1;
+    transition: opacity 0.5s;
+}
+    .C--hide{
+        opacity: 0;
+        pointer-events: none;
+    }
+
 .C--topLeft{
     position: absolute;
     top: 3rem;
