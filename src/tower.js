@@ -130,8 +130,13 @@ class Tower{
                     (1 / this.chargeTime).toFixed(2),
                     styled('span', 'C--secondary', '/sec'),
                 ],
+                this.extraDescription?.pop && [  // using .pop as proxy for "isArray"
+                    wrapEl(styled('span', '', this.extraDescription[0]), el => el.style.color = colorAsString(this.getColor())),
+                    wrapEl(styled('span', '', this.extraDescription[1]), el => el.style.color = colorAsString(this.getColor())),
+                ],
             ),
-            div('', this.extraDescription),
+            this.extraDescription && !this.extraDescription.pop &&  // using .pop as proxy for "isArray"
+                wrapEl(div('', this.extraDescription), el => el.style.color = colorAsString(this.getColor()))
         );
     }
 
@@ -221,7 +226,7 @@ const orderedTowerTypes = [
         slowAmount = 3 / this.level;
         chargeTime = 0.25;
         range = 1 + this.level / 2;
-        extraDescription = `Slow ${~~(100 - this.slowAmount * 100)}%`;
+        extraDescription = [`${~~(100 - this.slowAmount * 100)}%`, 'slowing'];
 
         hit(targetsInRange) {
             targetsInRange.forEach(t => {
@@ -245,7 +250,7 @@ const orderedTowerTypes = [
         chargeTime = 8 / this.level;
         damage = 0;
         armorReduction = 1;
-        extraDescription = `Removes ${this.armorReduction} armor. (Does no damage)`;
+        extraDescription = [this.armorReduction, `armor remove`];
 
         getTargetsInRange() {
             return super.getTargetsInRange().filter(t => t.armor > 0);
@@ -264,7 +269,7 @@ const orderedTowerTypes = [
         fireDamagePerSec = this.level / 3;
         chargeTime = 0.25;
         range = 1.75 + this.level / 4;
-        extraDescription = `Fire ${this.fireDamagePerSec.toFixed(2)} / sec`;
+        extraDescription = [this.fireDamagePerSec.toFixed(2), `fire / sec`];
 
         hit(targetsInRange) {
             targetsInRange.forEach(t => {
@@ -315,7 +320,7 @@ const orderedTowerTypes = [
     withTowerPattern('gr', class extends Tower{
         displayName = 'Lightning';
         chain = this.level - 1;
-        extraDescription = `Chain ${this.chain}`;
+        extraDescription = [this.chain, 'chain'];
         range = 2.5;
         chargeTime = 1;
         damage = 2;
@@ -345,7 +350,7 @@ const orderedTowerTypes = [
         damage = 2 * this.level;
         manaLeech = this.level - 1;
 
-        extraDescription = `+${this.manaLeech} ᚯ /hit`;
+        extraDescription = [`+${this.manaLeech} ᚯ`, `/hit`];
 
         hit(targetsInRange) {
             const target = randChoice(targetsInRange);
@@ -366,7 +371,7 @@ const orderedTowerTypes = [
         /** @type {number} */
         maxCharge = this.level + 1;
 
-        extraDescription = `Capacity ${this.maxCharge}`;
+        extraDescription = [this.maxCharge, 'capacity'];
 
         step(dt) {
             this.charge = Math.min(this.charge + dt, this.chargeTime * this.maxCharge);

@@ -34,6 +34,8 @@ const styled = (tagName = "div", className = "",/* style = {},*/ ...children) =>
     return el;
 };
 
+const wrapEl = (el, cb) => { cb(el); return el};
+
 
 /* random helpers */
 // Performs a probabalistic rounding; so 1.25 -> `1` 75% of the time and `2` 25%.
