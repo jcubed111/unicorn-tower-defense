@@ -194,10 +194,32 @@ class BossEnemy extends Enemy{
     armor = this.level >> 1;
 }
 
-class Bridgeicorn extends Enemy{
-    displayName = 'Bridgeicorn';
+class Rainbowicorn extends Enemy{
+    displayName = 'Rainbowicorn';
     maxHp = ~~(4 * 1.5 ** this.level);
     totalHpModifier = 0.3;  // so we get 2
+
+    *getSprites() {
+        for(const s of super.getSprites()) {
+            // Cycle through the rainbow colors
+            yield s.withColor(lerpColor(WHITE, [
+                [180, 54, 46, 255],
+                [203, 134, 13, 255],
+                [195, 176, 12, 255],
+                [6, 176, 78, 255],
+                [70, 68, 206, 255],
+                [172, 71, 191, 255],
+            ][(~~GameState.terrain.terrainTotalTime) % 6], 0.25));
+            // Writing out the lerp uses (marginally) fewer bytes
+            // than the precomputed versions:
+            // [236, 204, 202, 255],
+            // [242, 224, 194, 255],
+            // [240, 235, 194, 255],
+            // [192, 235, 210, 255],
+            // [208, 208, 242, 255],
+            // [234, 209, 239, 255],
+        }
+    }
 
     getTarget(sx, sy) {
         const w = GameState.terrain.descentMap[sx]?.[sy];
