@@ -85,8 +85,8 @@ const initHtml = () => {
                 GameState.runebook = scrollDiv('C--runeBook'),
             ),
             div('C--topLeft',
-                GameState.topLeftDisplay = div(),
-                GameState.startNextWaveButton = div('', 'Start Wave Now'),
+                GameState.topLeftDisplay = div(),  // Wave status text
+                GameState.startNextWaveButton = div(''),
             ),
             GameState.mainMenu = div('C--fullscreen',
                 styled('h1', '', "Unicorn Tower Defense"),

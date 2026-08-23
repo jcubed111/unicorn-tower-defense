@@ -22,7 +22,11 @@ class Terrain{
     actionQueue = new Set;  // Set<[delayTime, cb]>
     manaPassiveClock = 0;
 
+    upcomingWaves = [];  // Array<[timeTillStart, startWaveFn]>
+    totalWaves = 0;
+
     screenShake = 0;  // px; decays over time in render
+    timeRate = 1;
 
     constructor(goalLocation, terrainString, waves, onEndCb) {
         terrainString.split('').forEach((c, i) => this.isGround[i % this.size][~~(i / this.size)] = c.charCodeAt(0) - 46);
@@ -175,7 +179,14 @@ class Terrain{
     }
 
     step(dt) {
-        if(this.wavesComplete && this.enemies.size == 0) {
+        dt *= this.timeRate;
+
+        if(this.upcomingWaves.length) {
+            this.upcomingWaves[0][0] -= dt;
+            if(this.upcomingWaves[0][0] < 0) {
+                this.upcomingWaves.shift()[1]();
+            }
+        }else if(!this.enemies.size) {
             this.onEndCb(true);
             this.onEndCb = () => 0;
         }
@@ -245,25 +256,24 @@ class Terrain{
         }
     }
 
-    nextWaveTime = -1;
     startNextWaveNow() {
-        if(this.nextWaveTime < 0) return;
-        this.manaPassiveClock += (this.nextWaveTime - this.terrainTotalTime) * MANA_PASSIVE_RATE;
-        this.terrainTotalTime = this.nextWaveTime;
-        GameState.startNextWaveButton.style.display = 'none';
+        if(this.upcomingWaves.length) {
+            this.timeRate ||= 1;  // set time rate to 1 if frozen
+            this.manaPassiveClock += Math.max(0, this.upcomingWaves[0][0]) * MANA_PASSIVE_RATE;
+            this.upcomingWaves[0][0] = 0;
+        }
     }
 
     _setWaves(enemyConstructors) {
+        this.timeRate = 0;  // freeze time till first wave is started
+        this.totalWaves = enemyConstructors.length;
         GameState.startNextWaveButton.addEventListener('click', () => this.startNextWaveNow());
-        var prevEndTime = 0;
 
-        const expandedWaves = enemyConstructors.map((WaveCls, waveIndex) => {
+        this.upcomingWaves = enemyConstructors.map((WaveCls, waveIndex) => {
             // Derive the wave metrics
             const targetTotalHp = 15 * 1.5 ** waveIndex;
             const sampleEnemy = new WaveCls(waveIndex, [0, 0]);
 
-            // wave start
-            const startTime = 10 + 20 * waveIndex;
             // delay per monster
             const enemyDelay = sampleEnemy.delayPerMonster;
             // number of enemies
@@ -271,45 +281,37 @@ class Terrain{
 
             console.log('wave', waveIndex + 1, 'num enemies', numEnemies, 'hp', sampleEnemy.maxHp);
 
-            // Pre-wave countdown
-            range(startTime - prevEndTime).forEach(dt => {
-                this.actionQueue.add([startTime - dt, () => {
-                    GameState.topLeftDisplay.innerText =
-                        (waveIndex ? `Wave ${waveIndex}/${enemyConstructors.length}\n` : '')
-                        + `Next wave in ${dt}...`;
-
-                    GameState.startNextWaveButton.style.display = 'block';
-                    this.nextWaveTime = startTime;
-                }]);
-            });
-
-            // Wave start
-            this.actionQueue.add([startTime, () => {
-                GameState.topLeftDisplay.innerText = `Wave ${waveIndex + 1}/${enemyConstructors.length}`;
-
-                GameState.startNextWaveButton.style.display = 'none';
-                this.nextWaveTime = -1;
-            }]);
-
-            // Enemies
-            range(numEnemies).forEach(i => {
-                this.actionQueue.add([
-                    startTime + i * enemyDelay,
-                    () => {
-                        const e = new WaveCls(waveIndex, randChoice(this.spawnLocations));
-                        e.hp = e.maxHp;
-                        this.enemies.add(e);
-                    },
-                ]);
-            });
-
-            prevEndTime = Math.ceil(startTime + enemyDelay * numEnemies);
+            return [waveIndex == 0 ? 0 : 20, () => {
+                range(numEnemies).forEach(i => {
+                    this.actionQueue.add([
+                        this.terrainTotalTime + i * enemyDelay,
+                        () => {
+                            const e = new WaveCls(waveIndex, randChoice(this.spawnLocations));
+                            e.hp = e.maxHp;
+                            this.enemies.add(e);
+                        },
+                    ]);
+                });
+            }];
         });
-
-        this.actionQueue.add([prevEndTime + 1, () => this.wavesComplete = true]);
     }
 
     renderSpecialEffects(dt, ctx) {
+        // Draw wave indicator
+        const i = this.totalWaves - this.upcomingWaves.length;
+        if(i) {
+            GameState.topLeftDisplay.innerText = `Wave ${i} / ${this.totalWaves}`;
+        }else{
+            GameState.topLeftDisplay.innerText = '';
+        }
+
+        const timeToNext = this.upcomingWaves[0]?.[0] ?? -1;
+        GameState.startNextWaveButton.innerText =
+            timeToNext >= 0
+                ? `Start Next Wave (${Math.ceil(timeToNext)})`
+                : ``;
+
+
         // Draw mana pool
         const rate = this.mana / (this.mana + 200);
         const colorRate = 255 * this.mana / (this.mana + 50);

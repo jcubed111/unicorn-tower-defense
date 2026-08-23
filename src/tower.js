@@ -119,8 +119,8 @@ class Tower{
             div('C--infoTitle', `${this.displayName}`),
             div('C--secondary', `Level ${this.level}`),
             div('C--infoGrid',
-                this.damage > 0 && [
-                    this.damage,
+                this.damage > -1 && [
+                    `${this.damage}`,
                     styled('span', 'C--secondary', 'damage'),
                 ],
                 this.range > 0 && [
@@ -266,7 +266,7 @@ const orderedTowerTypes = [
 
     withTowerPattern('rgr', class extends Tower{
         displayName = 'Fire';
-        damage = 0;
+        damage = -1;  // so we don't show at all
         fireDamagePerSec = this.level / 3;
         chargeTime = 0.25;
         range = 1.75 + this.level / 4;

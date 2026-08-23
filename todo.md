@@ -1,5 +1,7 @@
 TODO:
 - style wave info & start now button
+- speed up, pause?
+
 - sound / screenshake on enemy death
 - wave toast & sound effect
 
@@ -32,7 +34,6 @@ TODO:
     - zombie? -> turns unicorns to allies on death
     - a better big hitter tower besides green & sniper
 
-- speed up, pause?
 
 - animate sea waves
 - add wave effects to ocean
