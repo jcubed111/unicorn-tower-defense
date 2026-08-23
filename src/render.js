@@ -105,6 +105,7 @@ function render(dt) {
     const [gx, gy] = terrain.goalLocation;
     if(terrain.health >= 0) {
         renderSprite(ctx, gx, gy, sprites[30]);
+        // needs to match explode location in Terrain.step
         renderSprite(ctx, gx, gy - 0.333, sprites[31]);
     }else{
         renderSprite(ctx, gx, gy, sprites[30].withColor([0, 0, 0, 127]));

@@ -2,14 +2,12 @@ TODO:
 - speed up, pause?
 
 - wave start sound effect
-- clicking start wave should spawn mana particles
-- explode wizard sprite on death
-- clear particles on cloud
 - add level hover info to level select screen
     - use a sprite renderer to render the terrain as a minimap to show? Extract the logic from the main render.
-- add movement to intro screen? Maybe the rainbow path sparkle will do this.
+- add more movement to intro screen? Unicorns running around?
 - need a way to restart level during level. Menu/esc. annoying to shoot for perfect without that feature.
 
+- bg music
 
 - spells
     - click to focus enemy
@@ -38,7 +36,6 @@ TODO:
     - a better big hitter tower besides green & sniper
 
 
-- animate sea waves
 - add wave effects to ocean
 - keyboard controls for tower building
 - rainbow the title?

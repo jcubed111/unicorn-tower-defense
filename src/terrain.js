@@ -251,8 +251,13 @@ class Terrain{
                     e.setLocation(resetLocation);
                     AudioSystem.playRespawn();
                 }else{
-                    if(this.health > 0) {
+                    if(this.health >= 0) {
                         this.screenShake += 4;
+                        const [gx, gy] = this.goalLocation;
+                        ParticleSystem.explodeSpritesAt(
+                            [gx, gy - 0.333],  // needs to match wizard pos in render
+                            sprites[31],
+                        );
                     }
                     this.health = -1;
                     this.onEndCb(false);
