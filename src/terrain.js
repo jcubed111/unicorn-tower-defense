@@ -226,6 +226,8 @@ class Terrain{
                     e.pos.map(v => v - 0.5),
                     ...e.getSprites(),
                 );
+                AudioSystem.playEnemyDeath();
+                this.screenShake += 0.2;
 
             }else if(sx == tx && sy == ty) {
                 if(this.health > 0) {

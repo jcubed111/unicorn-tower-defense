@@ -1,10 +1,12 @@
 TODO:
 - speed up, pause?
 
-- sound / screenshake on enemy death
 - wave toast & sound effect
 - level number toast
 - explode wizard sprite on death
+- add level hover info to level select screen
+    - use a sprite renderer to render the terrain as a minimap to show? Extract the logic from the main render.
+- add movement to intro screen? Maybe the rainbow path sparkle will do this.
 
 - game flow:
     - highlight the start wave button before the start of the level. Or maybe give it a 30s timeout?

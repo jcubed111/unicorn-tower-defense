@@ -8,6 +8,7 @@ const PLUCK_BAD_SLOW = [0.002, 0.75, 0.05, 0.3, 'sawtooth'];
 const PING =  [0.007, 0.06, 0.42, 0.05];
 
 const ERROR = [.01, .01, 1, .1, 'sawtooth'];
+const ENEMY_DEATH = [.002, .07, .05, .3];
 
 
 const AudioSystem = new class {
@@ -46,6 +47,16 @@ const AudioSystem = new class {
             33,
             0.05,
             ERROR,
+            0.4,
+        );
+    }
+
+    playEnemyDeath() {
+        this.scheduleNote(
+            this.ctx.currentTime + randFloat(0, 0.1),
+            randFloat(52, 54),
+            0.05,
+            ENEMY_DEATH,
             0.4,
         );
     }
