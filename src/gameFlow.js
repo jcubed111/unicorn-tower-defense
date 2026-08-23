@@ -42,6 +42,14 @@ const showLevelEndMenu = (levelNum, isSuccess, isPerfect) => {
     const retryButton = div('C--buttonLike C--onBlack', 'Retry');
     const continueButton = div('C--buttonLike C--onBlack', 'Continue');
 
+    const img =
+        isPerfect
+            ? makeSpriteCanvas(ctx => {
+                renderSprite(ctx, 0, 0, sprites[21]);
+                renderSprite(ctx, 0, 0.5, sprites[31]);
+            }, 1, 1.5)
+            : sprites[isSuccess ? 31 : 27];
+
     return showEventText(
         runeBorderDiv([16, 16, 16, 255], 200),
         res => {
@@ -49,8 +57,8 @@ const showLevelEndMenu = (levelNum, isSuccess, isPerfect) => {
             continueButton.addEventListener('click', e => res(false));
         }
     )(
-        sprites[isSuccess ? 31 : 27],
-        isSuccess ? 'Victory!' : 'Defeat!',
+        img,
+        isSuccess ? isPerfect ? 'Perfect!' : 'Victory!' : 'Defeat!',
         styled('br'),
         !isSuccess && retryButton,
         continueButton,

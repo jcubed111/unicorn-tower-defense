@@ -2,7 +2,6 @@ const makeLevelSelectTerrain = cb => new LevelSelectTerrain(
     '........../////..733/333/..///...0......0...2....0.../..41115....0...0.........../36.0...........0.2./36.........0./3;.2.73/6....0...../3;..2....0.....0....2....4/33/3;./33/36..........0..0.2..........0..0./.../33/333/33/...................................',
     '....................p...q...r........................m...........................o...................l.............n.......h...........i..........................k..j...e..f.................................g...a..b...c..d...................................',
     cb,
-    getLevelIsUnlockedMap(),
 );
 
 const levelDeps = [
@@ -28,14 +27,17 @@ const levelDeps = [
 ];
 
 const getLevelIsUnlockedMap = () => {
-    const passedLevels = new Set(getLocalStorageItem('p') ?? [0]);
+    const passedLevels = getPassedSet();
     return levelDeps.map(deps => !deps || deps.some(d => passedLevels.has(d)));
+};
+const getPassedSet = () => {
+    return new Set(getLocalStorageItem('p') ?? [0]);
 };
 const getLevelPerfectedSet = () => {
     return new Set(getLocalStorageItem('q') ?? [0]);
 };
 const setLevelPassed = (n, isPerfect) => {
-    const passedLevels = new Set(getLocalStorageItem('p') ?? [0]);
+    const passedLevels = getPassedSet();
     setLocalStorageItem('p', [...passedLevels, n]);
     if(isPerfect) {
         const perfectedLevels = getLevelPerfectedSet();

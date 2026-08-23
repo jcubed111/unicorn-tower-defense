@@ -357,24 +357,37 @@ class MockTerrain extends Terrain{
 
 class LevelSelectTerrain extends MockTerrain{
     levelIndices = grid2d(this.size, 0);
-    levelIsUnlocked = [];
+    levelIsUnlocked = getLevelIsUnlockedMap();
+    passedLevelSet = getPassedSet();
+    perfectedLevelSet = getLevelPerfectedSet();
 
-    constructor(terrainString, levelIndexString, onEndCb, levelIsUnlocked) {
+    constructor(
+        terrainString,
+        levelIndexString,
+        onEndCb,
+    ) {
         super(terrainString, onEndCb);
         levelIndexString.split('').forEach((c, i) => {
             this.levelIndices[i % this.size][~~(i / this.size)] =
                 c == '.' ? 0 : c.charCodeAt(0) - 96
         });
-        this.levelIsUnlocked = levelIsUnlocked;
     }
 
     renderSpecialEffects(dt, ctx) {
         ctx.font = '8px sans-serif';
-        ctx.fillStyle = '#fff';
         ctx.textAlign = 'center';
         forEachGrid2d(this.levelIndices, (i, [x, y]) => {
             if(!i) return;
             if(this.levelIsUnlocked[i]) {
+                if(this.perfectedLevelSet.has(i)) {
+                    renderSprite(ctx, x, y - 0.1, sprites[21]);
+                    ctx.fillStyle = '#fff';
+                }else if(this.passedLevelSet.has(i)) {
+                    renderSprite(ctx, x, y - 0.1, sprites[36]);
+                    ctx.fillStyle = '#06b04e';
+                }else{
+                    ctx.fillStyle = '#fff';
+                }
                 ctx.fillText(i, x * 15 + 7.5, y * 15 + 10);
             }else{
                 renderSprite(ctx, x, y, sprites[32].withColor([10, 56, 10, 255]));

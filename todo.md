@@ -9,9 +9,8 @@ TODO:
 
 - game flow:
     - highlight the start wave button before the start of the level. Or maybe give it a 30s timeout?
-    - win/loss screen
-        - special win screen if perfect (no enemies reach tower)
-        - maybe mark perfected levels on the level select?
+    - special win screen if perfect (no enemies reach tower)
+    - mark perfected levels on the level select?
 
 - spells
     - click to focus enemy
