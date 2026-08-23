@@ -51,4 +51,4 @@ if '[CSS]' not in js:
     print("ERROR: no [CSS] placeholder in the JS to inject the stylesheet into", file=sys.stderr)
     sys.exit(1)
 
-sys.stdout.write(replace_classes(js.replace('[CSS]', css)))
+sys.stdout.write(replace_classes(js.replace('[CSS]', css.replace('"', '\\"'))))

@@ -43,7 +43,7 @@ function withTowerPattern(stringRepr, Cls) {
     // Grid<null | [towerType, 1]>
     const asGrid = transposeGrid2d(
         stringRepr.split('|').map(row => row.split('').map(
-            t => ({'r': [1, 1], 'g': [2, 1], 'b': [3, 1]})[t] ?? null,
+            t => (t = ' rgb'.indexOf(t)) > 0 ? [t, 1] : null,
         )),
     );
     const allForms = allFormsGrid2d(asGrid)
