@@ -30,16 +30,20 @@ canvas{
     display: block;
 }
 
+@property --s {
+    syntax: "<number>";
+    inherits: true;
+    initial-value: 0;
+}
 .C--cloudBlocker{
     position: absolute;
     inset: 0;
-    background: #ccc;
-    opacity: 1;
-    transition: opacity 0.5s;
+    transition: --s 0.5s linear;
+    --s: 1;
 }
     .C--hide{
-        opacity: 0;
         pointer-events: none;
+        --s: 0;
     }
 
 .C--topLeft{

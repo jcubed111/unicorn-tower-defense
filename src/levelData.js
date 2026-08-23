@@ -38,6 +38,13 @@ const setLevelPassed = n => {
 
 const setCloudTransition = async show => {
     if(GameState.cloudBlocker.classList.contains('C--hide') != show) return;
+    const cloudOriginPoints = [
+        [18, 233], [105, 207], [186, 226], [265, 208], [200, 145], [283, 133], [122, 140], [34, 141], [7, 103], [75, 82], [157, 86], [234, 71], [283, 47], [231, 23], [141, 19], [77, 21], [12, 25]
+    ];
+    GameState.cloudBlocker.style.background = cloudOriginPoints
+        .map(([px, py], i) =>
+            `radial-gradient(circle calc(18rem * log(30 * (var(--s) - ${i / cloudOriginPoints.length / 2}) + 1)) at ${px}rem ${py}rem, #aaa 100%, #0000 100%)`
+        ).join(',');
     GameState.cloudBlocker.classList.toggle('C--hide', !show);
     await new Promise(res => setTimeout(res, 500));
 };

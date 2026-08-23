@@ -31,7 +31,7 @@ TODO:
 - tower types
     - fear?
     - zombie? -> turns unicorns to allies on death
-    - a better big hitter tower besides sniper
+    - a better big hitter tower besides green & sniper
 
 - speed up, pause?
 
