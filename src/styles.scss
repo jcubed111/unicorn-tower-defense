@@ -71,6 +71,26 @@ h1{
         --s: 0;
     }
 
+    .C--eventTextScroll{
+        width: 84rem;
+        font-size: 6rem;
+        transition: height 0.8s ease-in-out, opacity 0.3s;
+        height: 0;
+        opacity: 0;
+        overflow: hidden;
+    }
+    .C--innerEventTextScroll{
+        padding: 10rem;
+        white-space: pre-wrap;
+        text-wrap: balance;
+        color: #ccc;
+        text-align: center;
+        line-height: 1.5;
+    }
+    b{
+        color: #fff;
+    }
+
 .C--topLeft{
     @extend %flexCol;
     position: absolute;

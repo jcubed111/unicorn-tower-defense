@@ -42,11 +42,82 @@ const setCloudTransition = async show => {
     await new Promise(res => setTimeout(res, 500));
 };
 
+const time = n => new Promise(res => setTimeout(res, n));
+const showEventText = async (sprite, ...text) => {
+    var inner;
+    const d = scrollDiv('C--eventTextScroll',
+        inner = div('C--innerEventTextScroll',
+            wrapEl(sprite.asImage ?? sprite, el => {
+                el.style.width = '40rem';
+                el.style.display = 'inline-block';
+            }),
+            div('', ' '),
+            ...text,
+        ),
+    );
+    GameState.cloudBlocker.replaceChildren(d);
+    await time(100);
+    d.style.height = inner.offsetHeight + 'px';
+    d.style.opacity = '1';
+
+    await time(300);
+    await new Promise(res => window.addEventListener('click', res, {once: true}));
+
+    d.style.opacity = '0';
+    await time(300);
+
+    GameState.cloudBlocker.replaceChildren();
+};
+
 
 const levelData = [
     {},
     // Level 1
     {
+        preLevelStoryContent: async () => {
+            await showEventText(
+                sprites[31],
+                `An `,
+                styled('b', '', `EVIL WIZARD`),
+                ` has descended upon the Unicorn Archipelago!\n\n(That's you)`,
+            );
+            await showEventText(
+                sprites[22],
+                `You've stolen the\n`,
+                styled('b', '', `GOLDEN HORN,`),
+                `\nbut the unicorns want it back.\n\n(Obviously)`,
+            );
+            await showEventText(
+                sprites[18].withRot(2),
+                // // This is +0.5% over just reusing an existing sprite
+                // makeSpriteCanvas(ctx => {
+                //     renderSprite(ctx, 0, 0, sprites[15]);
+                //     renderSprite(ctx, 1, 0, sprites[15]);
+                //     renderSprite(ctx, 2, 0, sprites[3]);
+                //     renderSprite(ctx, 2, 0, sprites[18].withRot(2));
+                //     renderSprite(ctx, 3, 0, sprites[3]);
+
+                //     renderSprite(ctx, 0, 1, sprites[15]);
+                //     renderSprite(ctx, 1, 1, sprites[3]);
+                //     renderSprite(ctx, 2, 1, sprites[2]);
+                //     renderSprite(ctx, 3, 1, sprites[7]);
+
+                //     renderSprite(ctx, 0, 2, sprites[15]);
+                //     renderSprite(ctx, 1, 2, sprites[3]);
+                //     renderSprite(ctx, 1, 2, sprites[30]);
+                //     renderSprite(ctx, 1, 2, sprites[27]);
+                //     renderSprite(ctx, 2, 2, sprites[3]);
+                //     renderSprite(ctx, 3, 2, sprites[15]);
+
+                //     renderSprite(ctx, 0, 3, sprites[15]);
+                //     renderSprite(ctx, 1, 3, sprites[7]);
+                //     renderSprite(ctx, 2, 3, sprites[7]);
+                //     renderSprite(ctx, 3, 3, sprites[15]);
+                // }, 4, 4),
+                `Defeat the attacking unicorns and escape with your\n`,
+                styled('b', '', `RIGHTEOUSLY STOLEN BOOTY`),
+            );
+        },
         goalLocation: [2, 12],
         terrainString: '...//.....//.......///...///......./////////........////////..........//////...........////............////.//.........////.//..........///...........73/////.........0..//////.....///.../.../...///////...///.....///./////...................................',
         waves: [
@@ -92,8 +163,10 @@ const levelData = [
 
 
 const runBattle = async n => {
+    await levelData[n].preLevelStoryContent?.();
+
     setCloudTransition(false);
-    // TODO: level-specific intro text
+
     const pass = await new Promise(resolve => {
         GameState.terrain = new Terrain(
             levelData[n].goalLocation,
@@ -102,6 +175,7 @@ const runBattle = async n => {
             resolve,
         );
     });
+
     if(pass) {
         console.log('Passed!')
         setLevelPassed(n);
@@ -139,11 +213,11 @@ const runGame = async () => {
     GameState.mainMenu.remove();
     GameState.sidebarEl.classList.toggle('C--sidebarHide', false);
 
-    // // On load, if you haven't passed level 1, skip level select
-    // // and go to the first level
-    // if(!getLevelIsUnlockedMap[2]) {
-    //     await runBattle(1);
-    // }
+    // On load, if you haven't passed level 1, skip level select
+    // and go to the first level
+    if(!getLevelIsUnlockedMap()[2]) {
+        await runBattle(1);
+    }
 
     while(true) {
         const l = await runLevelSelect();

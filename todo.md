@@ -1,16 +1,14 @@
 TODO:
-- style wave info & start now button
 - speed up, pause?
 
 - sound / screenshake on enemy death
 - wave toast & sound effect
 
 - game flow:
-    - intro text
+    - highlight the start wave button before the start of the level. Or maybe give it a 30s timeout?
     - win/loss screen
         - special win screen if perfect (no enemies reach tower)
         - maybe mark perfected levels on the level select?
-    - delay first wave till user clicks
 
 - spells
     - click to focus enemy
@@ -39,6 +37,8 @@ TODO:
 - add wave effects to ocean
 - keyboard controls for tower building
 - rainbow the title?
+
+NOTE: swapping scroll back for rune back would save 0.8%
 
 
 ## Feature Ideas

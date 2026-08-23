@@ -1,7 +1,3 @@
-// const br = () => {
-//     return plainElement('br');
-// }
-
 // const plainElement = (tagName, ...children) => {
 //     return styled(tagName, '', {}, ...children);
 // }
