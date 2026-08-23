@@ -86,8 +86,8 @@ class Terrain{
                     CandidateTower.sourcePattern.allForms.forEach(sourcePatternForm => {
 
                         // Do the whole test/gen op as one map
-                        var fits = true;
-                        var prevTower;  // outside closure so we can use it for charge retention
+                        let fits = true;
+                        let prevTower;  // outside closure so we can use it for charge retention
                         const usedPrevTowerCounts = new Map();  // Map[Tower, usedCells: number]
                         // towerCells: Grid2d<[type, level, x, y]>
                         // typed as such so it fits nicely into `towerGridToElement`
@@ -291,6 +291,10 @@ class Terrain{
             console.log('wave', waveIndex + 1, 'num enemies', numEnemies, 'hp', sampleEnemy.maxHp);
 
             return [waveIndex == 0 ? 0 : 20, () => {
+                GameState.toastWaveInfo(
+                    `Wave ${waveIndex + 1}`,
+                    `${sampleEnemy.displayName} × ${numEnemies}`,
+                );
                 range(numEnemies).forEach(i => {
                     this.actionQueue.add([
                         this.terrainTotalTime + i * enemyDelay,

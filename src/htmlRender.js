@@ -88,7 +88,8 @@ const initHtml = () => {
 
                 GameState.runebook = scrollDiv('C--runeBook'),
             ),
-            div('C--topLeft',
+            GameState.waveInfoToast = div('C--waveInfoToast C--fullscreen C--waveInfoToastOut'),
+            div('C--topLeft', // NOTE: the css depends on this being after sidebar
                 GameState.startNextWaveButton = div('C--buttonLike'),
                 GameState.topLeftDisplay = div(),  // Wave status text
             ),

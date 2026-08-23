@@ -69,6 +69,17 @@ const showEventText = async (sprite, ...text) => {
     GameState.cloudBlocker.replaceChildren();
 };
 
+let waveToastStacks = 0;  // ensures an earlier toast won't remove the new toast
+GameState.toastWaveInfo = async (title, ...subtext) => {
+    GameState.waveInfoToast.replaceChildren(
+        div('C--larger', title),
+        ...subtext.map(s => div('C--secondary', s)),
+    );
+    GameState.waveInfoToast.classList.toggle('C--waveInfoToastOut', !++waveToastStacks);
+    await time(1500);
+    GameState.waveInfoToast.classList.toggle('C--waveInfoToastOut', !--waveToastStacks);
+}
+
 
 const levelData = [
     {},
@@ -166,6 +177,11 @@ const runBattle = async n => {
     await levelData[n].preLevelStoryContent?.();
 
     setCloudTransition(false);
+
+    (async () => {
+        await time(500);
+        GameState.toastWaveInfo(`Level ${n}`);
+    })();
 
     const pass = await new Promise(resolve => {
         GameState.terrain = new Terrain(

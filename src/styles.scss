@@ -50,6 +50,7 @@ h1{
 }
     div.C--buttonLike{
         padding: 3rem 4rem;
+        &:empty{ display: none; }
     }
 
 @property --s {
@@ -58,7 +59,7 @@ h1{
     initial-value: 0;
 }
 .C--fullscreen{
-    // shared by cloudBlocker and mainMenu
+    // shared by cloudBlocker and mainMenu and waveInfoToast
     position: absolute;
     inset: 0;
     transition: --s 0.5s linear;
@@ -91,6 +92,25 @@ h1{
         color: #fff;
     }
 
+.C--waveInfoToast{
+    border: 1rem solid;
+    background: linear-gradient(to right, #1110, #1116, #1116, #1110);
+    inset: 12rem 75rem auto 15rem;
+    pointer-events: none;
+    border-image: linear-gradient(to right, #1110, #111e, #111e, #1110) 1;
+    gap: 2rem;
+    padding: 3rem;
+    opacity: 1;
+    transition: top 0.4s ease-in-out, opacity 0.4s;
+}
+    .C--waveInfoToastOut{
+        top: 0rem;
+        opacity: 0;
+    }
+    .C--larger{
+        font-size: 110%;
+    }
+
 .C--topLeft{
     @extend %flexCol;
     position: absolute;
@@ -107,10 +127,10 @@ h1{
 }
     .C--sidebarHide{
         display: none;
-        &+.C--topLeft{ display: none; }
+        &~.C--topLeft{ display: none; }
     }
     .C--sidebarLevelSelect{
-        .C--statBar, .C--runeBook, .C--spellArea, &+.C--topLeft{
+        .C--statBar, .C--runeBook, .C--spellArea, &~.C--topLeft{
             display: none;
         }
     }

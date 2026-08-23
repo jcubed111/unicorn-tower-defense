@@ -6,6 +6,9 @@ const GameState = {
 
     hoveringPos: null,
     hoveringTower: null,
+    waveInfoToast: null,
+    toastWaveInfo: _ => 0,
+
     // forces hovering el to resolve to this value; used to allow hovering ui elements
     hoveringElOverride: null,
     runeButtons: [],
