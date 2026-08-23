@@ -108,7 +108,7 @@ const initHtml = () => {
         // shorter, but looks less natural. Might need a sin? But then not as short.
         // ...range(24).map(i => [30 + 60 * (i % 5), 240 - i / 12])
         .map(([px, py], i, a) =>
-            `radial-gradient(circle calc(18rem * log(30 * (var(--s) - ${i / a.length / 2}) + 1)) at ${px}rem ${py}rem, #aaa 100%, #0000 100%)`
+            `radial-gradient(circle calc(18rem * log(30 * (var(--s) - ${i / a.length / 2}) + 1)) at ${px}rem ${py}rem, #${(i & 2) ? 'b3b3b3' : 'aaa'} 100%, #0000 100%)`
         )
         .join(',');
 
