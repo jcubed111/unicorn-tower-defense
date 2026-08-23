@@ -101,8 +101,9 @@ function render(dt) {
     forEachGrid2d(terrain.computedTowersByLocation, t => t._particleFirstRender = false);
 
     // Draw wizard
-    renderSprite(ctx, ...terrain.goalLocation, sprites[30]);
-    renderSprite(ctx, ...terrain.goalLocation, sprites[27]);
+    const [gx, gy] = terrain.goalLocation;
+    renderSprite(ctx, gx, gy, sprites[30]);
+    renderSprite(ctx, gx, gy - 0.333, sprites[31]);
 
     // Draw enemies
     for(const e of terrain.enemies) {

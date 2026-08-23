@@ -3,6 +3,7 @@ TODO:
 
 - sound / screenshake on enemy death
 - wave toast & sound effect
+- level number toast
 
 - game flow:
     - highlight the start wave button before the start of the level. Or maybe give it a 30s timeout?
