@@ -1,0 +1,151 @@
+
+const setCloudTransition = async show => {
+    if(GameState.cloudBlocker.classList.contains('C--cloudBlockerHide') != show) return;
+    GameState.cloudBlocker.classList.toggle('C--cloudBlockerHide', !show);
+    await new Promise(res => setTimeout(res, 500));
+};
+
+const time = n => new Promise(res => setTimeout(res, n));
+const showEventText = (
+    divFn = scrollDiv,
+    promiseCb = res => window.addEventListener('click', res, {once: true}),
+    container = GameState.cloudBlocker,
+) => async (sprite, ...text) => {
+    var inner;
+    const d = divFn('C--eventTextScroll',
+        inner = div('C--innerEventTextScroll',
+            wrapEl(sprite.asImage ?? sprite, el => {
+                el.style.width = '40rem';
+                el.style.display = 'inline-block';
+            }),
+            div('', ' '),
+            ...text,
+        ),
+    );
+    container.replaceChildren(d);
+    await time(100);
+    d.style.height = inner.offsetHeight + 'px';
+    d.style.opacity = '1';
+
+    await time(300);
+    const result = await new Promise(promiseCb);
+
+    d.style.opacity = '0';
+    await time(300);
+
+    container.replaceChildren();
+    return result;
+};
+
+const showLevelEndMenu = (levelNum, isSuccess, isPerfect) => {
+    // return bool whether to restart
+    const retryButton = div('C--buttonLike C--onBlack', 'Retry');
+    const continueButton = div('C--buttonLike C--onBlack', 'Continue');
+
+    return showEventText(
+        runeBorderDiv([16, 16, 16, 255], 200),
+        res => {
+            retryButton.addEventListener('click', e => res(true));
+            continueButton.addEventListener('click', e => res(false));
+        }
+    )(
+        sprites[isSuccess ? 31 : 27],
+        isSuccess ? 'Victory!' : 'Defeat!',
+        styled('br'),
+        !isSuccess && retryButton,
+        continueButton,
+    );
+};
+
+let waveToastStacks = 0;  // ensures an earlier toast won't remove the new toast
+GameState.toastWaveInfo = async (title, ...subtext) => {
+    GameState.waveInfoToast.replaceChildren(
+        div('C--larger', title),
+        ...subtext.map(s => div('C--secondary', s)),
+    );
+    GameState.waveInfoToast.classList.toggle('C--waveInfoToastOut', !++waveToastStacks);
+    await time(1500);
+    GameState.waveInfoToast.classList.toggle('C--waveInfoToastOut', !--waveToastStacks);
+}
+
+
+const runBattle = async (n, wasRestarted) => {
+    // returns true to restart
+
+    if(!wasRestarted) {
+        await levelData[n].preLevelStoryContent?.();
+    }
+
+    setCloudTransition(false);
+
+    (async () => {
+        await time(500);
+        GameState.toastWaveInfo(`Level ${n}`);
+    })();
+
+    const pass = await new Promise(resolve => {
+        GameState.terrain = new Terrain(
+            levelData[n].goalLocation,
+            levelData[n].terrainString,
+            levelData[n].waves,
+            resolve,
+        );
+    });
+
+    const isPerfect = GameState.terrain.health == STARTING_HEALTH;
+    if(pass) {
+        setLevelPassed(n, isPerfect);
+    }
+    const result = await showLevelEndMenu(
+        n + 1,
+        pass,
+        isPerfect,
+    );
+    await setCloudTransition(true);
+    return result;
+};
+
+const loopBattle = async n => {
+    let restart = await runBattle(n, false);
+    while(restart) {
+        restart = await runBattle(n, true);
+    }
+}
+
+const runLevelSelect = async () => {
+    setCloudTransition(false);
+    // setup
+    GameState.sidebarEl.classList.toggle('C--sidebarLevelSelect', true);
+    GameState.drawType = 7;
+
+    const l = await new Promise(resolve => {
+        GameState.terrain = makeLevelSelectTerrain(resolve);
+    });
+
+    await setCloudTransition(true);
+    // teardown
+    GameState.sidebarEl.classList.toggle('C--sidebarLevelSelect', false);
+    GameState.drawType = 0;
+
+    return l;
+};
+
+const runGame = async () => {
+    // await new Promise(res => setTimeout(res, 5000));
+    await new Promise(res => window.addEventListener('click', res));
+
+    await setCloudTransition(true);
+    GameState.mainMenu.remove();
+    GameState.sidebarEl.classList.toggle('C--sidebarHide', false);
+
+    // On load, if you haven't passed level 1, skip level select
+    // and go to the first level
+    if(!getLevelIsUnlockedMap()[2]) {
+        await loopBattle(1);
+    }
+
+    while(true) {
+        const l = await runLevelSelect();
+        await loopBattle(l);
+    }
+};

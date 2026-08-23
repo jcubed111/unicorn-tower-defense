@@ -5,8 +5,8 @@ class Terrain{
     goalLocation = [0, 0];
     // raw towers stores primary color + level for each square.
     rawTowers = grid2d(this.size, [0, 0]); // [x][y] -> Tuple<0 | 1 (r) | 2 (g) | 3 (b), level: number = 0>
-    mana = 150;
-    health = 15;  // hits you can take before dying
+    mana = STARTING_MANA;
+    health = STARTING_HEALTH;  // hits you can take before dying
     wavesComplete = false;
 
     computedTowersArr = [];
@@ -250,7 +250,10 @@ class Terrain{
                     e.setLocation(resetLocation);
                     AudioSystem.playRespawn();
                 }else{
-                    this.screenShake += 4;
+                    if(this.health > 0) {
+                        this.screenShake += 4;
+                    }
+                    this.health = -1;
                     this.onEndCb(false);
                     this.onEndCb = () => 0;
                 }

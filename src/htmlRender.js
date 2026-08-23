@@ -13,14 +13,14 @@ const scrollDiv = (...divArgs) => {
 };
 
 const runeBorderBackImageCache = {};
-const runeBorderDiv = (color, ...divArgs) => {
+const runeBorderDiv = (color, bgAlpha=102) => (...divArgs) => {
     runeBorderBackImageCache[colorAsString(color)]
         ??= sprites[26].withColor(color).asImage.toDataURL();
     const el = div(...divArgs);
     el.style.borderStyle = `solid`;
-    el.style.borderWidth = `5rem`;
+    el.style.borderWidth = `4rem`;
     el.style.borderImage = `url(${runeBorderBackImageCache[colorAsString(color)]}) 6 / 6rem / 0 round`;
-    el.style.background = '#20202066 padding-box';
+    el.style.background = `${colorAsString(withAlpha(color, bgAlpha))} padding-box`;
     return el;
 };
 
@@ -77,12 +77,12 @@ const initHtml = () => {
                     div('C--heartNumber', GameState.heartDisplay = styled('span', '', 10)),
                 ),
 
-                runeBorderDiv([32, 32, 32, 255], 'C--spellArea',
+                runeBorderDiv([32, 32, 32, 255])('C--spellArea',
                     div('', "Inscribe Rune"),
                     div('C--runeButtonRow', ...GameState.runeButtons),
                 ),
 
-                runeBorderDiv([32, 32, 32, 255], '',
+                runeBorderDiv([32, 32, 32, 255])('',
                     GameState.hoverInfoEl = div('C--hoverInfoArea'),
                 ),
 

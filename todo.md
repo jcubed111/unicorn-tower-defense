@@ -1,8 +1,7 @@
 TODO:
 - speed up, pause?
 
-- wave toast & sound effect
-- level number toast
+- wave start sound effect
 - explode wizard sprite on death
 - add level hover info to level select screen
     - use a sprite renderer to render the terrain as a minimap to show? Extract the logic from the main render.
@@ -25,6 +24,7 @@ TODO:
     - narwal-i-corn (swims, gives large mana. Dark shadow in water)
     - rhino-i-corn
     - dash-i-corn (dashes every n seconds, starting on first damage, using a rainbow trail effect)
+    - manticorn
 
 - enemy graphics
     - unicorns should sparkle

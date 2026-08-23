@@ -15,6 +15,7 @@ JS_FILES := \
 	src/render.js \
 	src/htmlRender.js \
 	src/levelData.js \
+	src/gameFlow.js \
 	src/main.js
 
 # IMAGES := $(wildcard src/*.png)

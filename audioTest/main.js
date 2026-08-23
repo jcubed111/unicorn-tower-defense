@@ -566,3 +566,160 @@ document.getElementById("horn").addEventListener("click", () => {
   ctx.resume();
   horn(ctx.currentTime + 0.02);
 });
+
+
+// --- Viking horn, simplified --------------------------------------------------
+// Same instrument with nothing but OscillatorNode and GainNode. Everything the
+// full version leans on -- waveshaper, biquads, convolver, delay, noise buffer
+// -- is gone, so the harmonics have to be built one sine at a time.
+//
+// The trick is that this is not a loss of the idea, just of the shortcut. The
+// shaper's whole point was that harmonic content grows with drive; through a
+// tanh, harmonic h comes up roughly as drive^(h-1). So instead of one triangle
+// and a drive envelope, there is one sine per harmonic and each gets that same
+// envelope raised to its own power: at soft drive only the fundamental is
+// audible, at hard drive the stack lights up top-down. That is the brass bloom.
+//
+// What is genuinely lost: the breath chiff (no noise buffer), and the tube's
+// own resonances, now baked in as fixed per-harmonic weights instead of a
+// filter that moves. It reads flatter and drier than the real thing.
+
+// The bell flare's resonance, frozen: what the peaking filter at 900Hz did to a
+// harmonic depends only on its frequency, so it can just be a gain multiplier.
+function bellWeight(f) {
+  const octaves = Math.log2(f / 900);
+  return 1 + 1.2 * Math.exp(-(octaves * octaves) / 0.72); // ~7dB at the peak
+}
+
+// [detune cents, level, frequency multiple, harmonics to build]
+const HORN_VOICES = [[0, 1, 1, 20], [4, 0.75, 1, 14], [-3, 0.32, 2, 8]];
+
+function hornSimple(t, freq = 110, dur = 2.2, vol = 0.4) {
+  const A = 0.13;
+  const REL = 0.45;           // the note itself ending: the player stops blowing
+  const TAIL = 2.2;           // and then the valley keeps it, much quieter
+  const noteEnd = t + dur + REL;
+  const stop = t + dur + TAIL;  // tail is shaped to be gone by here...
+  const cut = stop + 0.3;       // ...and the oscillators run past it, so the
+                                // hard stop lands on true silence, not on -60dB
+
+  // Two paths, one signal. Without a convolver there is no room, but the thing
+  // a room mostly does at the end of a note is keep going after the source
+  // stops -- so the tail is just a quiet parallel copy on a much longer decay.
+  // No predelay and no diffusion, so it is not reverb; it is the note refusing
+  // to end at the same rate it stopped being played, which is the audible half.
+  const DRY = 0.78, WET = 0.22; // split so the two together still peak at vol
+  const out = ctx.createGain();
+  const room = ctx.createGain();
+  const stir = ctx.createGain();
+  out.connect(ctx.destination);
+  room.connect(stir).connect(ctx.destination);
+
+  out.gain.setValueAtTime(0.0001, t);
+  out.gain.exponentialRampToValueAtTime(vol * DRY, t + A);
+  out.gain.exponentialRampToValueAtTime(vol * DRY * 0.72, t + A + 0.4);
+  out.gain.setValueAtTime(vol * DRY * 0.72, t + dur);
+  // setTargetAtTime, not a ramp to 0.0001: a ramp is a straight line in dB, so
+  // it fades at a fixed rate and then simply arrives. This decays like a thing
+  // losing energy -- fast at first, asymptotic after, never actually landing.
+  out.gain.setTargetAtTime(0, t + dur, REL / 3.5);
+
+  room.gain.setValueAtTime(0.0001, t);
+  room.gain.exponentialRampToValueAtTime(vol * WET, t + A + 0.12); // fills in late
+  room.gain.setValueAtTime(vol * WET, t + dur);
+  room.gain.setTargetAtTime(0, t + dur + 0.05, TAIL / 6);
+
+  // A flat fade still sounds like a fader. Two slow, unrelated rates stir the
+  // tail so it breathes; held at zero until the note is over, so the body of
+  // the note is untouched. This has to sit IN the path rather than summing into
+  // room.gain -- added there it would survive the decay as a floor that the
+  // oscillators then chop off, which is the click this whole tail exists to
+  // avoid. In series it is a multiplier, so it dies exactly when the tail does.
+  stir.gain.value = 1;
+  for (const [rate, depth] of [[0.37, 0.18], [0.53, 0.1]]) {
+    const lfo = ctx.createOscillator();
+    const d = ctx.createGain();
+    lfo.frequency.value = rate;
+    d.gain.setValueAtTime(0, t + dur);
+    d.gain.linearRampToValueAtTime(depth, t + dur + 0.5);
+    lfo.connect(d).connect(stir.gain);
+    lfo.start(t);
+    lfo.stop(cut);
+  }
+
+  // Identical to the full version's drive envelope -- but here it is read as a
+  // curve rather than played into a shaper. [time, drive]
+  const DRIVE = [
+    [t, 0.06],
+    [t + A * 1.4, 0.95],
+    [t + A + 0.45, 0.55],
+    [t + dur * 0.75, 0.55],
+    [noteEnd, 0.12],
+    [stop, 0.04], // the tail keeps darkening: by the end it is nearly a sine
+  ];
+
+  // Instability: three unrelated LFO rates, summed in cents, same as before.
+  const wobble = ctx.createGain();
+  for (const [rate, cents, fadeIn] of [[5.3, 6, 0.75], [7.1, 2.5, 1.1], [0.63, 5, 0]]) {
+    const lfo = ctx.createOscillator();
+    const depth = ctx.createGain();
+    lfo.frequency.value = rate;
+    if (fadeIn) {
+      depth.gain.setValueAtTime(0, t);
+      depth.gain.linearRampToValueAtTime(cents, t + fadeIn);
+    } else {
+      depth.gain.value = cents;
+    }
+    lfo.connect(depth).connect(wobble);
+    lfo.start(t);
+    lfo.stop(cut); // runs through the tail, so the tail drifts too
+  }
+  const breath = ctx.createGain();
+  breath.gain.value = vol * 0.004;
+  wobble.connect(breath).connect(out.gain);
+
+  for (const [cents, level, mult, harmonics] of HORN_VOICES) {
+    // Attack pitch wobble is per-voice, so a voice's harmonics glide together.
+    const off = 55 + Math.random() * 35;
+
+    for (let h = 1; h <= harmonics; h++) {
+      const f = freq * mult * h;
+      if (f > 11000) break;
+      const amp = (level * 0.5 * bellWeight(f)) / h; // 1/h: the tube's own slope
+
+      const osc = ctx.createOscillator();
+      osc.type = "sine";
+      osc.frequency.value = f;
+      osc.detune.setValueAtTime(-off, t);
+      osc.detune.linearRampToValueAtTime(cents + 3, t + 0.055);
+      osc.detune.linearRampToValueAtTime(cents, t + 0.11);
+      wobble.connect(osc.detune);
+
+      // THE substitution: this harmonic's level is the drive envelope to the
+      // power of (h-1). h=1 is flat, h=20 is a switch that only opens on the blat.
+      const g = ctx.createGain();
+      const at = (drive) => Math.max(1e-6, amp * drive ** (h - 1));
+      g.gain.setValueAtTime(at(DRIVE[0][1]), t);
+      for (let i = 1; i < DRIVE.length; i++) {
+        const [time, drive] = DRIVE[i];
+        // The 4th point is a hold, not a ramp -- keeps the body steady.
+        if (i === 3) g.gain.setValueAtTime(at(drive), time);
+        else g.gain.exponentialRampToValueAtTime(at(drive), time);
+      }
+
+      osc.connect(g);
+      g.connect(out);
+      g.connect(room);
+      osc.start(t);
+      osc.stop(cut);
+      track(osc, g);
+    }
+  }
+
+  return out;
+}
+
+document.getElementById("hornSimple").addEventListener("click", () => {
+  ctx.resume();
+  hornSimple(ctx.currentTime + 0.02);
+});

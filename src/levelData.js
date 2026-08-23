@@ -31,74 +31,36 @@ const getLevelIsUnlockedMap = () => {
     const passedLevels = new Set(getLocalStorageItem('p') ?? [0]);
     return levelDeps.map(deps => !deps || deps.some(d => passedLevels.has(d)));
 };
-const setLevelPassed = n => {
+const getLevelPerfectedSet = () => {
+    return new Set(getLocalStorageItem('q') ?? [0]);
+};
+const setLevelPassed = (n, isPerfect) => {
     const passedLevels = new Set(getLocalStorageItem('p') ?? [0]);
     setLocalStorageItem('p', [...passedLevels, n]);
+    if(isPerfect) {
+        const perfectedLevels = getLevelPerfectedSet();
+        setLocalStorageItem('q', [...perfectedLevels, n]);
+    }
 };
-
-const setCloudTransition = async show => {
-    if(GameState.cloudBlocker.classList.contains('C--cloudBlockerHide') != show) return;
-    GameState.cloudBlocker.classList.toggle('C--cloudBlockerHide', !show);
-    await new Promise(res => setTimeout(res, 500));
-};
-
-const time = n => new Promise(res => setTimeout(res, n));
-const showEventText = async (sprite, ...text) => {
-    var inner;
-    const d = scrollDiv('C--eventTextScroll',
-        inner = div('C--innerEventTextScroll',
-            wrapEl(sprite.asImage ?? sprite, el => {
-                el.style.width = '40rem';
-                el.style.display = 'inline-block';
-            }),
-            div('', ' '),
-            ...text,
-        ),
-    );
-    GameState.cloudBlocker.replaceChildren(d);
-    await time(100);
-    d.style.height = inner.offsetHeight + 'px';
-    d.style.opacity = '1';
-
-    await time(300);
-    await new Promise(res => window.addEventListener('click', res, {once: true}));
-
-    d.style.opacity = '0';
-    await time(300);
-
-    GameState.cloudBlocker.replaceChildren();
-};
-
-let waveToastStacks = 0;  // ensures an earlier toast won't remove the new toast
-GameState.toastWaveInfo = async (title, ...subtext) => {
-    GameState.waveInfoToast.replaceChildren(
-        div('C--larger', title),
-        ...subtext.map(s => div('C--secondary', s)),
-    );
-    GameState.waveInfoToast.classList.toggle('C--waveInfoToastOut', !++waveToastStacks);
-    await time(1500);
-    GameState.waveInfoToast.classList.toggle('C--waveInfoToastOut', !--waveToastStacks);
-}
-
 
 const levelData = [
     {},
     // Level 1
     {
         preLevelStoryContent: async () => {
-            await showEventText(
+            await showEventText()(
                 sprites[31],
                 `An `,
                 styled('b', '', `EVIL WIZARD`),
                 ` has descended upon the Unicorn Archipelago!\n\n(That's you)`,
             );
-            await showEventText(
+            await showEventText()(
                 sprites[22],
                 `You've stolen the\n`,
                 styled('b', '', `GOLDEN HORN,`),
                 `\nbut the unicorns want it back.\n\n(Obviously)`,
             );
-            await showEventText(
+            await showEventText()(
                 sprites[18].withRot(2),
                 // // This is +0.5% over just reusing an existing sprite
                 // makeSpriteCanvas(ctx => {
@@ -171,72 +133,3 @@ const levelData = [
     //     ],
     // },
 ];
-
-
-const runBattle = async n => {
-    await levelData[n].preLevelStoryContent?.();
-
-    setCloudTransition(false);
-
-    (async () => {
-        await time(500);
-        GameState.toastWaveInfo(`Level ${n}`);
-    })();
-
-    const pass = await new Promise(resolve => {
-        GameState.terrain = new Terrain(
-            levelData[n].goalLocation,
-            levelData[n].terrainString,
-            levelData[n].waves,
-            resolve,
-        );
-    });
-
-    if(pass) {
-        console.log('Passed!')
-        setLevelPassed(n);
-        // TODO: victory/defeat screen
-    }else{
-        console.log('Failed </3')
-        // TODO: victory/defeat screen
-    }
-    await setCloudTransition(true);
-};
-
-const runLevelSelect = async () => {
-    setCloudTransition(false);
-    // setup
-    GameState.sidebarEl.classList.toggle('C--sidebarLevelSelect', true);
-    GameState.drawType = 7;
-
-    const l = await new Promise(resolve => {
-        GameState.terrain = makeLevelSelectTerrain(resolve);
-    });
-
-    await setCloudTransition(true);
-    // teardown
-    GameState.sidebarEl.classList.toggle('C--sidebarLevelSelect', false);
-    GameState.drawType = 0;
-
-    return l;
-};
-
-const runGame = async () => {
-    // await new Promise(res => setTimeout(res, 5000));
-    await new Promise(res => window.addEventListener('click', res));
-
-    await setCloudTransition(true);
-    GameState.mainMenu.remove();
-    GameState.sidebarEl.classList.toggle('C--sidebarHide', false);
-
-    // On load, if you haven't passed level 1, skip level select
-    // and go to the first level
-    if(!getLevelIsUnlockedMap()[2]) {
-        await runBattle(1);
-    }
-
-    while(true) {
-        const l = await runLevelSelect();
-        await runBattle(l);
-    }
-};

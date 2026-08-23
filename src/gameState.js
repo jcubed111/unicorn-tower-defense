@@ -26,6 +26,8 @@ const GameState = {
 const TOWER_BASE_COSTS =      [, 45, 30, 10];
 const TOWER_INCREMENT_COSTS = [,  5,  5,  5];
 const MANA_PASSIVE_RATE = 1;
+const STARTING_MANA = 150;
+const STARTING_HEALTH = 15;
 
 const LS_PREFIX = 'com.jstimac.26.';
 const getLocalStorageItem = (key, def=null) => JSON.parse(window.localStorage[LS_PREFIX + key] ?? 'null') ?? def;

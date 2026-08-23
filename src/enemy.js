@@ -107,10 +107,26 @@ class Enemy extends AbcEnemy{
             .map(([rate, dur]) => [rate, dur - dt])
             .filter(([rate, dur]) => dur > 0);
 
+        // determine speed
+        const speed = this.speed * Math.min(
+            1,
+            ...this.slowEffects.map(s => s[0]),
+        );
+        this.slowEffects = this.slowEffects
+            .map(([a, t]) => [a, t - dt])
+            .filter(s => s[1] > 0);
+
         // Movement
         if(!this.targetLocation) {
             // TODO: support diagonals?
             const [sx, sy] = this.getSquare();
+
+            // we're at the goal; spin in palce lol
+            if(GameState.terrain.descentMap[sx]?.[sy] == 0) {
+                this.facing += dt * speed * 2;
+                return;
+            }
+
             this.targetLocation = minByTiesRand(
                 [
                     [sx + 1, sy],
@@ -122,13 +138,6 @@ class Enemy extends AbcEnemy{
             ).map(v => v + randFloat(0.4, 0.6));
         }
 
-        const speed = this.speed * Math.min(
-            1,
-            ...this.slowEffects.map(s => s[0]),
-        );
-        this.slowEffects = this.slowEffects
-            .map(([a, t]) => [a, t - dt])
-            .filter(s => s[1] > 0);
 
         const [x, y] = this.pos;
         const [tx, ty] = this.targetLocation;
