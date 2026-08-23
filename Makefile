@@ -58,11 +58,10 @@ dev/index.html: build/index.html $(IMAGES_DEV) $(JS_DEV) scripts/combine-dev.py 
 	python3 scripts/combine-dev.py $(JS_DEV) > $@
 
 
-# we save ~20 bytes replacing forEach with map
 build/main-max.js: $(JS_FILES)
 	@echo $@ "<-" $^
 	@cat $^ > build/main-max.js
-# 	@cat $^ | sed 's/[.]forEach[(]/.map(/g' > build/main-max.js
+
 
 build/main-min.js: build/main-max.js
 	@echo $@ "<-" $^
