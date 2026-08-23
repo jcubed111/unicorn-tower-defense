@@ -237,7 +237,7 @@ class Terrain{
                     e.setLocation(resetLocation);
                     AudioSystem.playRespawn();
                 }else{
-                    this.screenShake += 7;
+                    this.screenShake += 4;
                     this.onEndCb(false);
                     this.onEndCb = () => 0;
                 }

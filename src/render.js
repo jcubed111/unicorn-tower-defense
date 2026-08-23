@@ -179,6 +179,31 @@ function render(dt) {
         GameState.hoverInfoEl.replaceChildren();
     }
 
+    // Hovering rune placement indicator
+    if(GameState.hoveringPos && GameState.drawType) {
+        const [fx, fy] = GameState.hoveringPos;
+        const x = ~~fx, y = ~~fy;
+        if(terrain.isGround[x]?.[y] == 1) {
+            const [towerType, towerLevel] = terrain.rawTowers[x][y];
+            const spriteOffsetForLevel = towerType == GameState.drawType ? towerLevel : 0;
+            if(spriteOffsetForLevel <= 2) {
+                const spriteIndex = [
+                    4, 8, 12,  // runes
+                    0, 0, 0,  // spells
+                    23,  // level select
+                ][GameState.drawType - 1] + spriteOffsetForLevel;
+                renderSprite(
+                    ctx,
+                    x,
+                    y,
+                    sprites[spriteIndex]
+                        .withColor([255, 255, 255, 128])
+                        .withRot(GameState.drawType == 7 ? (performance.now() >> 9) & 3 : 0),
+                );
+            }
+        }
+    }
+
     // Update rune draw buttons
     GameState.manaDisplay.innerText = GameState.terrain.mana;
     GameState.heartDisplay.innerText = GameState.terrain.health;

@@ -7,6 +7,7 @@ const GameState = {
     // forces hovering el to resolve to this value; used to allow hovering ui elements
     hoveringElOverride: null,
     runeButtons: [],
+    // 0 = no draw, 1-3 = runes, 4-6 = spells, 7 = level select
     drawType: 0,
     manaDisplay: null,
     heartDisplay: null,

@@ -99,10 +99,12 @@ const runBattle = async n => {
 
 const runLevelSelect = async () => {
     setCloudTransition(false);
+    GameState.drawType = 7;
     const l = await new Promise(resolve => {
         GameState.terrain = makeLevelSelectTerrain(resolve);
     });
     await setCloudTransition(true);
+    GameState.drawType = 0;
     return l;
 };
 
