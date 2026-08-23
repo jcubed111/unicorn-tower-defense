@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+    <style>
+        html{
+            background: #458;
+            font-size: 0.35vh;
+        }
+
+        @property --s {
+          syntax: "<number>";
+          inherits: true;
+          initial-value: 0;
+        }
+
+        body{
+            margin: 0;
+            height: 240rem;
+            width: 300rem;
+            border: 1px solid #f00;
+            --s: 0;
+            transition: --s 0.5s linear;
+        }
+
+        body.on{
+            --s: 1;
+        }
+    </style>
+</head>
+<body>
+<script>
+    const range = end => [...Array(end).keys()];
+
+    const points = range(24).map(i => [30 + 60 * (i % 5), 240 - i / 12]);
+
+    function setBg() {
+        document.body.style.background = [
+            ...points.map(([px, py], i, {length}) =>
+                `radial-gradient(
+                    circle
+                    calc(60rem / 3.4 * log(30 * (var(--s) - ${i / length / 2}) + 1))
+                    at   ${px}rem ${py}rem,
+                    #ccc 100%,
+                    #0000 100%
+                )`
+            ),
+            `radial-gradient(circle 60rem at 0% 10%, #c00 100%, #0000 100%)`,
+        ].join(',');
+        console.log(points);
+    }
+
+    document.body.addEventListener('keydown', e => {
+        if(e.key == 'Backspace') points.pop();
+        setBg();
+    })
+
+    document.body.addEventListener('click', e => {
+        const {width, height} = document.body.getBoundingClientRect();
+        points.push([
+            Math.round(e.clientX / width * 300),
+            Math.round(e.clientY / height * 240),
+        ])
+        setBg();
+    });
+
+    setBg();
+    setInterval(() => document.body.classList.toggle('on'), 1000);
+</script>
+</body>
+</html>
