@@ -27,6 +27,9 @@ TODO:
     - rhino-i-corn
     - dash-i-corn (dashes every n seconds, starting on first damage, using a rainbow trail effect)
     - manticorn
+    - bridgeicorn
+        - only 1 per wave
+        - when doing targetLocation, if there's a square 2 away with weight <2 this weight, form a bridge to it.
 
 - enemy graphics
     - unicorns should sparkle

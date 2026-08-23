@@ -127,15 +127,7 @@ class Enemy extends AbcEnemy{
                 return;
             }
 
-            this.targetLocation = minByTiesRand(
-                [
-                    [sx + 1, sy],
-                    [sx - 1, sy],
-                    [sx, sy - 1],
-                    [sx, sy + 1],
-                ],
-                ([x, y]) => GameState.terrain.descentMap[x]?.[y] ?? 1e8,
-            ).map(v => v + randFloat(0.4, 0.6));
+            this.targetLocation = this.getTarget(sx, sy);;
         }
 
 
@@ -159,6 +151,18 @@ class Enemy extends AbcEnemy{
         if(Math.abs(facingError) > Math.PI) this.facing += Math.PI * 2 * Math.sign(facingError);
         // moveAmount is speed * dt, so we stil lscale correctly with time step
         this.facing += (Math.atan2(dx, -dy) - this.facing) * (1 - 2 ** (-5 * moveAmount));
+    }
+
+    getTarget(sx, sy) {
+        return minByTiesRand(
+            [
+                [sx + 1, sy],
+                [sx - 1, sy],
+                [sx, sy - 1],
+                [sx, sy + 1],
+            ],
+            ([x, y]) => GameState.terrain.descentMap[x]?.[y] ?? 1e8,
+        ).map(v => v + randFloat(0.4, 0.6));
     }
 }
 
@@ -188,4 +192,45 @@ class BossEnemy extends Enemy{
     maxHp = ~~(8 * 1.5 ** this.level);
     totalHpModifier = 0.1;  // ensure there's only 1 boss
     armor = this.level >> 1;
+}
+
+class Bridgeicorn extends Enemy{
+    displayName = 'Bridgeicorn';
+    maxHp = ~~(4 * 1.5 ** this.level);
+    totalHpModifier = 0.3;  // so we get 2
+
+    getTarget(sx, sy) {
+        const w = GameState.terrain.descentMap[sx]?.[sy];
+        let bridgeDir = [
+            [0, 1],
+            [1, 0],
+            [-1, 0],
+            [0, -1],
+        ].find(([dx, dy]) =>
+            GameState.terrain.isGround[sx]?.[sy] == 1
+            && GameState.terrain.isGround[sx + dx]?.[sy + dy] == 0
+            && GameState.terrain.isGround[sx + 2 * dx]?.[sy + 2 * dy] == 1
+            && GameState.terrain.descentMap[sx + 2 * dx]?.[sy + 2 * dy] < w - 1
+        );
+        if(bridgeDir) {
+            const [dx, dy] = bridgeDir;
+            GameState.terrain.isGround[sx + dx][sy + dy] = dx == 0 ? 2 : 3;
+            GameState.terrain.recomputeDerivedValues();
+            const sprite = sprites[33].withRot(dx == 0 ? 0 : 1);
+            sprite
+                .toParticlesSparse(0.25)
+                .forEach(([fy, fx, color]) => {
+                    ParticleSystem.addParticle(new EnergyFadeParticle(
+                        [(sx + dx) * tileSize + fx, (sy + dy) * tileSize + fy],
+                        color,
+                    ))
+                });
+            // ParticleSystem.explodeSpritesAt([sx + dx, sy + dy], sprite);
+
+            // always move to the new bridge
+            return [sx + dx + 0.5, sy + dy + 0.5];
+        }
+
+        return super.getTarget(sx, sy);
+    }
 }
