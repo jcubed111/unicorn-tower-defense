@@ -77,14 +77,11 @@ function render(dt) {
                 renderSprite(ctx, x, y, s);
 
                 // sparkle: each pixel should generate a particle every 20 seconds.
-                s.toParticlesSparse(
-                    maybeComputedTower._particleFirstRender ? 0.5 : dt / 20
-                ).forEach(([fy, fx, color]) => {
-                    ParticleSystem.addParticle(new EnergyFadeParticle(
-                        [x * tileSize + fx, y * tileSize + fy],
-                        color,
-                    ))
-                });
+                ParticleSystem.sparkleSpriteAt(
+                    s,
+                    [x, y],
+                    maybeComputedTower._particleFirstRender ? 0.5 : dt / 20,
+                );
             }
         }
 
@@ -117,13 +114,14 @@ function render(dt) {
         }
 
         for(const s of e.getSprites()) {
-            renderSprite(ctx, e.pos[0] - 0.5, e.pos[1] - 0.5, s, e.facing);
+            const [x, y] = e.pos.map(n => n - 0.5);
+            renderSprite(ctx, x, y, s, e.facing);
             if(e.fireEffects.length) {
-                s.toParticlesSparse(dt / 2).map(([fx, fy]) =>
-                    ParticleSystem.addParticle(new FireParticle([
-                        e.pos[0] * 15 - 7.5 + fx,
-                        e.pos[1] * 15 - 7.5 + fy,
-                    ]))
+                ParticleSystem.sparkleSpriteAt(
+                    s,
+                    [x, y],
+                    dt / 2,
+                    (x, y) => new FireParticle([x, y]),
                 );
             }
         }

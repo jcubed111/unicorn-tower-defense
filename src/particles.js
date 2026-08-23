@@ -139,6 +139,21 @@ const ParticleSystem = new class{
         );
     }
 
+    sparkleSpriteAt(
+        sprite,
+        [x, y],
+        chance,
+        makeParticleCb = (x, y, c) => new EnergyFadeParticle([x, y], c),
+    ) {
+        range(probRound(chance * sprite.asIndexed.length))
+            .map(_ => randChoice(sprite.asIndexed))
+            .forEach(([fy, fx, color]) =>
+                ParticleSystem.addParticle(
+                    makeParticleCb(x * 15 + fx, y * 15 + fy, color)
+                )
+            )
+    }
+
     explodeManaAt([x, y], num) {
         range(num).forEach(_ => {
             this.addParticle(new ManaGainParticle([x * 15, y * 15]));

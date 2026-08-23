@@ -55,11 +55,6 @@ class Sprite{
     withScale(n) {
         return new Sprite(this.data2d, n);
     }
-
-    toParticlesSparse(chance) {  // -> [y, x, color] (note the y-first order)
-        const toSpawn = probRound(chance * this.asIndexed.length);
-        return range(toSpawn).map(_ => randChoice(this.asIndexed));
-    }
 }
 
 function renderSprite(ctx, x, y, sprite, rot=0) {

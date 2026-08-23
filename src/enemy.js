@@ -216,15 +216,12 @@ class Bridgeicorn extends Enemy{
             const [dx, dy] = bridgeDir;
             GameState.terrain.isGround[sx + dx][sy + dy] = dx == 0 ? 2 : 3;
             GameState.terrain.recomputeDerivedValues();
-            const sprite = sprites[33].withRot(dx == 0 ? 0 : 1);
-            sprite
-                .toParticlesSparse(0.25)
-                .forEach(([fy, fx, color]) => {
-                    ParticleSystem.addParticle(new EnergyFadeParticle(
-                        [(sx + dx) * tileSize + fx, (sy + dy) * tileSize + fy],
-                        color,
-                    ))
-                });
+
+            ParticleSystem.sparkleSpriteAt(
+                sprites[33].withRot(dx == 0 ? 0 : 1),
+                [sx + dx, sy + dy],
+                0.25,
+            );
             // ParticleSystem.explodeSpritesAt([sx + dx, sy + dy], sprite);
 
             // always move to the new bridge
