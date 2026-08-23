@@ -102,8 +102,12 @@ function render(dt) {
 
     // Draw wizard
     const [gx, gy] = terrain.goalLocation;
-    renderSprite(ctx, gx, gy, sprites[30]);
-    renderSprite(ctx, gx, gy - 0.333, sprites[31]);
+    if(terrain.health >= 0) {
+        renderSprite(ctx, gx, gy, sprites[30]);
+        renderSprite(ctx, gx, gy - 0.333, sprites[31]);
+    }else{
+        renderSprite(ctx, gx, gy, sprites[30].withColor([0, 0, 0, 127]));
+    }
 
     // Draw enemies
     for(const e of terrain.enemies) {
