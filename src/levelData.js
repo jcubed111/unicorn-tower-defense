@@ -37,8 +37,8 @@ const setLevelPassed = n => {
 };
 
 const setCloudTransition = async show => {
-    if(GameState.cloudBlocker.classList.contains('C--hide') != show) return;
-    GameState.cloudBlocker.classList.toggle('C--hide', !show);
+    if(GameState.cloudBlocker.classList.contains('C--cloudBlockerHide') != show) return;
+    GameState.cloudBlocker.classList.toggle('C--cloudBlockerHide', !show);
     await new Promise(res => setTimeout(res, 500));
 };
 
@@ -99,17 +99,29 @@ const runBattle = async n => {
 
 const runLevelSelect = async () => {
     setCloudTransition(false);
+    // setup
+    GameState.sidebarEl.classList.toggle('C--sidebarLevelSelect', true);
     GameState.drawType = 7;
+
     const l = await new Promise(resolve => {
         GameState.terrain = makeLevelSelectTerrain(resolve);
     });
+
     await setCloudTransition(true);
+    // teardown
+    GameState.sidebarEl.classList.toggle('C--sidebarLevelSelect', false);
     GameState.drawType = 0;
+
     return l;
 };
 
 const runGame = async () => {
+    // await new Promise(res => setTimeout(res, 5000));
+    await new Promise(res => window.addEventListener('click', res));
+
     await setCloudTransition(true);
+    GameState.mainMenu.remove();
+    GameState.sidebarEl.classList.toggle('C--sidebarHide', false);
 
     // // On load, if you haven't passed level 1, skip level select
     // // and go to the first level

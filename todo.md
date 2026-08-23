@@ -8,7 +8,6 @@ TODO:
     - win/loss screen
         - special win screen if perfect (no enemies reach tower)
         - maybe mark perfected levels on the level select?
-    - finish transition animation
     - delay first wave till user clicks
 
 - spells
@@ -37,6 +36,8 @@ TODO:
 
 - animate sea waves
 - add wave effects to ocean
+- keyboard controls for tower building
+- rainbow the title?
 
 
 ## Feature Ideas

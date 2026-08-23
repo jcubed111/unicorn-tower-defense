@@ -67,7 +67,7 @@ const initHtml = () => {
     document.body.append(
         div('C--mainWrapper',
             GameState.mainCanvas = styled('canvas'),
-            GameState.sidebarEl = div('C--sidebar',
+            GameState.sidebarEl = div('C--sidebar C--sidebarHide',
                 div('C--statBar',
                     div('C--manaColor', GameState.manaDisplay = styled('span'), " ᚯ"),
                     div('C--heartNumber', GameState.heartDisplay = styled('span', '', 10)),
@@ -88,7 +88,11 @@ const initHtml = () => {
                 GameState.topLeftDisplay = div(),
                 GameState.startNextWaveButton = div('', 'Start Wave Now'),
             ),
-            GameState.cloudBlocker = div('C--cloudBlocker'),
+            GameState.mainMenu = div('C--fullscreen',
+                styled('h1', '', "Unicorn Tower Defense"),
+                "Click to Begin",
+            ),
+            GameState.cloudBlocker = div('C--fullscreen C--cloudBlockerHide'),
         )
     );
     GameState.rerenderRunebook();

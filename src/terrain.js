@@ -328,12 +328,24 @@ class Terrain{
 }
 
 
-class LevelSelectTerrain extends Terrain{
+class MockTerrain extends Terrain{
+    constructor(terrainString, onEndCb = _ => 0) {
+        super([-1, -1], terrainString, [], onEndCb);
+    }
+    // override the methods we don't want to use
+    renderSpecialEffects() {}
+    recomputeDerivedValues() {}
+    step() {}
+    placeTower() { return true; }
+}
+
+
+class LevelSelectTerrain extends MockTerrain{
     levelIndices = grid2d(this.size, 0);
     levelIsUnlocked = [];
 
     constructor(terrainString, levelIndexString, onEndCb, levelIsUnlocked) {
-        super([-1, -1], terrainString, [], onEndCb);
+        super(terrainString, onEndCb);
         levelIndexString.split('').forEach((c, i) => {
             this.levelIndices[i % this.size][~~(i / this.size)] =
                 c == '.' ? 0 : c.charCodeAt(0) - 96
@@ -364,8 +376,4 @@ class LevelSelectTerrain extends Terrain{
         this.onEndCb(level);
         return true;
     }
-
-    // override the methods we don't want to use
-    recomputeDerivedValues() {}
-    step() {}
 }

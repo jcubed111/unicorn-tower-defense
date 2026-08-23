@@ -1,7 +1,10 @@
-%flexRow {
-    display: flex;
+%flexCenterAll{
     align-items: center;
     justify-content: center;
+}
+%flexRow {
+    @extend %flexCenterAll;
+    display: flex;
 }
 %flexCol {
     display: flex;
@@ -29,19 +32,26 @@ body{
 canvas{
     display: block;
 }
+h1{
+    font-size: 14rem;
+    margin: -29rem 0 40rem;
+}
 
 @property --s {
     syntax: "<number>";
     inherits: true;
     initial-value: 0;
 }
-.C--cloudBlocker{
+.C--fullscreen{
+    // shared by cloudBlocker and mainMenu
     position: absolute;
     inset: 0;
     transition: --s 0.5s linear;
     --s: 1;
+    @extend %flexCol;
+    @extend %flexCenterAll;
 }
-    .C--hide{
+    .C--cloudBlockerHide{ // cloud blocker
         pointer-events: none;
         --s: 0;
     }
@@ -58,6 +68,15 @@ canvas{
     inset: 0 0 0 auto;
     width: 60rem;
 }
+    .C--sidebarHide{
+        display: none;
+    }
+    .C--sidebarLevelSelect{
+        .C--statBar, .C--runeBook, .C--spellArea{
+            display: none;
+        }
+    }
+
     .C--statBar{
         @extend %flexRow;
         justify-content: space-between;

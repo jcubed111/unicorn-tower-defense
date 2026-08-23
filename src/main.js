@@ -16,7 +16,10 @@ window.onload = () => {
     initHtml();
     window.addEventListener('click', () => AudioSystem.playMainMusic(), {once: true});
 
-    GameState.terrain = makeLevelSelectTerrain(() => 0);
+    // Unicorn head island terrain
+    GameState.terrain = new MockTerrain(
+        '......................................./...../....736.//..../...73;/////.../....;////////./.....//////////......////////.//.....////////////..../////////////.../////..///////..////...../////..///........//...//............../...............................',
+    );
 
     animLoop();
     runGame();

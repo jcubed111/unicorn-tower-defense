@@ -2,6 +2,8 @@ const GameState = {
     terrain: null,
     mainCanvas: null,
     cloudBlocker: null,
+    mainMenu: null,
+
     hoveringPos: null,
     hoveringTower: null,
     // forces hovering el to resolve to this value; used to allow hovering ui elements
