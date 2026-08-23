@@ -5,8 +5,6 @@ const scrollBackImage = makeSpriteCanvas(ctx => {
 }, 1, 2).toDataURL();
 const scrollDiv = (...divArgs) => {
     const el = div(...divArgs);
-    // 15 rem = 1 tile
-    // The magic numbers here are the result of dividing [sprite px] / 7.5 to get the rem values.
     el.style.borderStyle = `solid`;
     el.style.borderWidth = `14rem 5rem 14rem 1rem`;
     el.style.borderImage = `url(${scrollBackImage}) 14 5 14 8 / 14rem 5rem 14rem 8rem / 0 round`;
@@ -19,14 +17,20 @@ const runeBorderDiv = (color, ...divArgs) => {
     runeBorderBackImageCache[colorAsString(color)]
         ??= sprites[26].withColor(color).asImage.toDataURL();
     const el = div(...divArgs);
-    // 15 rem = 1 tile
-    // The magic numbers here are the result of dividing [sprite px] / 7.5 to get the rem values.
     el.style.borderStyle = `solid`;
     el.style.borderWidth = `5rem`;
     el.style.borderImage = `url(${runeBorderBackImageCache[colorAsString(color)]}) 6 / 6rem / 0 round`;
     el.style.background = '#20202066 padding-box';
     return el;
 };
+
+
+const buttonBorderBackImageCache = {};
+const getButtonBorderBackForColor = c => buttonBorderBackImageCache[colorAsString(c)]
+    ??= [
+        sprites[23].withColor(c).asImage.toDataURL(),
+        sprites[23].withColor(c).withRot(1).asImage.toDataURL(),
+    ];
 
 GameState.rerenderRunebook = () => {
     GameState.runebook.replaceChildren(
@@ -85,8 +89,8 @@ const initHtml = () => {
                 GameState.runebook = scrollDiv('C--runeBook'),
             ),
             div('C--topLeft',
+                GameState.startNextWaveButton = div('C--buttonLike'),
                 GameState.topLeftDisplay = div(),  // Wave status text
-                GameState.startNextWaveButton = div(''),
             ),
             GameState.mainMenu = div('C--fullscreen',
                 styled('h1', '', "Unicorn Tower Defense"),

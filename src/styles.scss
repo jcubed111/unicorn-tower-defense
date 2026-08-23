@@ -37,6 +37,21 @@ h1{
     margin: -29rem 0 40rem;
 }
 
+.C--buttonLike {
+    cursor: pointer;
+    border: 0.5rem solid #202020;
+
+    &:hover{
+        background: #0004;
+        // url set via js as border-image-source in this animation
+        border-image: 5 / 5rem / 0 round;
+        animation: B 1s steps(1) infinite;
+    }
+}
+    div.C--buttonLike{
+        padding: 3rem 4rem;
+    }
+
 @property --s {
     syntax: "<number>";
     inherits: true;
@@ -57,9 +72,11 @@ h1{
     }
 
 .C--topLeft{
+    @extend %flexCol;
     position: absolute;
     top: 3rem;
     left: 3rem;
+    gap: 2rem;
 }
 
 .C--sidebar{
@@ -70,9 +87,10 @@ h1{
 }
     .C--sidebarHide{
         display: none;
+        &+.C--topLeft{ display: none; }
     }
     .C--sidebarLevelSelect{
-        .C--statBar, .C--runeBook, .C--spellArea{
+        .C--statBar, .C--runeBook, .C--spellArea, &+.C--topLeft{
             display: none;
         }
     }
@@ -124,15 +142,11 @@ h1{
         padding: 1rem 3rem 1rem 3rem;
         margin: 0 1rem 1rem 0;
     }
-
         .C--runeListing{
             @extend %flexRow;
             justify-content: space-between;
             padding: 1.5rem 0;
         }
-    // .C--towerName{
-    //     font-size: 4.5rem;
-    // }
 
     .C--spellArea{
         padding: 1rem 2rem 2rem;
@@ -153,17 +167,12 @@ h1{
 
             canvas{
                 width: 12rem!important;
-                cursor: pointer;
-                border: 0.5rem solid #202020;
-
-                &:hover{
-                    background: #0004;
-                }
+                @extend .C--buttonLike;
             }
         }
 
             .C--runeButtonActive canvas{
-                border: 0.5rem solid #94d6ff;
+                border: 0.5rem solid #94d6ff!important;
                 background: #0004;
             }
 

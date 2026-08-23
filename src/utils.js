@@ -108,3 +108,4 @@ const lerpGrad = (grad, f) => {
 }
 const withAlpha = (color, a) => [...color.slice(0, 3), a];
 const WHITE = [255, 255, 255, 255];
+const HALF_WHITE = [255, 255, 255, 127];

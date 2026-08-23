@@ -267,7 +267,14 @@ class Terrain{
     _setWaves(enemyConstructors) {
         this.timeRate = 0;  // freeze time till first wave is started
         this.totalWaves = enemyConstructors.length;
-        GameState.startNextWaveButton.addEventListener('click', () => this.startNextWaveNow());
+        let ignoreButton = false;
+        GameState.startNextWaveButton.addEventListener('click', e => {
+            if(ignoreButton) return;
+            this.startNextWaveNow();
+            // Prevent double clicking
+            ignoreButton = true;
+            setTimeout(_ => ignoreButton = false, 250);
+        });
 
         this.upcomingWaves = enemyConstructors.map((WaveCls, waveIndex) => {
             // Derive the wave metrics
@@ -299,18 +306,15 @@ class Terrain{
     renderSpecialEffects(dt, ctx) {
         // Draw wave indicator
         const i = this.totalWaves - this.upcomingWaves.length;
-        if(i) {
-            GameState.topLeftDisplay.innerText = `Wave ${i} / ${this.totalWaves}`;
-        }else{
-            GameState.topLeftDisplay.innerText = '';
-        }
+        GameState.topLeftDisplay.innerText = `Wave ${i} / ${this.totalWaves}`;
 
         const timeToNext = this.upcomingWaves[0]?.[0] ?? -1;
         GameState.startNextWaveButton.innerText =
-            timeToNext >= 0
-                ? `Start Next Wave (${Math.ceil(timeToNext)})`
-                : ``;
-
+            timeToNext < 0
+                ? ``
+                : timeToNext > 0
+                    ? `Start Wave (${Math.ceil(timeToNext)})`
+                    : 'Start Wave';
 
         // Draw mana pool
         const rate = this.mana / (this.mana + 200);

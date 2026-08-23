@@ -197,7 +197,7 @@ function render(dt) {
                     x,
                     y,
                     sprites[spriteIndex]
-                        .withColor([255, 255, 255, 128])
+                        .withColor(HALF_WHITE)
                         .withRot(GameState.drawType == 7 ? (performance.now() >> 9) & 3 : 0),
                 );
             }
