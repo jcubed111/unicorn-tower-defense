@@ -202,6 +202,7 @@ class Terrain{
 
         this.manaPassiveClock += dt * MANA_PASSIVE_RATE;
         this.mana += ~~this.manaPassiveClock;
+        ParticleSystem.explodeManaAt([1.25, 0.5], ~~this.manaPassiveClock);
         this.manaPassiveClock %= 1;
 
         for(const e of this.enemies) {

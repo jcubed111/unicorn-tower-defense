@@ -2,15 +2,18 @@ TODO:
 - speed up, pause?
 
 - wave start sound effect
+- clicking start wave should spawn mana particles
 - explode wizard sprite on death
+- clear particles on cloud
 - add level hover info to level select screen
     - use a sprite renderer to render the terrain as a minimap to show? Extract the logic from the main render.
 - add movement to intro screen? Maybe the rainbow path sparkle will do this.
+- need a way to restart level during level. Menu/esc. annoying to shoot for perfect without that feature.
+- make start wave toast longer?
+
 
 - game flow:
     - highlight the start wave button before the start of the level. Or maybe give it a 30s timeout?
-    - special win screen if perfect (no enemies reach tower)
-    - mark perfected levels on the level select?
 
 - spells
     - click to focus enemy
@@ -47,11 +50,11 @@ NOTE: swapping scroll back for rune back would save 0.8%
 ## Feature Ideas
 
 - allow enemies to move diagonal?
+    - problem: this will cut down on the spread effect we get currently; enemies will always greedily use a diag if available.
 
-- it'd be nice to know which stats will get boosted when a tower is upgraded
+- it'd be nice to show which stats will get boosted when a tower is upgraded
 
 - make mana gain delay till particle arrival?
-- clicking start wave should spawn mana particles
 
 
 - use audio tree for playing sounds
