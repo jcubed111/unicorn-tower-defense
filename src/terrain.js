@@ -271,7 +271,6 @@ class Terrain{
     }
 
     _setWaves(enemyConstructors) {
-        this.timeRate = 0;  // freeze time till first wave is started
         this.totalWaves = enemyConstructors.length;
         let ignoreButton = false;
         GameState.startNextWaveButton.addEventListener('click', e => {
@@ -294,7 +293,7 @@ class Terrain{
 
             console.log('wave', waveIndex + 1, 'num enemies', numEnemies, 'hp', sampleEnemy.maxHp);
 
-            return [waveIndex == 0 ? 0 : 20, () => {
+            return [waveIndex == 0 ? STARTING_WAVE_DELAY : WAVE_DELAY, () => {
                 GameState.toastWaveInfo(
                     `Wave ${waveIndex + 1}`,
                     `${sampleEnemy.displayName} × ${numEnemies}`,
@@ -323,8 +322,20 @@ class Terrain{
             timeToNext < 0
                 ? ``
                 : timeToNext > 0
-                    ? `Start Wave (${Math.ceil(timeToNext)})`
-                    : 'Start Wave';
+                    ? `Start Wave ${i + 1} (${Math.ceil(timeToNext)})`
+                    : `Start Wave ${i + 1}`;
+
+        if(i == 0) {
+            ParticleSystem.sparkleRect(
+                [0.167, 0.167],
+                [
+                    GameState.startNextWaveButton.offsetWidth / GameState.pxCssSize / 15,
+                    GameState.startNextWaveButton.offsetHeight / GameState.pxCssSize / 15,
+                ],
+                dt * 0.3,
+                [213, 60, 255, 255],
+            );
+        }
 
         // Draw mana pool
         const rate = this.mana / (this.mana + 200);

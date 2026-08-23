@@ -31,7 +31,8 @@ function render(dt) {
     );
 
     // Set rem to 1/2 tile size
-    document.documentElement.style.fontSize = pxSize / window.devicePixelRatio + 'px';
+    document.documentElement.style.fontSize =
+        (GameState.pxCssSize = pxSize / window.devicePixelRatio) + 'px';
     mainCanvas.width = 1.25 * pxSize * tileSize * terrain.size;
     mainCanvas.height = pxSize * tileSize * terrain.size;
     const cssEdgeSize = mainCanvas.height / window.devicePixelRatio;

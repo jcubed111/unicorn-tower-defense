@@ -9,11 +9,7 @@ TODO:
     - use a sprite renderer to render the terrain as a minimap to show? Extract the logic from the main render.
 - add movement to intro screen? Maybe the rainbow path sparkle will do this.
 - need a way to restart level during level. Menu/esc. annoying to shoot for perfect without that feature.
-- make start wave toast longer?
 
-
-- game flow:
-    - highlight the start wave button before the start of the level. Or maybe give it a 30s timeout?
 
 - spells
     - click to focus enemy

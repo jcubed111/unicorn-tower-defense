@@ -119,13 +119,21 @@ const ParticleSystem = new class{
         }
     }
 
-    spawnParticlePixelLine(aPos, bPos, makeParticleCb) {
+    spawnParticlePixelLine(aPos, bPos, makeParticleCb, density = 1) {
         const [ax, ay, bx, by] = [...aPos, ...bPos].map(v => Math.floor(v * 15));
         const num = Math.max(...[ax - bx, ay - by].map(Math.abs));
-        range(num + 1).map(i => this.addParticle(makeParticleCb([
+        range(num + 1).filter(_ => Math.random() < density).map(i => this.addParticle(makeParticleCb([
             ax + (bx - ax) * i / num,
             ay + (by - ay) * i / num,
         ].map(Math.round))));
+    }
+
+    sparkleRect([sx, sy], [w, h], density, color) {
+        const makeParticleCb = pos => new EnergyFadeParticle(pos, color);
+        this.spawnParticlePixelLine([sx, sy], [sx + w, sy], makeParticleCb, density);
+        this.spawnParticlePixelLine([sx, sy + h], [sx + w, sy + h], makeParticleCb, density);
+        this.spawnParticlePixelLine([sx, sy], [sx, sy + h], makeParticleCb, density);
+        this.spawnParticlePixelLine([sx + w, sy], [sx + w, sy + h], makeParticleCb, density);
     }
 
     explodeSpritesAt([x, y], ...sprites) {

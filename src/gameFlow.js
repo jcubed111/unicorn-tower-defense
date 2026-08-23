@@ -72,7 +72,7 @@ GameState.toastWaveInfo = async (title, ...subtext) => {
         ...subtext.map(s => div('C--secondary', s)),
     );
     GameState.waveInfoToast.classList.toggle('C--waveInfoToastOut', !++waveToastStacks);
-    await time(1500);
+    await time(2e3);
     GameState.waveInfoToast.classList.toggle('C--waveInfoToastOut', !--waveToastStacks);
 }
 
