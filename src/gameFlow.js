@@ -3,6 +3,7 @@ const setCloudTransition = async show => {
     if(GameState.cloudBlocker.classList.contains('C--cloudBlockerHide') != show) return;
     GameState.cloudBlocker.classList.toggle('C--cloudBlockerHide', !show);
     await new Promise(res => setTimeout(res, 500));
+    if(show) ParticleSystem.clear();
 };
 
 const time = n => new Promise(res => setTimeout(res, n));

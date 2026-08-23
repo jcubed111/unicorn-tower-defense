@@ -56,14 +56,17 @@ function render(dt) {
             renderSprite(ctx, x, y, sprites[performance.now() & 1024 ? 7 : 11]);
         }
         if(isGround) {
-            renderSprite(ctx, x, y,
-                isGround == 1
-                    ? terrain.computedTowersByLocation[x][y]
-                        ? sprites[3].withColor([200,200,200,255])
-                        : sprites[(x + 3 * y) % 7 ? 3 : 2]
-                    // rainbow
-                    : sprites[33 + ((isGround - 2) >> 2)].withRot((isGround - 2) & 3)
-            );
+            const sprite = isGround == 1
+                ? terrain.computedTowersByLocation[x][y]
+                    ? sprites[3].withColor([200,200,200,255])
+                    : sprites[(x + 3 * y) % 7 ? 3 : 2]
+                // rainbow
+                : sprites[33 + ((isGround - 2) >> 2)].withRot((isGround - 2) & 3)
+            renderSprite(ctx, x, y, sprite);
+            // sparkle the rainbow paths
+            if(isGround != 1) {
+                ParticleSystem.sparkleSpriteAt(sprite, [x, y], dt / 100);
+            }
         }
 
         // Tower

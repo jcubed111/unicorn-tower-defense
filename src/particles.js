@@ -119,6 +119,10 @@ const ParticleSystem = new class{
         }
     }
 
+    clear() {
+        this.particles.clear();
+    }
+
     spawnParticlePixelLine(aPos, bPos, makeParticleCb, density = 1) {
         const [ax, ay, bx, by] = [...aPos, ...bPos].map(v => Math.floor(v * 15));
         const num = Math.max(...[ax - bx, ay - by].map(Math.abs));
