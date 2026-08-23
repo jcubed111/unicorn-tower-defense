@@ -17,9 +17,9 @@ JS_FILES := \
 	src/levelData.js \
 	src/main.js
 
-IMAGES := $(wildcard src/*.png)
-IMAGES_DIST := $(IMAGES:src/%.png=dist/%.webp)
-IMAGES_DEV := $(IMAGES:src/%.png=dev/%.webp)
+# IMAGES := $(wildcard src/*.png)
+# IMAGES_DIST := $(IMAGES:src/%.png=dist/%.webp)
+# IMAGES_DEV := $(IMAGES:src/%.png=dev/%.webp)
 
 JS_DEV := $(JS_FILES:src/%=dev/%)
 
@@ -40,8 +40,8 @@ clean:
 	rm -rf build/*
 	rm -rf build/.[!.]*
 
-dev/%.webp: dist/%.webp
-	cp $^ $@
+# dev/%.webp: dist/%.webp
+# 	cp $^ $@
 
 dev/%.js: src/%.js
 	cp $^ $@
@@ -103,12 +103,12 @@ build/index.html: src/index.html
 		$^
 
 
-# There are two compression methods here, I'm getting basically the same
-# results for each atm, but might be worth trying later too.
-dist/%.webp: src/%.png
-	@echo $@ "<-" $^
-	@cwebp -lossless -q 100 -m 6 -z 9 -metadata none $^ -o $@
-# 	@magick $^ -define webp:lossless=true -quality 100 -define webp:method=6 -strip $@
+# # There are two compression methods here, I'm getting basically the same
+# # results for each atm, but might be worth trying later too.
+# dist/%.webp: src/%.png
+# 	@echo $@ "<-" $^
+# 	@cwebp -lossless -q 100 -m 6 -z 9 -metadata none $^ -o $@
+# # 	@magick $^ -define webp:lossless=true -quality 100 -define webp:method=6 -strip $@
 
 dist/styles-min.css: build/styles-min.css
 	cp $^ $@
@@ -125,8 +125,8 @@ dist/index.html: build/index.html build/main-packed.js scripts/wrap-html.py
 
 to-be-titled.zip: dist/index.html $(IMAGES_DIST)
 	@echo $@ "<-" $^
-	@rm -f $@ dist/@
-	@cd dist && 7z a -tzip -bd -bso0 -bsp0 -mx9 $@ $($^:dist/%=%)
+	@rm -f $@ dist/$@
+	@cd dist && 7z a -tzip -bd -bso0 -bsp0 -mx9 $@ $(^:dist/%=%)
 	@mv dist/$@ $@
 	@npx advzip --recompress --shrink-insane -q -i$(ZIP_ITERS) $@
 	@rm -rf test_extract
