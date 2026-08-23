@@ -103,10 +103,10 @@ const initHtml = () => {
 
     // Cloud blocker bg
     GameState.cloudBlocker.style.background =
-        // [0,10],
         [[18, 233], [105, 207], [186, 226], [265, 208], [200, 145], [283, 133], [122, 140], [34, 141], [7, 103], [75, 82], [157, 86], [234, 71], [283, 47], [231, 23], [141, 19], [77, 21], [12, 25]]
-        // shorter, but looks less natural. Might need a sin? But then not as short.
-        // ...range(24).map(i => [30 + 60 * (i % 5), 240 - i / 12])
+        // // shorter, but looks less natural. Might need a sin? But then not as short.
+        // // Saves 0.35%.
+        // range(24).map(i => [30 + 60 * (i % 5), 240 - i * 12])
         .map(([px, py], i, a) =>
             `radial-gradient(circle calc(18rem * log(30 * (var(--s) - ${i / a.length / 2}) + 1)) at ${px}rem ${py}rem, #${(i & 2) ? 'b3b3b3' : 'aaa'} 100%, #0000 100%)`
         )
