@@ -1,5 +1,6 @@
 class AbcEnemy{
     // need a super class to force init order to put level first
+    // Note that the first wave is level `0`
     level = 0;
     constructor(level, pos) {
         this.level = level;
@@ -55,12 +56,12 @@ class Enemy extends AbcEnemy{
                 styled('span', 'C--secondary', 'speed'),
 
                 this.armor > 0 && [
-                    this.armor,
+                    styled('span', 'C--armorColor', this.armor),
                     styled('span', 'C--secondary', 'armor'),
                 ],
 
                 this.manaOnKillMult
-                    ? styled('span', 'C--manaColor', this.maxHp * this.manaOnKillMult + ' ᚯ')
+                    ? styled('span', 'C--manaColor', ~~(this.maxHp * this.manaOnKillMult) + ' ᚯ')
                     : styled('span', '', '0 ᚯ'),
                 styled('span', 'C--secondary', 'reward'),
 
@@ -166,6 +167,15 @@ class Enemy extends AbcEnemy{
     }
 }
 
+class Rhinocoricorn extends Enemy{
+    displayName = 'Rhinocoricorn';
+    speed = 1.33;
+    armor = (this.level + 1) >> 1;
+    totalHpModifier = 0.6;
+    manaOnKillMult = 2;
+    // TODO: rhino sprites
+}
+
 class SwarmEnemy extends Enemy{
     displayName = 'Minicorn';
     maxHp = ~~(1.5 * 1.35 ** this.level);
@@ -192,6 +202,7 @@ class BossEnemy extends Enemy{
     maxHp = ~~(8 * 1.5 ** this.level);
     totalHpModifier = 0.1;  // ensure there's only 1 boss
     armor = this.level >> 1;
+    manaOnKillMult = 2;
 }
 
 class Rainbowicorn extends Enemy{

@@ -318,32 +318,6 @@ const orderedTowerTypes = [
         }
     }),
 
-    withTowerPattern('gr', class extends Tower{
-        displayName = 'Lightning';
-        chain = this.level - 1;
-        extraDescription = [this.chain, 'chain'];
-        range = 2.5;
-        chargeTime = this.level / 2;
-        damage = this.level;
-
-        hit(targetsInRange, i = 0, origin = this.center) {
-            const target = randChoice(targetsInRange);
-            target.takeDamage(this.damage);
-            this.boltAt(target, origin);
-            if(i < this.chain) {
-                const chainTargets = this.getTargetsInRange(target.pos)
-                    .filter(t => t != target);
-                if(chainTargets.length) {
-                    this.hit(
-                        chainTargets,
-                        i + 1,
-                        target.pos,
-                    );
-                }
-            }
-        }
-    }),
-
     withTowerPattern('gb', class extends Tower{
         displayName = 'Mana Leech';
         range = 2;
@@ -411,6 +385,32 @@ const orderedTowerTypes = [
         }
     }),
 
+    withTowerPattern('gr', class extends Tower{
+        displayName = 'Lightning';
+        chain = this.level - 1;
+        extraDescription = [this.chain, 'chain'];
+        range = 2.5;
+        chargeTime = this.level / 2;
+        damage = this.level;
+
+        hit(targetsInRange, i = 0, origin = this.center) {
+            const target = randChoice(targetsInRange);
+            target.takeDamage(this.damage);
+            this.boltAt(target, origin);
+            if(i < this.chain) {
+                const chainTargets = this.getTargetsInRange(target.pos)
+                    .filter(t => t != target);
+                if(chainTargets.length) {
+                    this.hit(
+                        chainTargets,
+                        i + 1,
+                        target.pos,
+                    );
+                }
+            }
+        }
+    }),
+
     withTowerPattern('r', class extends Tower{
         displayName = 'Red';
         extraDescription = 'AoE';
@@ -431,7 +431,7 @@ const orderedTowerTypes = [
     withTowerPattern('g', class extends Tower{
         displayName = 'Green';
         // simple bolt tower
-        range = 3;
+        range = 2.75 + 0.25 * this.level;
         chargeTime = 2;
         damage = 3 * this.level;
         isDiscovered() { return true; }

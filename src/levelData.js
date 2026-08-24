@@ -104,6 +104,53 @@ const levelData = [
     },
     // Level 2
     {
+        preLevelStoryContent: async () => {
+            await showEventText()(
+                orderedTowerTypes.at(-4).sourcePattern.makeElement(),
+                `Multiple runes can be combined to make stronger towers.\n\nTry making a lightning tower from a red and green rune.`,
+            );
+        },
+        terrainString: '...//////..........//////36......../////..2........////..//........////.////.......////.////36.....////..//..2...../////.....2......//////////.......//////////.......0..0..///.......0..0..///.....///////////....////////////.....//////////..................',
+        goalLocation: [3, 13],
+        waves: [
+            SwarmEnemy,
+            Enemy,
+            SwarmEnemy,
+            Enemy,
+            SwarmEnemy,
+        ],
+    },
+    // Level 3
+    {
+        preLevelStoryContent: async () => {
+            await showEventText()(
+                towerGridToElement(
+                    [
+                        [ null,   null, [2, 2] ],
+                        [ [2, 1], null, null   ],
+                        [ null,   null, [2, 3] ],
+                    ],
+                    normalizedTowerRgb(0, 1, 0),
+                ),
+                `Inscribe a rune atop one of the same color to make a stronger version`,
+            );
+        },
+        terrainString: '......../...........736./...........0./////........./////////......///.../////.....//..///////..../////////////...///////////./...//./////..../...//.////////./...//../////////....//.////////...../////..////....../////////........./////.....................',
+        goalLocation: [8, 8],
+        waves: [
+            Enemy,
+            Rhinocoricorn,
+            SwarmEnemy,
+            Rhinocoricorn,
+            Enemy,
+            Rhinocoricorn,
+        ],
+    },
+
+    // Level 4
+    // Level 5: This level is actually pretty hard as written,
+    // cause runner + boss are very different
+    {
         goalLocation: [10, 15],
         terrainString: '..///////.........///////36.......//////..2..........0....2..........41//15............//..............2...////...///..2...////../////.2.7336//../////15.0//2//../////...0//2.....///....0..2......2...73;..2......:333;..../..............///............/////.',
         waves: [
@@ -118,7 +165,7 @@ const levelData = [
             BossEnemy,
         ],
     },
-    // Level 3
+    // Level 6
     {
         goalLocation: [8, 13],
         terrainString: '....///////////......//////..//....../////////..............2........./////.2........./////15........//////.......911/////........2..............////....////....////..////////..////33////////..///.........//.........///..//........../////..................',
@@ -126,20 +173,4 @@ const levelData = [
             Rainbowicorn,
         ],
     }
-    // // Level 3
-    // {
-    //     goalLocation: [7, 15],
-    //     terrainString: './.../.../.../.../////////////.../////////////36./////////////.2./../../../../.2./../../../../.2./////////////.2./////////////15./////////////.../.2.../...2./.../.:36./.915./.../...2./.2.../.../////////////.../////////////.../////////////........./........',
-    //     waves: [
-    //         Enemy,
-    //         Enemy,
-    //         SwarmEnemy,
-    //         Enemy,
-    //         Enemy,
-    //         SwarmEnemy,
-    //         RunnerEnemy,
-    //         Enemy,
-    //         BossEnemy,
-    //     ],
-    // },
 ];

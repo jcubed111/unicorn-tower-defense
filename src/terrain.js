@@ -68,10 +68,19 @@ class Terrain{
             // error if there isn't any top spawn point
             throw 1;
         }
-        // error if any enemy is inside a WALL
+        // error if any enemy is inside (or behind) a wall
         for(const e of this.enemies) {
             const [x, y] = e.getSquare();
             if(y >= 0 && this.descentMap[x][y] >= DESCENT_WALL) throw 1;
+        }
+        // reset target if enemy is walking into a wall
+        for(const e of this.enemies) {
+            if(e.targetLocation) {
+                const [tx, ty] = e.targetLocation;
+                if(this.descentMap[~~tx][~~ty] >= DESCENT_WALL) {
+                    e.targetLocation = null;
+                }
+            }
         }
 
         /* joined towers */
@@ -218,10 +227,10 @@ class Terrain{
             const [tx, ty] = this.goalLocation;
             if(e.hp <= 0) {
                 this.enemies.delete(e);
-                this.mana += e.maxHp * e.manaOnKillMult;
+                this.mana += ~~(e.maxHp * e.manaOnKillMult);
                 ParticleSystem.explodeManaAt(
                     e.pos.map(v => v - 0.5),
-                    e.maxHp * e.manaOnKillMult,
+                    ~~(e.maxHp * e.manaOnKillMult),
                 );
                 ParticleSystem.explodeSpritesAt(
                     e.pos.map(v => v - 0.5),

@@ -7,6 +7,17 @@ TODO:
 - add more movement to intro screen? Unicorns running around?
 - need a way to restart level during level. Menu/esc. annoying to shoot for perfect without that feature.
 
+
+- Level ideas:
+    - intro (easy)
+    - intro 2
+    - wide open path
+    - extra swarm
+    - extra armor
+    - Pegasus focus
+    - fixed unicorn path (rainbow bridge?)
+    - no runes of a certain color??
+
 - bg music
 
 - spells
@@ -21,9 +32,6 @@ TODO:
     - rhino-i-corn
     - dash-i-corn (dashes every n seconds, starting on first damage, using a rainbow trail effect)
     - manticorn
-    - bridgeicorn
-        - only 1 per wave
-        - when doing targetLocation, if there's a square 2 away with weight <2 this weight, form a bridge to it.
 
 - enemy graphics
     - unicorns should sparkle
