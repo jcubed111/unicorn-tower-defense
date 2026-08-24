@@ -36,38 +36,7 @@ function renderRectIndicator(
     );
 }
 
-function render(dt) {
-    const mainCanvas = GameState.mainCanvas;
-    const terrain = GameState.terrain;
-
-    // size of a visual pixel in canvas pixels
-    const pxSize = Math.floor(
-        Math.min(window.innerHeight, window.innerWidth * 0.8)
-        * window.devicePixelRatio
-        / terrain.size
-        / tileSize
-    );
-
-    // Set rem to 1/2 tile size
-    document.documentElement.style.fontSize =
-        (GameState.pxCssSize = pxSize / window.devicePixelRatio) + 'px';
-    mainCanvas.width = 1.25 * pxSize * tileSize * terrain.size;
-    mainCanvas.height = pxSize * tileSize * terrain.size;
-    const cssEdgeSize = mainCanvas.height / window.devicePixelRatio;
-    mainCanvas.style.width = 1.25 * cssEdgeSize + 'px';
-    mainCanvas.style.height = cssEdgeSize + 'px';
-    // GameState.sidebarEl.style.width = (cssEdgeSize >> 2) + 'px';
-
-    const ctx = mainCanvas.getContext('2d');
-    ctx.setTransform(pxSize, 0, 0, pxSize, 0, 0);
-
-    if(terrain.screenShake > 0.1) {
-        ctx.translate(randFloat(-terrain.screenShake, terrain.screenShake), randFloat(-terrain.screenShake, terrain.screenShake))
-        // decay with half life of 2s
-    }
-    terrain.screenShake *= 0.5 ** (4 * dt);
-
-    // Render terrain & towers
+function renderTerrainBase(ctx, dt, terrain) {
     forEachGrid2d(terrain.isGround, (isGround, [x, y]) => {
         // ground edge
         if(isGround != 1 && terrain.isGround[x][y - 1] == 1) {
@@ -112,6 +81,41 @@ function render(dt) {
         // ctx.fillStyle = `#fff`;
         // ctx.fillText(terrain.descentMap[x][y], x * tileSize + 2, y * tileSize + 2);
     });
+}
+
+function render(dt) {
+    const mainCanvas = GameState.mainCanvas;
+    const terrain = GameState.terrain;
+
+    // size of a visual pixel in canvas pixels
+    const pxSize = Math.floor(
+        Math.min(window.innerHeight, window.innerWidth * 0.8)
+        * window.devicePixelRatio
+        / terrain.size
+        / tileSize
+    );
+
+    // Set rem to 1/2 tile size
+    document.documentElement.style.fontSize =
+        (GameState.pxCssSize = pxSize / window.devicePixelRatio) + 'px';
+    mainCanvas.width = 1.25 * pxSize * tileSize * terrain.size;
+    mainCanvas.height = pxSize * tileSize * terrain.size;
+    const cssEdgeSize = mainCanvas.height / window.devicePixelRatio;
+    mainCanvas.style.width = 1.25 * cssEdgeSize + 'px';
+    mainCanvas.style.height = cssEdgeSize + 'px';
+    // GameState.sidebarEl.style.width = (cssEdgeSize >> 2) + 'px';
+
+    const ctx = mainCanvas.getContext('2d');
+    ctx.setTransform(pxSize, 0, 0, pxSize, 0, 0);
+
+    if(terrain.screenShake > 0.1) {
+        ctx.translate(randFloat(-terrain.screenShake, terrain.screenShake), randFloat(-terrain.screenShake, terrain.screenShake))
+        // decay with half life of 2s
+    }
+    terrain.screenShake *= 0.5 ** (4 * dt);
+
+    // Render terrain & towers
+    renderTerrainBase(ctx, dt, terrain);
 
     // Render tower special effects
     terrain.computedTowersArr.forEach(t => t.renderSpecialEffects(dt, ctx));
@@ -169,6 +173,7 @@ function render(dt) {
     // Draw hovered tower info
     if(GameState.hoveringElOverride) {
         GameState.hoverInfoEl.replaceChildren(GameState.hoveringElOverride);
+
     }else if(GameState.hoveringTower && GameState.hoveringPos) {
         // We use `&& hoveringPos` here to distinguish from non-world towers (eg the runebook)
         const [x, y] = GameState.hoveringTower.center;
@@ -191,7 +196,9 @@ function render(dt) {
         const inRange = [...terrain.enemies].filter(e => dist2(e) <= 0.25);
         const maybeEnemy = inRange.length && minByTiesRand(inRange, dist2);
         GameState.hoverInfoEl.replaceChildren(
-            maybeEnemy ? maybeEnemy.asHoverEl() : ''
+            maybeEnemy
+                ? maybeEnemy.asHoverEl()
+                : (terrain.tileHoverEls[~~x]?.[~~y] ?? '')
         );
 
     }else{

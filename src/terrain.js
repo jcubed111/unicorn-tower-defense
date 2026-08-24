@@ -28,6 +28,8 @@ class Terrain{
     screenShake = 0;  // px; decays over time in render
     timeRate = 1;
 
+    tileHoverEls = grid2d(this.size, null);  // Grid2d<Element | null>
+
     constructor(goalLocation, terrainString, waves, onEndCb) {
         terrainString.split('').forEach((c, i) => this.isGround[i % this.size][~~(i / this.size)] = c.charCodeAt(0) - 46);
         this.goalLocation = goalLocation;
@@ -398,8 +400,28 @@ class LevelSelectTerrain extends MockTerrain{
     ) {
         super(terrainString, onEndCb);
         levelIndexString.split('').forEach((c, i) => {
-            this.levelIndices[i % this.size][~~(i / this.size)] =
-                c == '.' ? 0 : c.charCodeAt(0) - 96
+            const x = i % this.size;
+            const y = ~~(i / this.size);
+            const level = c == '.' ? 0 : c.charCodeAt(0) - 96;
+            this.levelIndices[x][y] = level;
+            if(level && this.levelIsUnlocked[level] && levelData[level]) {
+                this.tileHoverEls[x][y] = div('',
+                    div('C--infoTitle', `Level ${level}`),
+                    div('', `${levelData[level]?.waves?.length} Waves`),
+                    makeSpriteCanvas(ctx => {
+                        renderTerrainBase(ctx, 0,
+                            new Terrain(
+                                levelData[level]?.goalLocation,
+                                levelData[level]?.terrainString,
+                                [],
+                                _ => 0,
+                            ),
+                        );
+                    }, 16, 16, 45),
+                );
+            }else if(level) {
+                this.tileHoverEls[x][y] = div('', `Locked`);
+            }
         });
     }
 
