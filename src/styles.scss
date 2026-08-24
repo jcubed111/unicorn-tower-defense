@@ -147,10 +147,11 @@ h1{
 
     .C--statBar{
         @extend %flexRow;
+        align-items: center;
         justify-content: space-between;
         line-height: 1;
         font-size: 5rem;
-        margin: 5rem 0 4rem 16rem;
+        margin: 2rem 2rem 1rem 14.5rem;
     }
         .C--manaColor{
             color: #94d6ff;

@@ -1,5 +1,5 @@
 const MANA_POOL_POS = [16, 0];
-const HEART_POS = [19, 0]
+const HEART_POS = [18, 0]
 
 
 class Particle{

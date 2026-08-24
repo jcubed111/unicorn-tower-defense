@@ -240,7 +240,7 @@ class Terrain{
                 this.screenShake += 0.2;
 
             }else if(sx == tx && sy == ty) {
-                if(this.health > 0) {
+                if(this.health >= 0) {
                     ParticleSystem.explodeSpritesAt(
                         HEART_POS,
                         sprites[29].withColor([20, 20, 20, 255]),
@@ -261,20 +261,24 @@ class Terrain{
                     e.banishDamage *= 2;
                     e.setLocation(resetLocation);
                 }else{
-                    if(this.health >= 0) {
-                        this.screenShake += 4;
-                        const [gx, gy] = this.goalLocation;
-                        ParticleSystem.explodeSpritesAt(
-                            [gx, gy - 0.333],  // needs to match wizard pos in render
-                            sprites[31],
-                        );
-                    }
-                    this.health = -1;
-                    this.onEndCb(false);
-                    this.onEndCb = () => 0;
+                    this.lose();
                 }
             }
         }
+    }
+
+    lose() {
+        if(this.health >= 0) {
+            this.screenShake += 6;
+            const [gx, gy] = this.goalLocation;
+            ParticleSystem.explodeSpritesAt(
+                [gx, gy - 0.333],  // needs to match wizard pos in render
+                sprites[31],
+            );
+        }
+        this.health = -1;
+        this.onEndCb(false);
+        this.onEndCb = () => 0;
     }
 
     startNextWaveNow() {

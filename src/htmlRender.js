@@ -75,6 +75,13 @@ const initHtml = () => {
                 div('C--statBar',
                     div('C--manaColor', GameState.manaDisplay = styled('span'), " ᚯ"),
                     div('C--heartNumber', GameState.heartDisplay = styled('span', '', 10)),
+                    wrapEl(sprites[39].asImage, e => {
+                        e.className = 'C--buttonLike';
+                        e.style.width = '10rem';
+                        e.addEventListener('click', e => {
+                            if(confirm('Give up?')) GameState.terrain.lose();
+                        });
+                    }),
                 ),
 
                 runeBorderDiv([32, 32, 32, 255])('C--spellArea',
