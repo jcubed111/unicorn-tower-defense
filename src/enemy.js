@@ -173,7 +173,12 @@ class Rhinocoricorn extends Enemy{
     armor = (this.level + 1) >> 1;
     totalHpModifier = 0.6;
     manaOnKillMult = 2;
-    // TODO: rhino sprites
+    // TODO: better rhino sprites?
+    *getSprites() {
+        for(const s of super.getSprites()) {
+            yield s.withColor([180, 180, 180, 255]);
+        }
+    }
 }
 
 class SwarmEnemy extends Enemy{
