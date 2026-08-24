@@ -24,6 +24,10 @@ JS_FILES := \
 
 JS_DEV := $(JS_FILES:src/%=dev/%)
 
+# how many parallel Roadroller searches to race. Each is ~20s and they run
+# concurrently, so more is nearly free until you run out of cores.
+PACK_RUNS := 8
+
 # how many itertions to zip for. Less is faster; seems to max out after 10k
 # ZIP_ITERS := 10000
 ZIP_ITERS := 100
@@ -70,10 +74,11 @@ build/main-min.js: build/main-max.js
 	@cat build/main-min-2.js | sed 's/window[.]//g' > $@
 
 # Roadroller is a context-mixing packer: it beats DEFLATE badly enough on this
-# payload to be worth the ~2KB self-extracting stub it prepends.
-build/main-packed.js: build/main-payload.js
+# payload to be worth the ~2KB self-extracting stub it prepends. Its parameter
+# search is randomized, so pack.sh races PACK_RUNS of them and keeps the best.
+build/main-packed.js: build/main-payload.js scripts/pack.sh
 	@echo $@ "<-" $^
-	npx roadroller $^ -o $@ -O2 -D -q
+	@scripts/pack.sh $< $@ $(PACK_RUNS)
 # 	npx uglifyjs build/main-min-1.js \
 # 	    --compress \
 # 	        arrows=true,booleans=true,collapse_vars=true,comparisons=true,dead_code=true,drop_console=true,drop_debugger=true,hoist_funs=true,hoist_props=true,hoist_vars=true,if_return=true,inline=3,join_vars=true,keep_fargs=false,keep_infinity=false,loops=true,module=true,negate_iife=true,properties=true,pure_getters=true,reduce_funcs=true,reduce_vars=true,sequences=true,side_effects=true,strings=true,switches=true,templates=true,top_retain=false,toplevel=true,typeofs=true,unsafe=true,unsafe_comps=true,unsafe_Function=true,unsafe_math=true,unsafe_proto=true,unsafe_regexp=true,unsafe_undefined=true,unused=true \
