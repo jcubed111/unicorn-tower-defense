@@ -49,6 +49,7 @@ const levelData = [
     {},
     // Level 1
     {
+        // extraSetup() {}
         preLevelStoryContent: async () => {
             await showEventText()(
                 sprites[31],
@@ -147,9 +148,44 @@ const levelData = [
         ],
     },
 
-    // Level 4
-    // Level 5: This level is actually pretty hard as written,
-    // cause runner + boss are very different
+    // Level 4 (parallel to 5) Mob focus
+    {
+        terrainString: '...////.............///3336......./////...////...///////3/////...///////./////...//////.../////...//..0.....///....0.////..7///...////////3;.//...////////...//..//////////.7;...//////////.0..../////////..///..////////..////../////.0.91////........415......',
+        goalLocation: [14, 14],
+        waves: [
+            Enemy,
+            SwarmEnemy,
+            Enemy,
+            RunnerEnemy,
+            SwarmEnemy,
+            Enemy,
+            RunnerEnemy,
+        ],
+    },
+
+    // Level 5 (parallel to 4) Armor focus
+    {
+        extraSetup() {
+            GameState.terrain.rawTowers[10][13] = [3, 1];
+            GameState.terrain.rawTowers[11][13] = [3, 1];
+            GameState.terrain.rawTowers[10][14] = [3, 1];
+            GameState.terrain.recomputeDerivedValues();
+        },
+        terrainString: '....///////............0...........///.0.///......//...0...//.....//./////.////..///./////.////..///./////.////..///./////.////..///./////.////..///...0...///....////.0.////..........0..///.....///.///........././3/././/......///.///.//......./............',
+        goalLocation: [3, 15],
+        waves: [
+            Enemy,
+            Rhinocoricorn,
+            Enemy,
+            Rhinocoricorn,
+            Pegacorn,
+            Rhinocoricorn,
+            Rhinocoricorn,
+        ],
+    },
+
+    // Level 6: This level is actually pretty hard as written,
+    // cause runner + boss are very different. Miniboss.
     {
         goalLocation: [10, 15],
         terrainString: '..///////.........///////36.......//////..2..........0....2..........41//15............//..............2...////...///..2...////../////.2.7336//../////15.0//2//../////...0//2.....///....0..2......2...73;..2......:333;..../..............///............/////.',

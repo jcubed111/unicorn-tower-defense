@@ -417,7 +417,8 @@ const orderedTowerTypes = [
         // hits all enemies in range on each shot
         range = 3;
         chargeTime = 5 - this.level;
-        damage = 2;
+        /** @type {number} */
+        damage = 1 + this.level;
 
         hit(targetsInRange) {
             targetsInRange.forEach(target => {

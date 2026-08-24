@@ -71,11 +71,11 @@ class Terrain{
         // error if any enemy is inside (or behind) a wall
         for(const e of this.enemies) {
             const [x, y] = e.getSquare();
-            if(y >= 0 && this.descentMap[x][y] >= DESCENT_WALL) throw 1;
+            if(e.landBased && y >= 0 && this.descentMap[x][y] >= DESCENT_WALL) throw 1;
         }
         // reset target if enemy is walking into a wall
         for(const e of this.enemies) {
-            if(e.targetLocation) {
+            if(e.landBased && e.targetLocation) {
                 const [tx, ty] = e.targetLocation;
                 if(this.descentMap[~~tx][~~ty] >= DESCENT_WALL) {
                     e.targetLocation = null;
@@ -195,7 +195,7 @@ class Terrain{
             if(this.upcomingWaves[0][0] < 0) {
                 this.upcomingWaves.shift()[1]();
             }
-        }else if(!this.enemies.size) {
+        }else if(!this.enemies.size && !this.actionQueue.size) {
             this.onEndCb(true);
             this.onEndCb = () => 0;
         }
@@ -245,10 +245,12 @@ class Terrain{
                         HEART_POS,
                         sprites[29].withColor([20, 20, 20, 255]),
                     );
+                    AudioSystem.playRespawn();
                 }
                 if(this.health >= e.banishDamage) {
                     this.health -= e.banishDamage;
-                    const resetLocation = [randChoice(this.spawnLocations)[0] + 0.5, 0.5];
+                    const [sx, sy] = randChoice(e.resetSpawnLocations ?? this.spawnLocations);
+                    const resetLocation = [sx + 0.5, sy + 1.5];
                     ParticleSystem.spawnParticlePixelLine(
                         e.pos,
                         resetLocation,
@@ -258,7 +260,6 @@ class Terrain{
                     e.manaOnKillMult = 0;
                     e.banishDamage *= 2;
                     e.setLocation(resetLocation);
-                    AudioSystem.playRespawn();
                 }else{
                     if(this.health >= 0) {
                         this.screenShake += 4;

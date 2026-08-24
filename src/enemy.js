@@ -15,6 +15,7 @@ class Enemy extends AbcEnemy{
     extraDescription;
     banishDamage = 1;  // is doubled each banish
     manaOnKillMult = 1;  // is set to 0 if banished
+    landBased = true;
 
     targetLocation = null;
     facing = 3;
@@ -30,6 +31,8 @@ class Enemy extends AbcEnemy{
     // used by wave generator
     delayPerMonster = 1;
     totalHpModifier = 1;
+
+    resetSpawnLocations;  // used to override terrain default. Unsafeish. Given as tile ints one tile off the map
 
     // constructor(level, pos) {
     //     super(level, pos);
@@ -80,7 +83,7 @@ class Enemy extends AbcEnemy{
         if(this.slowEffects.length) {
             yield sprites[20].withColor([59, 124, 255, 255]);
         }
-        const s = sprites[16 + Math.floor(performance.now() / 200 * this.speed) % 4];
+        const s = sprites[16 + ((GameState.terrain.terrainTotalTime * 5 * this.speed) & 3)];
         if(this.poisonEffects.length) {
             yield s.withColor([150, 255, 150, 255]);
         }else{
@@ -199,6 +202,38 @@ class RunnerEnemy extends Enemy{
     maxHp = ~~(1.5 * 1.25 ** this.level);
     delayPerMonster = 0.25;
     armor = 0;
+}
+
+class Pegacorn extends Enemy{
+    displayName = 'Pegacorn';
+    speed = 2;
+    armor = 0;
+    totalHpModifier = 0.75;
+    manaOnKillMult = 1.5;
+    landBased = false;
+
+    constructor(level, pos) {
+        const locs = range(14).map(i => [i + 1, -1]);
+        super(level, randChoice(locs));
+        this.resetSpawnLocations = locs;
+    }
+
+    *getSprites() {
+        yield* super.getSprites();
+        yield sprites[37 + ((GameState.terrain.terrainTotalTime * 3 * this.speed) & 1)];
+    }
+
+    getTarget(sx, sy) {
+        const [gx, gy] = GameState.terrain.goalLocation;
+        return randChoice(
+            [
+                gx > sx && sy >= 0 && [sx + 1.5, sy + 0.5],
+                gx < sx && sy >= 0 && [sx - 0.5, sy + 0.5],
+                gy > sy && [sx + 0.5, sy + 1.5],
+                gy < sy && [sx + 0.5, sy - 0.5],
+            ].filter(t => t)
+        );
+    }
 }
 
 class BossEnemy extends Enemy{

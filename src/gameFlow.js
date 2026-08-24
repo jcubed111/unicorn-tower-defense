@@ -99,6 +99,7 @@ const runBattle = async (n, wasRestarted) => {
             levelData[n].waves,
             resolve,
         );
+        levelData[n].extraSetup?.(GameState.terrain);
     });
 
     const isPerfect = GameState.terrain.health == STARTING_HEALTH;

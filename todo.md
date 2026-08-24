@@ -14,13 +14,14 @@ TODO:
     - wide open path
     - extra swarm
     - extra armor
-    - Pegasus focus
+    - Pegacorn focus
     - fixed unicorn path (rainbow bridge?)
     - no runes of a certain color??
 
 - bg music
 
 - spells
+    - would help with spending mana in final wave
     - click to focus enemy
     - shift click to place multiple towers
     - spells: remove rune, meteor (damage + fire, get stronger each cast), freeze
