@@ -124,7 +124,7 @@ class Tower{
                     styled('span', 'C--secondary', 'damage'),
                 ],
                 this.range > 0 && [
-                    this.range,
+                    this.range.toFixed(2),
                     styled('span', 'C--secondary', 'range'),
                 ],
                 this.chargeTime > 0 && [
@@ -209,10 +209,12 @@ const orderedTowerTypes = [
     //     // TODO
     // }),
 
-    // withTowerPattern('rb|br', class extends Tower{
-    //     displayName = '???';
-    //     // TODO
-    // }),
+    withTowerPattern(' b |grg', class extends Tower{
+        displayName = 'Heavy';
+        chargeTime = 1;
+        damage = ~~(1.5 * this.level);
+        range = 1 + this.level / 3;
+    }),
 
     withTowerPattern('gb|bb', class extends Tower{
         displayName = 'Sniper';

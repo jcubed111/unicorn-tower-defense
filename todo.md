@@ -20,6 +20,8 @@ TODO:
 
 - bg music
 
+- show waves when hovering wave button?
+
 - spells
     - would help with spending mana in final wave
     - click to focus enemy
