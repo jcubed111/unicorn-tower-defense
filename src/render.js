@@ -18,6 +18,24 @@ function renderCircleIndicator(
     ctx.stroke();
 }
 
+function renderRectIndicator(
+    ctx,
+    x, y,
+    rx, ry,
+    lineWidth,
+    lineColor,
+) {
+    ctx.lineWidth = lineWidth;
+    ctx.strokeStyle = lineColor;
+    ctx.lineCap = 'butt';
+    ctx.strokeRect(
+        (x - rx) * 15,
+        (y - ry) * 15,
+        rx * 30,
+        ry * 30,
+    );
+}
+
 function render(dt) {
     const mainCanvas = GameState.mainCanvas;
     const terrain = GameState.terrain;
@@ -154,14 +172,7 @@ function render(dt) {
     }else if(GameState.hoveringTower && GameState.hoveringPos) {
         // We use `&& hoveringPos` here to distinguish from non-world towers (eg the runebook)
         const [x, y] = GameState.hoveringTower.center;
-        renderCircleIndicator(
-            ctx,
-            x, y,
-            GameState.hoveringTower.range,
-            0.5,
-            colorAsString(GameState.hoveringTower.getColor()),
-            1,
-        );
+        GameState.hoveringTower.renderRangeGuide(ctx);
         renderCircleIndicator(
             ctx,
             x, y,

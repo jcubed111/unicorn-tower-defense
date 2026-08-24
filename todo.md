@@ -43,8 +43,6 @@ TODO:
 - tower types
     - fear?
     - zombie? -> turns unicorns to allies on death
-    - a better big hitter tower besides green & sniper
-
 
 - add wave effects to ocean
 - keyboard controls for tower building

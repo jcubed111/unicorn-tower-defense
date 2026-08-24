@@ -141,6 +141,17 @@ class Tower{
         );
     }
 
+    renderRangeGuide(ctx) {
+        renderCircleIndicator(
+            ctx,
+            ...this.center,
+            this.range,
+            0.5,
+            colorAsString(this.getColor()),
+            1,
+        );
+    }
+
     renderSpecialEffects(dt, ctx) {
         // pass
     }
@@ -202,7 +213,6 @@ const orderedTowerTypes = [
 
     // TODO: 5-cell towers (1 or 2?)
     // TODO: 'rrr| b | g ' maybe?
-    // TODO: A white tower
 
     // withTowerPattern('bbrbb', class extends Tower{
     //     displayName = 'Fear';
@@ -301,7 +311,49 @@ const orderedTowerTypes = [
         }
     }),
 
-    withTowerPattern('gg| b', class extends Tower{
+    withTowerPattern('grb', class extends Tower{
+        displayName = 'Beam';
+        range = 0;
+        chargeTime = 10 / 9;
+        damage = this.level * 2;
+        chargeRateModifier = 1 + this.level * 0.05;
+        extraDescription = `Beam`;
+
+        getRangePair() {
+            return this.componentTowers.length == 1
+                ? [0.5, 18]
+                : [18, 0.5];
+        }
+
+        renderRangeGuide(ctx) {
+            renderRectIndicator(
+                ctx,
+                ...this.center,
+                ...this.getRangePair(),
+                0.5,
+                colorAsString(this.getColor()),
+            );
+        }
+
+        getTargetsInRange([x, y] = this.center) {
+            const [rx, ry] = this.getRangePair();
+            return [...GameState.terrain.enemies].filter(
+                e => {
+                    const [ex, ey] = e.pos;
+                    return (
+                        ex >= x - rx
+                        && ex <= x + rx
+                        && ey >= y - ry
+                        && ey <= y + ry
+                        && ey > 0
+                        && e.hp > 0
+                    );
+                }
+            );
+        }
+    }),
+
+    withTowerPattern('gg|b ', class extends Tower{
         displayName = 'Poison';
         range = 3;
         chargeTime = 2;
