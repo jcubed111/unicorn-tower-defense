@@ -314,7 +314,7 @@ const orderedTowerTypes = [
     withTowerPattern('grb', class extends Tower{
         displayName = 'Beam';
         range = 0;
-        chargeTime = 10 / 9;
+        chargeTime = 1.5;
         damage = this.level * 2;
         chargeRateModifier = 1 + this.level * 0.05;
         extraDescription = `Beam`;

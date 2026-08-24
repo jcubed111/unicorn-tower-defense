@@ -2,10 +2,7 @@ TODO:
 - speed up, pause?
 
 - wave start sound effect
-- add level hover info to level select screen
-    - use a sprite renderer to render the terrain as a minimap to show? Extract the logic from the main render.
 - add more movement to intro screen? Unicorns running around?
-- need a way to restart level during level. Menu/esc. annoying to shoot for perfect without that feature.
 
 
 - Level ideas:

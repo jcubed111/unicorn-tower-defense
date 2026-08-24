@@ -148,10 +148,9 @@ h1{
     .C--statBar{
         @extend %flexRow;
         align-items: center;
-        justify-content: space-between;
-        line-height: 1;
+        justify-content: flex-end;
         font-size: 5rem;
-        margin: 2rem 2rem 1rem 14.5rem;
+        margin: 2rem 2rem 1rem 0;
     }
         .C--manaColor{
             color: #94d6ff;
@@ -160,9 +159,10 @@ h1{
             color: #d67cf7;
         }
         .C--heartNumber{
-            width: 15rem;
+            width: 10rem;
             text-align: center;
             color: #fff;
+            margin: 0 5rem 0 3rem;
         }
 
     .C--sidebarTitle{
