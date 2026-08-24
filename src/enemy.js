@@ -179,7 +179,7 @@ class Rhinocoricorn extends Enemy{
     // TODO: better rhino sprites?
     *getSprites() {
         for(const s of super.getSprites()) {
-            yield s.withColor([180, 180, 180, 255]);
+            yield s.withColor([160, 160, 160, 255]);
         }
     }
 }
@@ -260,7 +260,7 @@ class Rainbowicorn extends Enemy{
                 [6, 176, 78, 255],
                 [70, 68, 206, 255],
                 [172, 71, 191, 255],
-            ][(~~GameState.terrain.terrainTotalTime) % 6], 0.25));
+            ][(~~GameState.terrain.terrainTotalTime) % 6], 0.5));
             // Writing out the lerp uses (marginally) fewer bytes
             // than the precomputed versions:
             // [236, 204, 202, 255],

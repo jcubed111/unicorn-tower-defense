@@ -41,6 +41,7 @@ const asciiEl = document.getElementById('ascii');
 const asciiByteCountEl = document.getElementById('ascii-byte-count');
 const swatchEls = [...document.querySelectorAll('.swatch')];
 const reverseEl = document.getElementById('reverse');
+const coordsEl = document.getElementById('coords');
 
 // cells[index] -> the <div class="cell"> for that grid position
 const cells = new Array(N * N);
@@ -350,6 +351,19 @@ window.addEventListener('pointercancel', () => {
   painting = false;
 });
 
+// Readout of the cell under the pointer, in the same x/y the grid is indexed by.
+function showCoords(index) {
+  coordsEl.textContent = index === null ? 'x -, y -' : `x ${colOf(index)}, y ${rowOf(index)}`;
+}
+
+gridEl.addEventListener('pointermove', e => {
+  showCoords(cellIndexAtPoint(e.clientX, e.clientY));
+});
+
+gridEl.addEventListener('pointerleave', () => {
+  showCoords(null);
+});
+
 for (const swatch of swatchEls) {
   swatch.addEventListener('click', () => {
     selectedValue = Number(swatch.dataset.value);
@@ -459,3 +473,4 @@ asciiEl.addEventListener('input', () => {
 
 buildGrid();
 refreshFromGrid();
+showCoords(null);

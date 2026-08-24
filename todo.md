@@ -30,9 +30,7 @@ TODO:
 
 - enemy types
     - narwal-i-corn (swims, gives large mana. Dark shadow in water)
-    - rhino-i-corn
-        - add sprite
-    - dash-i-corn (dashes every n seconds, starting on first damage, using a rainbow trail effect)
+    - add dedicated rhino-i-corn sprite?
     - manticorn
 
 - enemy graphics

@@ -306,7 +306,7 @@ class Terrain{
             // number of enemies
             const numEnemies = Math.ceil(targetTotalHp * sampleEnemy.totalHpModifier / sampleEnemy.maxHp);
 
-            console.log('wave', waveIndex + 1, 'num enemies', numEnemies, 'hp', sampleEnemy.maxHp);
+            console.log('Wave', waveIndex + 1, ':', numEnemies, 'x', sampleEnemy.displayName, '@', sampleEnemy.maxHp, 'hp');
 
             return [waveIndex == 0 ? STARTING_WAVE_DELAY : WAVE_DELAY, () => {
                 GameState.toastWaveInfo(
