@@ -120,15 +120,15 @@ class Enemy{
         // Movement
         if(!this.targetLocation) {
             // TODO: support diagonals?
-            const [sx, sy] = this.getSquare();
+            const square = this.getSquare();
 
             // we're at the goal; spin in palce lol
-            if(GameState.terrain.descentMap[sx]?.[sy] == 0) {
+            if(grid2dAt(GameState.terrain.descentMap, square) == 0) {
                 this.facing += dt * speed * 2;
                 return;
             }
 
-            this.targetLocation = this.getTarget([sx, sy]);
+            this.targetLocation = this.getTarget(square);
         }
 
 
@@ -262,23 +262,27 @@ class Rainbowicorn extends Enemy{
     }
 
     getTarget(square) {
-        const [sx, sy] = square;
-        const w = GameState.terrain.descentMap[sx]?.[sy];
+        const w = grid2dAt(GameState.terrain.descentMap, square);
         // TODO: use min by descent map instead of find
-        let bridgeDir = CARDINAL_DIRS.find(([dx, dy]) =>
-            GameState.terrain.isGround[sx]?.[sy] == 1
-            && GameState.terrain.isGround[sx + dx]?.[sy + dy] == 0
-            && GameState.terrain.isGround[sx + 2 * dx]?.[sy + 2 * dy] == 1
-            && GameState.terrain.descentMap[sx + 2 * dx]?.[sy + 2 * dy] < w - 1
-        );
-        if(bridgeDir) {
-            const [dx, dy] = bridgeDir;
-            GameState.terrain.isGround[sx + dx][sy + dy] = dx == 0 ? 2 : 3;
+        let bridgePos = CARDINAL_DIRS.map(dir => {
+            // return gapPos | false
+            const gapPos = addVec(square, dir);
+            const landPos = addVecWithBScaled(square, dir, 2);
+            return grid2dAt(GameState.terrain.isGround, square) == 1
+                && grid2dAt(GameState.terrain.isGround, gapPos) == 0
+                && grid2dAt(GameState.terrain.isGround, landPos) == 1
+                && grid2dAt(GameState.terrain.descentMap, landPos) < w - 1
+                && gapPos;  // return the gap pos
+        }).find(f => f);
+
+        if(bridgePos) {
+            const [bx, by] = bridgePos;
+            const isVertical = bx == square[0];
+            GameState.terrain.isGround[bx][by] = isVertical ? 2 : 3;
             GameState.terrain.recomputeDerivedValues();
 
-            const bridgePos = addVec(square, bridgeDir);
             ParticleSystem.sparkleSpriteAt(
-                sprites[33].withRot(dx == 0 ? 0 : 1),
+                sprites[33].withRot(isVertical ? 0 : 1),
                 bridgePos,
                 0.25,
             );

@@ -49,18 +49,19 @@ class Terrain{
         while(next.length) {
             let [pos, val] = next.shift();
             const [x, y] = pos;
-            if(x < 0 || y < 0 || x >= this.size || y >= this.size || !this.isGround[x][y]) continue;
+            // grid2dAt returns undefined off the grid, so this also bounds-checks
+            if(!grid2dAt(this.isGround, pos)) continue;
 
             // make the descent map work through walls, but make it cost a ton. This allows monsters
             // to still move even if they get caught under a placed tower.
-            if(this.rawTowers[x][y][0]) val += DESCENT_WALL;
+            if(grid2dAt(this.rawTowers, pos)[0]) val += DESCENT_WALL;
 
-            if(this.descentMap[x][y] <= val) continue;
+            if(grid2dAt(this.descentMap, pos) <= val) continue;
             this.descentMap[x][y] = val;
             next.push(...CARDINAL_DIRS.map(dir => [addVec(pos, dir), val + 1]));
         }
         this.spawnLocations = range(this.size)
-            .filter(x => this.descentMap[x][0] < DESCENT_WALL)
+            .filter(x => grid2dAt(this.descentMap, [x, 0]) < DESCENT_WALL)
             .map(x => [x, -1]);
         if(this.spawnLocations.length == 0) {
             // error if there isn't any top spawn point
@@ -102,14 +103,15 @@ class Terrain{
                         const usedPrevTowerCounts = new Map();  // Map[Tower, usedCells: number]
                         // towerCells: Grid2d<[type, level, pos]>
                         // typed as such so it fits nicely into `towerGridToElement`
-                        const towerCells = mapGrid2d(sourcePatternForm, (maybeNeededTower, [dx, dy]) => {
+                        const towerCells = mapGrid2d(sourcePatternForm, (maybeNeededTower, d) => {
                             if(!maybeNeededTower) return null;
-                            if(maybeNeededTower[0] != unjoinedTowerColors[x + dx]?.[y + dy]) {
+                            const cellPos = addVec([x, y], d);
+                            if(maybeNeededTower[0] != grid2dAt(unjoinedTowerColors, cellPos)) {
                                 fits = false;
                                 return null;
                             }
                             // count how many cells of each previous tower we used
-                            prevTower = prevComputedTowersByLocation[x + dx][y + dy];
+                            prevTower = grid2dAt(prevComputedTowersByLocation, cellPos);
                             if(prevTower) {
                                 usedPrevTowerCounts.set(
                                     prevTower,
@@ -117,8 +119,8 @@ class Terrain{
                                 );
                             }
                             return [
-                                ...this.rawTowers[x + dx][y + dy],
-                                [x + dx, y + dy],
+                                ...grid2dAt(this.rawTowers, cellPos),
+                                cellPos,
                             ];
                         });
                         if(!fits) return;
@@ -156,14 +158,15 @@ class Terrain{
         return scaleVec([e.clientX - x, e.clientY - y], this.size / height);
     }
 
-    placeTower([x, y], towerType) {  // -> boolean, whether the tower could be placed
+    placeTower(pos, towerType) {  // -> boolean, whether the tower could be placed
         if(!towerType) return true;  // so we don't make an error noise
+        const [x, y] = pos;
         const cost = this.towerDrawCosts[towerType];
-        const [current, currentLevel] = this.rawTowers[x][y];
+        const [current, currentLevel] = grid2dAt(this.rawTowers, pos);
         if(
             (current && current != towerType )
             || currentLevel >= MAX_TOWER_LEVEL
-            || this.isGround[x][y] != 1
+            || grid2dAt(this.isGround, pos) != 1
             || (x == this.goalLocation[0] && y == this.goalLocation[1])
             || cost > this.mana
         ) {
@@ -454,11 +457,11 @@ class LevelSelectTerrain extends MockTerrain{
         });
     }
 
-    placeTower([x, y]) {
+    placeTower(pos) {
         // this just gets called on click, so we can use it for
         // level select.
         // Return false to make an error noise.
-        const level = this.levelIndices[x][y];
+        const level = grid2dAt(this.levelIndices, pos);
         if(!level || !this.levelIsUnlocked[level]) return false;
         this.onEndCb(level);
         return true;

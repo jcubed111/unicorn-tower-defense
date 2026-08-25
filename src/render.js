@@ -37,13 +37,14 @@ function renderRectIndicator(
 function renderTerrainBase(ctx, dt, terrain) {
     forEachGrid2d(terrain.isGround, (isGround, pos) => {
         const [x, y] = pos;
+        const maybeComputedTower = grid2dAt(terrain.computedTowersByLocation, pos);
         // ground edge
-        if(isGround != 1 && terrain.isGround[x][y - 1] == 1) {
+        if(isGround != 1 && grid2dAt(terrain.isGround, addVec(pos, [0, -1])) == 1) {
             renderSprite(ctx, pos, sprites[performance.now() & 1024 ? 7 : 11]);
         }
         if(isGround) {
             const sprite = isGround == 1
-                ? terrain.computedTowersByLocation[x][y]
+                ? maybeComputedTower
                     ? sprites[3].withColor([200,200,200,255])
                     : sprites[(x + 3 * y) % 7 ? 3 : 2]
                 // rainbow
@@ -56,13 +57,13 @@ function renderTerrainBase(ctx, dt, terrain) {
         }
 
         // Tower
-        const maybeComputedTower = terrain.computedTowersByLocation[x][y];
         if(maybeComputedTower) {
             for(const s of getTowerSprites(
                 pos,
-                terrain.rawTowers[x][y],
+                grid2dAt(terrain.rawTowers, pos),
                 maybeComputedTower.getColor(),
-                pos => grid2dAt(terrain.computedTowersByLocation, pos) == maybeComputedTower,
+                neighborPos =>
+                    grid2dAt(terrain.computedTowersByLocation, neighborPos) == maybeComputedTower,
             )) {
                 renderSprite(ctx, pos, s);
 
@@ -78,7 +79,7 @@ function renderTerrainBase(ctx, dt, terrain) {
         // // render descent map for debug
         // ctx.font = '3px sans-serif';
         // ctx.fillStyle = `#fff`;
-        // ctx.fillText(terrain.descentMap[x][y], x * tileSize + 2, y * tileSize + 2);
+        // ctx.fillText(grid2dAt(terrain.descentMap, pos), ...addVecWithBScaled([2, 2], pos, tileSize));
     });
 }
 
@@ -212,8 +213,8 @@ function render(dt) {
     if(GameState.hoveringPos && GameState.drawType) {
         const pos = GameState.hoveringPos.map(v => ~~v);
         const [x, y] = pos;
-        if(terrain.isGround[x]?.[y] == 1) {
-            const [towerType, towerLevel] = terrain.rawTowers[x][y];
+        if(grid2dAt(terrain.isGround, pos) == 1) {
+            const [towerType, towerLevel] = grid2dAt(terrain.rawTowers, pos);
             const spriteOffsetForLevel = towerType == GameState.drawType ? towerLevel : 0;
             if(spriteOffsetForLevel <= 2) {
                 const spriteIndex = [
