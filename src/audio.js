@@ -13,6 +13,21 @@ const ENEMY_DEATH = [.002, .07, .05, .3];
 
 const AudioSystem = new class {
     ctx = new window.AudioContext();
+    sfxGain = this.ctx.createGain();
+    bgMusicGain = this.ctx.createGain();
+
+    constructor() {
+        this.sfxGain.connect(this.ctx.destination);
+        this.sfxGain.gain.value = getLocalStorageItem('S') ?? 1;
+        this.bgMusicGain.connect(this.ctx.destination);
+        this.bgMusicGain.gain.value = getLocalStorageItem('M') ?? 1;
+    }
+
+    setSourceOnOff(isBg, isOn) {
+        (isBg ? this.bgMusicGain : this.sfxGain).gain
+            .setTargetAtTime(isOn, this.ctx.currentTime, 0.01);
+        setLocalStorageItem('SM'[isBg], isOn);
+    }
 
     playTowerBolt(dNote) {
         this.scheduleNote(
@@ -61,11 +76,7 @@ const AudioSystem = new class {
         );
     }
 
-    // playNoteNow(...args) {
-    //     this.scheduleNote(this.ctx.currentTime, ...args);
-    // }
-
-    scheduleNote(atTime, midiNumber, noteLength, instrument, volume = 1) {
+    scheduleNote(atTime, midiNumber, noteLength, instrument, volume = 1, isBg = 0) {
         const [
             attack,
             decay,
@@ -80,7 +91,7 @@ const AudioSystem = new class {
         });
         const gain = this.ctx.createGain();
 
-        osc.connect(gain).connect(this.ctx.destination);
+        osc.connect(gain).connect(isBg ? this.bgMusicGain : this.sfxGain);
 
         gain.gain.setValueAtTime(0, atTime);
         gain.gain.linearRampToValueAtTime(volume, atTime + attack);
@@ -176,6 +187,7 @@ const AudioSystem = new class {
                 duration * beatLength,
                 [0.005, 0.4, 0.15, 0.3, 'sine'],
                 0.20,  // hardcoded bg music volume
+                1,  // send to background output
             );
             beat += duration;
         }

@@ -94,6 +94,30 @@ const initHtml = () => {
                 ),
 
                 GameState.runebook = scrollDiv('C--runeBook'),
+
+                div('',
+                    styled('label', 'C--audioCheckLabel'),
+                    styled('label', 'C--audioCheckLabel',
+                        wrapEl(styled('input'), el => {
+                            el.type = 'checkbox';
+                            el.checked = AudioSystem.bgMusicGain.gain.value;
+                            el.addEventListener('change', e => {
+                                AudioSystem.setSourceOnOff(1, el.checked)
+                            });
+                        }),
+                        'Music',
+                    ),
+                    styled('label', 'C--audioCheckLabel',
+                        wrapEl(styled('input'), el => {
+                            el.type = 'checkbox';
+                            el.checked = AudioSystem.sfxGain.gain.value;
+                            el.addEventListener('change', e => {
+                                AudioSystem.setSourceOnOff(0, el.checked)
+                            });
+                        }),
+                        'Sfx',
+                    ),
+                ),
             ),
             GameState.waveInfoToast = div('C--waveInfoToast C--fullscreen C--waveInfoToastOut'),
             div('C--topLeft', // NOTE: the css depends on this being after sidebar
