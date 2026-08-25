@@ -46,7 +46,9 @@ const randVec = mag => {
 
 /* Vector2 helpers */
 // Vectors are [x, y] tuples.
-const addVec = (...vs) => vs.reduce((a, b) => [a[0] + b[0], a[1] + b[1]]);
+const addVec = (a, b, s = 1) => [a[0] + b[0] * s, a[1] + b[1] * s],
+    // the same function; call it by this name wherever a scale factor is passed
+    addVecWithBScaled = addVec;
 const scaleVec = (v, s) => [v[0] * s, v[1] * s];
 const dist2Vec = (a, b) => (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2;
 // In ccw rotation order from (0, -1)

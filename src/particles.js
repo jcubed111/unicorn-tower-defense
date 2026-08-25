@@ -1,7 +1,7 @@
 const MANA_POOL_POS = [16, 0];
 const HEART_POS = [18, 0]
 // Where mana gain particles land, in sprite pixels
-const MANA_POOL_PARTICLE_TARGET = addVec(scaleVec(MANA_POOL_POS, 15), [7, 7]);
+const MANA_POOL_PARTICLE_TARGET = addVecWithBScaled([7, 7], MANA_POOL_POS, 15);
 
 
 class Particle{
@@ -16,7 +16,7 @@ class Particle{
     }
     posFn() {
         const dist = this.age - 0.25 * Math.log(1 + 3.6 * this.age);
-        return addVec(this.pos, scaleVec(this.asymptoticDriftVel, dist));
+        return addVecWithBScaled(this.pos, this.asymptoticDriftVel, dist);
     }
 
     constructor(pos) {
@@ -43,12 +43,20 @@ class ManaGainParticle extends Particle{
     /** @type {!Array<number>} */
     ctrlB = randVec(randFloat(30, 75));
 
+    // A quadratic bezier from the spawn point to the mana pool, with `ctrlB` as
+    // the middle control point stored relative to the spawn point.
+    // Substituting B = pos + ctrlB into the usual
+    //     (1-t)^2 pos + 2t(1-t) B + t^2 target
+    // gives 2t(1-t) pos worth of extra `pos`, and (1-t)^2 + 2t(1-t) == 1 - t^2,
+    // so the two endpoint terms collapse into a single lerp by t^2:
+    //     lerp(pos, target, t^2) + 2t(1-t) ctrlB
+    // which is one lerp and one scaled add instead of three scales and two adds.
     posFn() {
         const t = this.age / this.lifespan;
-        return addVec(
-            scaleVec(this.pos, 1 - t * t),
-            scaleVec(MANA_POOL_PARTICLE_TARGET, t * t),
-            scaleVec(this.ctrlB, 2 * t * (1 - t)),
+        return addVecWithBScaled(
+            lerpArr(this.pos, MANA_POOL_PARTICLE_TARGET, t * t),
+            this.ctrlB,
+            2 * t * (1 - t),
         );
     }
 
@@ -94,7 +102,7 @@ class ExplodeFadeParticle extends Particle{
     }
 
     posFn() {
-        return addVec(this.pos, scaleVec(this.vel, this.age));
+        return addVecWithBScaled(this.pos, this.vel, this.age);
     }
 }
 
@@ -123,7 +131,7 @@ const ParticleSystem = new class{
     spawnParticlePixelLine(aPos, bPos, makeParticleCb, density = 1) {
         const a = scaleVec(aPos, 15).map(Math.floor);
         const b = scaleVec(bPos, 15).map(Math.floor);
-        const num = Math.max(...addVec(b, scaleVec(a, -1)).map(Math.abs));
+        const num = Math.max(...addVecWithBScaled(b, a, -1).map(Math.abs));
         range(num + 1).filter(_ => Math.random() < density).map(i => this.addParticle(makeParticleCb(
             lerpArr(a, b, i / num).map(Math.round),
         )));
@@ -146,7 +154,7 @@ const ParticleSystem = new class{
             // sprite data2d is row-major, so asIndexed entries are [y, x, color]
             sprite.asIndexed.forEach(([fy, fx, color]) => {
                 this.addParticle(new ExplodeFadeParticle(
-                    addVec(scaleVec(pos, 15), [fx, fy]),
+                    addVecWithBScaled([fx, fy], pos, 15),
                     color,
                 ));
             })
@@ -163,7 +171,7 @@ const ParticleSystem = new class{
             .map(_ => randChoice(sprite.asIndexed))
             .forEach(([fy, fx, color]) =>
                 ParticleSystem.addParticle(
-                    makeParticleCb(addVec(scaleVec(pos, 15), [fx, fy]), color)
+                    makeParticleCb(addVecWithBScaled([fx, fy], pos, 15), color)
                 )
             )
     }

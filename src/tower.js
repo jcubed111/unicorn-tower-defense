@@ -104,7 +104,7 @@ class Tower{
             this.center = addVec(this.center, maybeTower[2] ?? [0, 0]);
             this.size++;
         });
-        this.center = addVec(scaleVec(this.center, 1 / this.size), [0.5, 0.5]);
+        this.center = addVecWithBScaled([0.5, 0.5], this.center, 1 / this.size);
     }
 
     _asHoverElResult;
@@ -436,9 +436,10 @@ const orderedTowerTypes = [
 
         getChargeOrbLocation(i) {
             const angle = performance.now() / 6e3 + i * Math.PI * 2 / this.maxCharge;
-            return addVec(
+            return addVecWithBScaled(
                 this.center,
-                scaleVec([Math.cos(angle), Math.sin(angle)], 0.7),
+                [Math.cos(angle), Math.sin(angle)],
+                0.7,
             );
         }
 

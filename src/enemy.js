@@ -132,7 +132,7 @@ class Enemy{
         }
 
 
-        const delta = addVec(this.targetLocation, scaleVec(this.pos, -1));
+        const delta = addVecWithBScaled(this.targetLocation, this.pos, -1);
         const [dx, dy] = delta;
         const dist = Math.hypot(dx, dy);
         const moveAmount = speed * dt;
@@ -140,7 +140,7 @@ class Enemy{
             this.pos = this.targetLocation;
             this.targetLocation = null;
         }else{
-            this.pos = addVec(this.pos, scaleVec(delta, moveAmount / dist));
+            this.pos = addVecWithBScaled(this.pos, delta, moveAmount / dist);
         }
 
         // update facing direction
@@ -276,15 +276,16 @@ class Rainbowicorn extends Enemy{
             GameState.terrain.isGround[sx + dx][sy + dy] = dx == 0 ? 2 : 3;
             GameState.terrain.recomputeDerivedValues();
 
+            const bridgePos = addVec(square, bridgeDir);
             ParticleSystem.sparkleSpriteAt(
                 sprites[33].withRot(dx == 0 ? 0 : 1),
-                addVec(square, bridgeDir),
+                bridgePos,
                 0.25,
             );
-            // ParticleSystem.explodeSpritesAt(addVec(square, bridgeDir), sprite);
+            // ParticleSystem.explodeSpritesAt(bridgePos, sprite);
 
             // always move to the new bridge
-            return addVec(square, bridgeDir, [0.5, 0.5]);
+            return addVec(bridgePos, [0.5, 0.5]);
         }
 
         return super.getTarget(square);

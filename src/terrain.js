@@ -443,7 +443,7 @@ class LevelSelectTerrain extends MockTerrain{
                 }else{
                     ctx.fillStyle = '#fff';
                 }
-                ctx.fillText(i, ...addVec(scaleVec(pos, 15), [7.5, 10]));
+                ctx.fillText(i, ...addVecWithBScaled([7.5, 10], pos, 15));
             }else{
                 renderSprite(ctx, pos, sprites[32].withColor([10, 56, 10, 255]));
             }

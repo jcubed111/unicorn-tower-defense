@@ -29,7 +29,7 @@ function renderRectIndicator(
     ctx.strokeStyle = lineColor;
     ctx.lineCap = 'butt';
     ctx.strokeRect(
-        ...scaleVec(addVec(pos, scaleVec(radii, -1)), 15),
+        ...scaleVec(addVecWithBScaled(pos, radii, -1), 15),
         ...scaleVec(radii, 30),
     );
 }
