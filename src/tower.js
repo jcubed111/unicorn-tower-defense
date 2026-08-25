@@ -394,7 +394,7 @@ const orderedTowerTypes = [
     withTowerPattern('rb', class extends Tower{
         displayName = 'Charge';
         range = 2;
-        chargeTime = 3.5;
+        chargeTime = 4;
         damage = 2 * this.level;
         /** @type {number} */
         maxCharge = this.level + 2;
@@ -487,7 +487,7 @@ const orderedTowerTypes = [
         // simple bolt tower
         range = 2.75 + 0.25 * this.level;
         chargeTime = 2;
-        damage = 3 * this.level;
+        damage = 1 + 2 * this.level;
         isDiscovered() { return true; }
     }),
 

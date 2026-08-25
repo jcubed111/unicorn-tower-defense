@@ -4,6 +4,8 @@ TODO:
 - wave start sound effect
 - add more movement to intro screen? Unicorns running around?
 - toast when new tower discovered
+- subtract dire acc from hp bar display?
+- give charge a 0.2 range boost per level?
 
 - Level ideas:
     - intro (easy)
