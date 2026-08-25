@@ -4,12 +4,20 @@ const HEART_POS = [18, 0]
 const MANA_POOL_PARTICLE_TARGET = addVecWithBScaled([7, 7], MANA_POOL_POS, 15);
 
 
+// Record<key, color[]>
+// Most particle's key into this is some class-unique int + their base color
+// Pretty important that this doesn't have conflicts, NOR grow unbounded.
+// So, like, don't incorporate anything random into the key.
+const globalColorCache = {};
+
+
 class Particle{
     age = 0;
     lifespan = 2;
 
     grad = [];
     _colorCache;
+    _globalColorCacheKey;  // needs to be set in child
 
     colorFn(agePct, ageSec) {
         return lerpGrad(this.grad, agePct);
@@ -28,7 +36,8 @@ class Particle{
     }
 
     render(ctx) {
-        this._colorCache ??= range(256).map(
+        if(!this._globalColorCacheKey) console.error('Need _globalColorCacheKey in particle')
+        this._colorCache ??= globalColorCache[this._globalColorCacheKey] ??= range(256).map(
             i => colorAsString(this.colorFn(i / 255, i / 255 * this.lifespan))
         );
         ctx.fillStyle = this._colorCache[~~(this.age / this.lifespan * 256)];
@@ -42,6 +51,8 @@ class ManaGainParticle extends Particle{
     lifespan = randFloat(1, 1.3);
     /** @type {!Array<number>} */
     ctrlB = randVec(randFloat(30, 75));
+
+    _globalColorCacheKey = 1;
 
     // A quadratic bezier from the spawn point to the mana pool, with `ctrlB` as
     // the middle control point stored relative to the spawn point.
@@ -74,6 +85,7 @@ class EnergyFadeParticle extends Particle{
             withAlpha(baseColor, 0),
         ];
         this.lifespan = lifespan;
+        this._globalColorCacheKey = 2 + colorAsString(baseColor);
     }
 }
 
@@ -92,6 +104,7 @@ class FireParticle extends Particle{
         [255, 211, 101, 255], [255, 102, 0, 255], [185, 34, 0, 255],
         [75, 75, 75, 255], [49, 49, 49, 255], [5, 5, 5, 0]
     ];
+    _globalColorCacheKey = 3;
 }
 
 class ExplodeFadeParticle extends Particle{
@@ -99,6 +112,7 @@ class ExplodeFadeParticle extends Particle{
         super(pos);
         this.grad = [color, withAlpha(color, 0)];
         this.vel = randVec(speed);
+        this._globalColorCacheKey = 4 + colorAsString(color);
     }
 
     posFn() {
@@ -113,12 +127,20 @@ const ParticleSystem = new class{
         this.particles.add(p);
     }
 
-    render(ctx) {
-        for(const p of this.particles) p.render(ctx);
-    }
+    render(dt, ctx) {
+        if(dt > 1/25 && this.particles.size > 200) {
+            console.log("Slow frame, removing particles. Was: ", this.particles.size);
+            // Note that iterating a set is in insertion order, so this removes
+            // the 100 oldest particles.
+            let i = 0;
+            for(const p of this.particles) {
+                this.particles.delete(p);
+                if(++i > 100) break;
+            }
+        }
 
-    step(dt) {
         for(const p of this.particles) {
+            p.render(ctx);
             p.age += dt;
             if(p.age > p.lifespan) this.particles.delete(p);
         }

@@ -7,15 +7,20 @@ TODO:
 - subtract fire acc from hp bar display?
 - give charge a 0.2 range boost per level?
 
+- "Pondering your orb reveals a vision..."
+    - combine crystal ball image with an undiscovered tower picture
+    - replace one square of the tower with '?', but keep the color.
+    - each level has a set tower it _can_ reaveal if undiscovered.
+    - try to make it make sense, eg, the no-red level reveals sniper
+
 - Level ideas:
-    - intro (easy)
-    - intro 2
     - wide open path
-    - extra swarm
-    - extra armor
+    - all-ish swarm
+    - all-ish armor
     - Pegacorn focus
-    - fixed unicorn path (rainbow bridge?)
-    - no runes of a certain color??
+    - fixed unicorn path (rainbow bridge?) - almost have this
+    - no blue runes
+        - maybe switch 10+11 -> 12+13, then make 14 (optional) the no blue one?
 
 - bg music
 

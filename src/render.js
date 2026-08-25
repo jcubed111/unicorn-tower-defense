@@ -178,8 +178,7 @@ function render(dt) {
     GameState.terrain.renderSpecialEffects(dt, ctx);
 
     // Draw particles
-    ParticleSystem.render(ctx);
-    ParticleSystem.step(dt);
+    ParticleSystem.render(dt, ctx);
 
     // Draw hovered tower info
     if(GameState.hoveringElOverride) {
