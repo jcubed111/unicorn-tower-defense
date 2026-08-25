@@ -68,13 +68,13 @@ const showLevelEndMenu = (levelNum, isSuccess, isPerfect) => {
 };
 
 let waveToastStacks = 0;  // ensures an earlier toast won't remove the new toast
-GameState.toastWaveInfo = async (title, ...subtext) => {
+GameState.toastWaveInfo = async (title, ...rest) => {
     GameState.waveInfoToast.replaceChildren(
         div('C--larger', title),
-        ...subtext.map(s => div('C--secondary', s)),
+        ...rest,
     );
     GameState.waveInfoToast.classList.toggle('C--waveInfoToastOut', !++waveToastStacks);
-    await time(2e3);
+    await time(3e3);
     GameState.waveInfoToast.classList.toggle('C--waveInfoToastOut', !--waveToastStacks);
 }
 

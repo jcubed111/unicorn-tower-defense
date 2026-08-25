@@ -164,6 +164,11 @@ class Tower{
         if(!this.isDiscovered()) {
             setLocalStorageItem(this.displayName, 1);
             GameState.rerenderRunebook();
+            GameState.toastWaveInfo(
+                'New Tower Discovered!',
+                this.displayName,
+                this.constructor.sourcePattern.makeElement(),
+            );
         }
     }
 
@@ -209,6 +214,23 @@ class Tower{
     }
 }
 
+let Meteor,
+    Heavy,
+    Sniper,
+    Slow,
+    Allegro,
+    AntiArmor,
+    Fire,
+    Beam,
+    Poison,
+    Ring,
+    ManaLeech,
+    Charge,
+    Lightning,
+    Red,
+    Green,
+    Blue;
+
 const orderedTowerTypes = [
     // IMPORTANT: this needs to be ordered from highest priority -> lowest. Usually this means larger towers come first.
 
@@ -220,7 +242,7 @@ const orderedTowerTypes = [
     //     // TODO
     // }),
 
-    withTowerPattern(' g |rrr| b ', class extends Tower{
+    Meteor = withTowerPattern(' g |rrr| b ', class extends Tower{
         displayName = 'Meteor';
         damage = 4 * this.level;
         fireDamagePerSec = this.level / 3;
@@ -247,21 +269,21 @@ const orderedTowerTypes = [
         }
     }),
 
-    withTowerPattern(' b |grg', class extends Tower{
+    Heavy = withTowerPattern(' b |grg', class extends Tower{
         displayName = 'Heavy';
         chargeTime = 1;
         damage = ~~(1.5 * this.level);
         range = 1 + this.level / 3;
     }),
 
-    withTowerPattern('gb|bb', class extends Tower{
+    Sniper = withTowerPattern('gb|bb', class extends Tower{
         displayName = 'Sniper';
         chargeTime = 5;
         /** @type {number} */ range = 2 + this.level;
         damage = 5 * this.level;
     }),
 
-    withTowerPattern('bb|bb', class extends Tower{
+    Slow = withTowerPattern('bb|bb', class extends Tower{
         displayName = 'Slow';
         damage = 0;
         slowAmount = 3 / this.level;
@@ -276,7 +298,7 @@ const orderedTowerTypes = [
         }
     }),
 
-    withTowerPattern('gg | gb', class extends Tower{
+    Allegro = withTowerPattern('gg | gb', class extends Tower{
         displayName = 'Allegro';
         // high speed bolt tower
         range = 3.5;
@@ -284,7 +306,7 @@ const orderedTowerTypes = [
         damage = 2 + (this.level >> 2);
     }),
 
-    withTowerPattern('rg|bb', class extends Tower{
+    AntiArmor = withTowerPattern('rg|bb', class extends Tower{
         displayName = 'Anti-Armor';
         range = 4;
         chargeTime = 8 / this.level;
@@ -303,7 +325,7 @@ const orderedTowerTypes = [
         }
     }),
 
-    withTowerPattern('rgr', class extends Tower{
+    Fire = withTowerPattern('rgr', class extends Tower{
         displayName = 'Fire';
         damage = -1;  // so we don't show at all
         fireDamagePerSec = this.level / 3;
@@ -326,7 +348,7 @@ const orderedTowerTypes = [
         }
     }),
 
-    withTowerPattern('grb', class extends Tower{
+    Beam = withTowerPattern('grb', class extends Tower{
         displayName = 'Beam';
         range = 0;
         chargeTime = 2;
@@ -368,7 +390,7 @@ const orderedTowerTypes = [
         }
     }),
 
-    withTowerPattern('gg|b ', class extends Tower{
+    Poison = withTowerPattern('gg|b ', class extends Tower{
         displayName = 'Poison';
         range = 3;
         chargeTime = 2;
@@ -387,7 +409,7 @@ const orderedTowerTypes = [
         }
     }),
 
-    withTowerPattern('rb|r ', class extends Tower{
+    Ring = withTowerPattern('rb|r ', class extends Tower{
         displayName = 'Ring';
         range = 5;
         minRange = 3;
@@ -414,7 +436,7 @@ const orderedTowerTypes = [
         }
     }),
 
-    withTowerPattern('gb', class extends Tower{
+    ManaLeech = withTowerPattern('gb', class extends Tower{
         displayName = 'Mana Leech';
         range = 2;
         chargeTime = 2;
@@ -434,7 +456,7 @@ const orderedTowerTypes = [
         }
     }),
 
-    withTowerPattern('rb', class extends Tower{
+    Charge = withTowerPattern('rb', class extends Tower{
         displayName = 'Charge';
         range = 2;
         chargeTime = 4;
@@ -480,7 +502,7 @@ const orderedTowerTypes = [
         }
     }),
 
-    withTowerPattern('gr', class extends Tower{
+    Lightning = withTowerPattern('gr', class extends Tower{
         displayName = 'Lightning';
         chain = this.level - 1;
         extraDescription = [this.chain, 'chain'];
@@ -506,7 +528,7 @@ const orderedTowerTypes = [
         }
     }),
 
-    withTowerPattern('r', class extends Tower{
+    Red = withTowerPattern('r', class extends Tower{
         displayName = 'Red';
         extraDescription = 'AoE';
         // hits all enemies in range on each shot
@@ -524,7 +546,7 @@ const orderedTowerTypes = [
         isDiscovered() { return true; }
     }),
 
-    withTowerPattern('g', class extends Tower{
+    Green = withTowerPattern('g', class extends Tower{
         displayName = 'Green';
         // simple bolt tower
         range = 2.75 + 0.25 * this.level;
@@ -533,7 +555,7 @@ const orderedTowerTypes = [
         isDiscovered() { return true; }
     }),
 
-    withTowerPattern('b', class extends Tower{
+    Blue = withTowerPattern('b', class extends Tower{
         displayName = 'Blue';
         // Doesn't attack, just blocks
         chargeTime = 0;

@@ -54,7 +54,7 @@ GameState.rerenderRunebook = () => {
 };
 
 const initHtml = () => {
-    GameState.runeButtons = orderedTowerTypes.slice(-3).map((T, i) => {
+    GameState.runeButtons = [Red, Green, Blue].map((T, i) => {
         return div(
             'C--runeButtonWrapper',
             div(),  // cost

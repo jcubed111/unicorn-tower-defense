@@ -56,10 +56,10 @@ const getTerrainForLevel = (n, resolveCb) => {
     return terrain;
 }
 
-const runOrbPonder = towerIndex => () => {
-    if(new orderedTowerTypes[towerIndex]([]).isDiscovered()) return;
+const runOrbPonder = TowerType => () => {
+    if(new TowerType([]).isDiscovered()) return;
 
-    const pattern = orderedTowerTypes[towerIndex].sourcePattern;
+    const pattern = TowerType.sourcePattern;
     const gridClone = mapGrid2d(pattern.asGrid, n => n);
     const [px, py] = randChoice(
         grid2dToIndexed(gridClone).filter(g => g[2])
@@ -81,20 +81,6 @@ const runOrbPonder = towerIndex => () => {
         `Pondering your orb reveals a vision...`,
     );
 };
-
-// preLevelStoryContent: runOrbPonder(0)  // Meteor
-// preLevelStoryContent: runOrbPonder(1)  // Heavy
-// preLevelStoryContent: runOrbPonder(2)  // Sniper
-// preLevelStoryContent: runOrbPonder(3)  // Slow
-// preLevelStoryContent: runOrbPonder(4)  // Allegro
-// preLevelStoryContent: runOrbPonder(5)  // Anti-Armor
-// preLevelStoryContent: runOrbPonder(6)  // Fire
-// preLevelStoryContent: runOrbPonder(7)  // Beam
-// preLevelStoryContent: runOrbPonder(8)  // Poison
-// preLevelStoryContent: runOrbPonder(9)  // Ring
-// preLevelStoryContent: runOrbPonder(10)  // Mana Leech
-// preLevelStoryContent: runOrbPonder(11)  // Charge
-// preLevelStoryContent: runOrbPonder(12)  // Lightning
 
 const levelData = [
     {},
@@ -158,7 +144,7 @@ const levelData = [
     {
         preLevelStoryContent: async () => {
             await showEventText()(
-                wrapEventImage(orderedTowerTypes.at(-4).sourcePattern.makeElement()),
+                wrapEventImage(Lightning.sourcePattern.makeElement()),
                 `Multiple runes can be combined to make stronger towers.\n\nTry making a lightning tower from a red and green rune.`,
             );
         },
@@ -201,7 +187,7 @@ const levelData = [
 
     // Level 4 (parallel to 5) Mob focus
     {
-        preLevelStoryContent: runOrbPonder(0),
+        preLevelStoryContent: runOrbPonder(Lightning),
         terrainString: '...////.............///3336......./////...////...///////3/////...///////./////...//////.../////...//..0.....///....0.////..7///...////////3;.//...////////...//..//////////.7;...//////////.0..../////////..///..////////..////../////.0.91////........415......',
         goalLocation: [14, 14],
         waves: [
@@ -217,6 +203,7 @@ const levelData = [
 
     // Level 5 (parallel to 4) Armor focus
     {
+        preLevelStoryContent: runOrbPonder(Charge),
         extraSetup(terrain) {
             terrain.rawTowers[10][13] = [3, 1];
             terrain.rawTowers[11][13] = [3, 1];
@@ -239,8 +226,8 @@ const levelData = [
     // Level 6: This level is actually pretty hard as written,
     // cause runner + boss are very different. Miniboss.
     {
-        goalLocation: [10, 15],
         terrainString: '..///////.........///////36.......//////..2..........0....2..........41//15............//..............2...////...///..2...////../////.2.7336//../////15.0//2//../////...0//2.....///....0..2......2...73;..2......:333;..../..............///............/////.',
+        goalLocation: [10, 15],
         waves: [
             Enemy,
             Enemy,
@@ -255,6 +242,7 @@ const levelData = [
     },
     // Level 7: Optional - no 2x2 tower spots
     {
+        preLevelStoryContent: runOrbPonder(ManaLeech),
         terrainString: '...././././././.....///.///.///....../.../.../......///.///.///..733/.///.///./..0..///.///.///..0.../.../.../...//.///.///.///...///.///.///./..//.///.///.///../.../.../.../...//.///.///.///...///.///.///./..//.///.///.///......0...2...........41115......',
         goalLocation: [1, 13],
         waves: [
@@ -272,8 +260,9 @@ const levelData = [
     },
     // Level 8: Rainbowicorn
     {
-        goalLocation: [9, 14],
+        preLevelStoryContent: runOrbPonder(Poison),
         terrainString: '...///..////.......///./////.......//../////36.....//.///....2.....////...//.2.....//...////15........//////.......///////........./////...///...73///.../////6..0.....//////.2..0...///.///..2..0.///////...//..41/////...////....////..//////.................',
+        goalLocation: [9, 14],
         waves: [
             Enemy,
             Enemy,
@@ -289,8 +278,9 @@ const levelData = [
     },
     // Level 9
     {
-        goalLocation: [6, 13],
+        preLevelStoryContent: runOrbPonder(Beam),
         terrainString: '...0...///.........0.///////.....73;.////////....0...////.////...4118.///.//.//.....0.///.//.//..733;..//.//.//..0...../////./...411118.//////........0....///...73333;.///////..0.....////////..0...//////////..41111/////////....../////////..................',
+        goalLocation: [6, 13],
         waves: [
             Enemy,
             Enemy,
@@ -305,10 +295,15 @@ const levelData = [
             SwarmEnemy,
         ],
     },
-    // Level 10: no red
+    // Level: 10 - runners
+    null,
+        // preLevelStoryContent: runOrbPonder(Slow),
+    // Level: 11 - armored
+    null,
+        // preLevelStoryContent: runOrbPonder(AntiArmor),
+    // Level 12: no red
     {
-        terrainString: '.......0.............73;..////.......0...//////....73;...//////....0.....//////...///.....////.../////....2..2.../////11115.95.../////......2..../////.....///.../////..../////...///..733/////........0../////.....////../////....//////..///.....//////.......',
-        goalLocation: [4, 15],
+        preLevelStoryContent: runOrbPonder(Sniper),
         extraSetup(terrain) {
             terrain.markLocation(
                 [5, 8],
@@ -323,6 +318,8 @@ const levelData = [
             );
             terrain.extraTowerValidation = (pos, towerType) => towerType != 1;
         },
+        terrainString: '.......0.............73;..////.......0...//////....73;...//////....0.....//////...///.....////.../////....2..2.../////11115.95.../////......2..../////.....///.../////..../////...///..733/////........0../////.....////../////....//////..///.....//////.......',
+        goalLocation: [4, 15],
         waves: [
             Enemy,
             SwarmEnemy,
@@ -336,10 +333,12 @@ const levelData = [
             Rhinocoricorn,
         ],
     },
-    // Level 11: no green
+    // Level: 13: OPTIONAL no blue
+        // preLevelStoryContent: runOrbPonder(Fire),
+    null,
+    // Level 14: no green
     {
-        terrainString: '..........///..............///...736.///...///...0.//////...///..4////////..///...///..////.///..///....///.///..///...////.///..//...////..///..///.////...///..///..//...////...///......///...7/////../////6..0.//////////.2..415.//////.415.................',
-        goalLocation: [7, 10],
+        preLevelStoryContent: runOrbPonder(Ring),
         extraSetup(terrain) {
             terrain.markLocation(
                 [7, 8],
@@ -354,6 +353,8 @@ const levelData = [
             );
             terrain.extraTowerValidation = (pos, towerType) => towerType != 2;
         },
+        terrainString: '..........///..............///...736.///...///...0.//////...///..4////////..///...///..////.///..///....///.///..///...////.///..//...////..///..///.////...///..///..//...////...///......///...7/////../////6..0.//////////.2..415.//////.415.................',
+        goalLocation: [7, 10],
         waves: [
             Enemy,
             Rhinocoricorn,
@@ -367,4 +368,13 @@ const levelData = [
             RunnerEnemy,
         ],
     },
+
+    // Level: 15
+    // Level: 16
+    // Level: 17
+    // Level: 18
+
+        // preLevelStoryContent: runOrbPonder(Allegro),
+        // preLevelStoryContent: runOrbPonder(Heavy),
+        // preLevelStoryContent: runOrbPonder(Meteor),
 ];

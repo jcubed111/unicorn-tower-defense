@@ -342,7 +342,7 @@ class Terrain{
             return [waveIndex == 0 ? STARTING_WAVE_DELAY : WAVE_DELAY, () => {
                 GameState.toastWaveInfo(
                     `Wave ${waveIndex + 1}`,
-                    `${sampleEnemy.displayName} × ${numEnemies}`,
+                    div('C--secondary', `${sampleEnemy.displayName} × ${numEnemies}`),
                 );
                 range(numEnemies).forEach(i => {
                     this.actionQueue.add([
