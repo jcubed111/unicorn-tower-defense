@@ -254,7 +254,6 @@ const orderedTowerTypes = [
         range = 3.5;
         chargeTime = 2 / this.level;
         damage = 3;
-        isDiscovered() { return true; }
     }),
 
     withTowerPattern('rg|bb', class extends Tower{

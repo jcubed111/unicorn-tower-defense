@@ -302,17 +302,27 @@ class Terrain{
             setTimeout(_ => ignoreButton = false, 250);
         });
 
+        console.log('--------------------')
+        console.log('Wave list:')
+
         this.upcomingWaves = enemyConstructors.map((WaveCls, waveIndex) => {
             // Derive the wave metrics
-            const targetTotalHp = 15 * 1.5 ** waveIndex;
+            const targetTotalHp = 15 + 2.5 * waveIndex ** 2;
             const sampleEnemy = new WaveCls(waveIndex, [0, 0]);
 
             // delay per monster
             const enemyDelay = sampleEnemy.delayPerMonster;
             // number of enemies
-            const numEnemies = Math.ceil(targetTotalHp * sampleEnemy.totalHpModifier / sampleEnemy.maxHp);
+            const numEnemies = Math.round((targetTotalHp / sampleEnemy.hpToNumRatio) ** 0.5)
+                || 1;  // always produce at least 1 enemy
+            const enemyHp = Math.round(targetTotalHp / numEnemies)
+                || 1;  // always have at least 1 hp
 
-            console.log('Wave', waveIndex + 1, ':', numEnemies, 'x', sampleEnemy.displayName, '@', sampleEnemy.maxHp, 'hp');
+            console.log(
+                'Wave', waveIndex + 1, ':',
+                numEnemies, 'x',
+                sampleEnemy.displayName,
+                '@', enemyHp, 'hp', sampleEnemy.armor, 'armor');
 
             return [waveIndex == 0 ? STARTING_WAVE_DELAY : WAVE_DELAY, () => {
                 GameState.toastWaveInfo(
@@ -324,7 +334,7 @@ class Terrain{
                         this.terrainTotalTime + i * enemyDelay,
                         () => {
                             const e = new WaveCls(waveIndex, randChoice(this.spawnLocations));
-                            e.hp = e.maxHp;
+                            e.hp = e.maxHp = enemyHp;
                             this.enemies.add(e);
                         },
                     ]);

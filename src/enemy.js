@@ -1,22 +1,23 @@
-class AbcEnemy{
-    // need a super class to force init order to put level first
-    // Note that the first wave is level `0`
-    level = 0;
-    constructor(level, pos) {
-        this.level = level;
-        this.pos = pos.map(v => v + 0.5);
-    }
-}
-
-class Enemy extends AbcEnemy{
+class Enemy{
     displayName = 'Unicorn';
     speed = 2;  // squares/sec
-    armor = this.level >> 2;
+    // armor = this.level >> 2;  // set in constructor
     extraDescription;
     banishDamage = 1;  // is doubled each banish
     manaOnKillMult = 1;  // is set to 0 if banished
     landBased = true;
 
+    resetSpawnLocations;  // used to override terrain default. Unsafeish. Given as tile ints one tile off the map
+
+    /* used by wave generator */
+    delayPerMonster = 1;
+    // Change the wave's total hp by this factor. Higher values make the wave harder.
+    totalHpModifier = 1;
+    // hpToNumRatio = enemy hp / num enemies
+    // higher values produce fewer but beefier enemies
+    hpToNumRatio = 0.7;
+
+    /* internal state vars */
     targetLocation = null;
     facing = 3;
 
@@ -25,18 +26,14 @@ class Enemy extends AbcEnemy{
     poisonEffects = [];  // Array<[damagePerSec, timeRemaining]>
     _dotAcc = 0;  // fire accumulates += dt * max(fireEffects), then damages upon hitting 1
 
-    maxHp = ~~(3 * 1.35 ** this.level);
+    maxHp = 0;  // set by setWaves in Terrain
     hp = 0;  // set by setWaves in Terrain
 
-    // used by wave generator
-    delayPerMonster = 1;
-    totalHpModifier = 1;
-
-    resetSpawnLocations;  // used to override terrain default. Unsafeish. Given as tile ints one tile off the map
-
-    // constructor(level, pos) {
-    //     super(level, pos);
-    // }
+    constructor(level, pos) {
+        this.level = level;
+        this.armor = level >> 2;
+        this.pos = pos.map(v => v + 0.5);
+    }
 
     setLocation(toPos) {
         this.pos = toPos;
@@ -83,7 +80,7 @@ class Enemy extends AbcEnemy{
         if(this.slowEffects.length) {
             yield sprites[20].withColor([59, 124, 255, 255]);
         }
-        const s = sprites[16 + ((GameState.terrain.terrainTotalTime * 5 * this.speed) & 3)];
+        const s = sprites[16 + ((GameState.terrain.terrainTotalTime * 3 * this.speed) & 3)];
         if(this.poisonEffects.length) {
             yield s.withColor([150, 255, 150, 255]);
         }else{
@@ -175,6 +172,7 @@ class Rhinocoricorn extends Enemy{
     speed = 1.33;
     armor = (this.level + 1) >> 1;
     totalHpModifier = 0.6;
+    hpToNumRatio = 1.5;
     manaOnKillMult = 2;
     // TODO: better rhino sprites?
     *getSprites() {
@@ -186,7 +184,7 @@ class Rhinocoricorn extends Enemy{
 
 class SwarmEnemy extends Enemy{
     displayName = 'Minicorn';
-    maxHp = ~~(1.5 * 1.35 ** this.level);
+    hpToNumRatio = 0.2;
     delayPerMonster = 0.5;
     armor = 0;
     *getSprites() {
@@ -199,7 +197,7 @@ class SwarmEnemy extends Enemy{
 class RunnerEnemy extends Enemy{
     displayName = 'Dash-i-corn';
     speed = 4;
-    maxHp = ~~(1.5 * 1.25 ** this.level);
+    hpToNumRatio = 0.5;
     delayPerMonster = 0.25;
     armor = 0;
 }
@@ -208,6 +206,7 @@ class Pegacorn extends Enemy{
     displayName = 'Pegacorn';
     speed = 2;
     armor = 0;
+    hpToNumRatio = 1.0;
     totalHpModifier = 0.75;
     manaOnKillMult = 1.5;
     landBased = false;
@@ -239,16 +238,14 @@ class Pegacorn extends Enemy{
 class BossEnemy extends Enemy{
     displayName = 'Bossy Corn';
     banishDamage = 5;
-    maxHp = ~~(8 * 1.5 ** this.level);
-    totalHpModifier = 0.1;  // ensure there's only 1 boss
+    hpToNumRatio = 1000;
     armor = this.level >> 1;
     manaOnKillMult = 2;
 }
 
 class Rainbowicorn extends Enemy{
     displayName = 'Rainbowicorn';
-    maxHp = ~~(4 * 1.5 ** this.level);
-    totalHpModifier = 0.3;  // so we get 2
+    hpToNumRatio = 20;
 
     *getSprites() {
         for(const s of super.getSprites()) {
