@@ -241,6 +241,13 @@ h1{
             .C--runeButtonTooExpensive.C--runeButtonActive canvas{
                 border: 0.5rem solid #888;
             }
-            // .C--runeButtonTooExpensive canvas{
-            //     filter: grayscale(1);
-            // }
+
+.C--orbPonderWrapper{
+    display: inline-grid;
+    place-items: center;
+    height: 60rem;
+    width: 60rem;
+    &>*{
+        grid-area: 1 / 1;
+    }
+}

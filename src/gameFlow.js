@@ -7,22 +7,23 @@ const setCloudTransition = async show => {
 };
 
 const time = n => new Promise(res => setTimeout(res, n));
+
+const wrapEventImage = el => wrapEl(el.asImage ?? el, el => {
+    el.style.width = '40rem';
+    el.style.display = 'inline-block';
+})
+
 const showEventText = (
     divFn = scrollDiv,
     promiseCb = res => window.addEventListener('click', res, {once: true}),
     container = GameState.cloudBlocker,
 ) => async (sprite, ...text) => {
-    var inner;
-    const d = divFn('C--eventTextScroll',
-        inner = div('C--innerEventTextScroll',
-            wrapEl(sprite.asImage ?? sprite, el => {
-                el.style.width = '40rem';
-                el.style.display = 'inline-block';
-            }),
-            div('', ' '),
-            ...text,
-        ),
+    const inner = div('C--innerEventTextScroll',
+        sprite,
+        div('', ' '),
+        ...text,
     );
+    const d = divFn('C--eventTextScroll', inner);
     container.replaceChildren(d);
     await time(100);
     d.style.height = inner.offsetHeight + 'px';
@@ -58,7 +59,7 @@ const showLevelEndMenu = (levelNum, isSuccess, isPerfect) => {
             continueButton.addEventListener('click', e => res(false));
         }
     )(
-        img,
+        wrapEventImage(img),
         isSuccess ? isPerfect ? 'Perfect!' : 'Victory!' : 'Defeat!',
         styled('br'),
         !isSuccess && retryButton,

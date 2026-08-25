@@ -276,7 +276,7 @@ const orderedTowerTypes = [
         }
     }),
 
-    withTowerPattern('g |gg| b', class extends Tower{
+    withTowerPattern('gg | gb', class extends Tower{
         displayName = 'Allegro';
         // high speed bolt tower
         range = 3.5;

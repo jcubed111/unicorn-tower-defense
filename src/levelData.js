@@ -56,6 +56,46 @@ const getTerrainForLevel = (n, resolveCb) => {
     return terrain;
 }
 
+const runOrbPonder = towerIndex => () => {
+    if(new orderedTowerTypes[towerIndex]([]).isDiscovered()) return;
+
+    const pattern = orderedTowerTypes[towerIndex].sourcePattern;
+    const gridClone = mapGrid2d(pattern.asGrid, n => n);
+    const [px, py] = randChoice(
+        grid2dToIndexed(gridClone).filter(g => g[2])
+    );
+    gridClone[px][py] = [4, 1];
+
+    const mysteryShape = towerGridToElement(
+        gridClone,
+        pattern.outerColor,
+        true,
+    );
+
+    return showEventText()(
+        div('C--orbPonderWrapper',
+            wrapEl(sprites[40].asImage, el => el.style.width = '60rem'),
+            wrapEl(mysteryShape,        el => el.style.width = '27rem'),
+            wrapEl(sprites[41].asImage, el => el.style.width = '60rem'),
+        ),
+        `Pondering your orb reveals a vision...`,
+    );
+};
+
+// preLevelStoryContent: runOrbPonder(0)  // Meteor
+// preLevelStoryContent: runOrbPonder(1)  // Heavy
+// preLevelStoryContent: runOrbPonder(2)  // Sniper
+// preLevelStoryContent: runOrbPonder(3)  // Slow
+// preLevelStoryContent: runOrbPonder(4)  // Allegro
+// preLevelStoryContent: runOrbPonder(5)  // Anti-Armor
+// preLevelStoryContent: runOrbPonder(6)  // Fire
+// preLevelStoryContent: runOrbPonder(7)  // Beam
+// preLevelStoryContent: runOrbPonder(8)  // Poison
+// preLevelStoryContent: runOrbPonder(9)  // Ring
+// preLevelStoryContent: runOrbPonder(10)  // Mana Leech
+// preLevelStoryContent: runOrbPonder(11)  // Charge
+// preLevelStoryContent: runOrbPonder(12)  // Lightning
+
 const levelData = [
     {},
     // Level 1
@@ -63,19 +103,19 @@ const levelData = [
         // extraSetup() {}
         preLevelStoryContent: async () => {
             await showEventText()(
-                sprites[31],
+                wrapEventImage(sprites[31]),
                 `An `,
                 styled('b', '', `EVIL WIZARD`),
                 ` has descended upon the Unicorn Archipelago!\n\n(That's you)`,
             );
             await showEventText()(
-                sprites[22],
+                wrapEventImage(sprites[22]),
                 `You've stolen the\n`,
                 styled('b', '', `GOLDEN HORN,`),
                 `\nbut the unicorns want it back.\n\n(Obviously)`,
             );
             await showEventText()(
-                sprites[18].withRot(2),
+                wrapEventImage(sprites[18].withRot(2)),
                 // // This is +0.5% over just reusing an existing sprite
                 // makeSpriteCanvas(ctx => {
                 //     renderSprite(ctx, [0, 0], sprites[15]);
@@ -118,7 +158,7 @@ const levelData = [
     {
         preLevelStoryContent: async () => {
             await showEventText()(
-                orderedTowerTypes.at(-4).sourcePattern.makeElement(),
+                wrapEventImage(orderedTowerTypes.at(-4).sourcePattern.makeElement()),
                 `Multiple runes can be combined to make stronger towers.\n\nTry making a lightning tower from a red and green rune.`,
             );
         },
@@ -136,14 +176,14 @@ const levelData = [
     {
         preLevelStoryContent: async () => {
             await showEventText()(
-                towerGridToElement(
+                wrapEventImage(towerGridToElement(
                     [
                         [ null,   null, [2, 2] ],
                         [ [2, 1], null, null   ],
                         [ null,   null, [2, 3] ],
                     ],
                     normalizedTowerRgb(0, 1, 0),
-                ),
+                )),
                 `Inscribe a rune atop one of the same color to make a stronger version`,
             );
         },
@@ -161,6 +201,7 @@ const levelData = [
 
     // Level 4 (parallel to 5) Mob focus
     {
+        preLevelStoryContent: runOrbPonder(0),
         terrainString: '...////.............///3336......./////...////...///////3/////...///////./////...//////.../////...//..0.....///....0.////..7///...////////3;.//...////////...//..//////////.7;...//////////.0..../////////..///..////////..////../////.0.91////........415......',
         goalLocation: [14, 14],
         waves: [
