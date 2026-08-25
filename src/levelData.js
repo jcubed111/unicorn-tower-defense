@@ -234,5 +234,23 @@ const levelData = [
             Rainbowicorn,
             SwarmEnemy,
         ],
+    },
+    // Level 9
+    {
+        goalLocation: [6, 13],
+        terrainString: '...0...///.........0.///////.....73;.////////....0...////.////...4118.///.//.//.....0.///.//.//..733;..//.//.//..0...../////./...411118.//////........0....///...73333;.///////..0.....////////..0...//////////..41111/////////....../////////..................',
+        waves: [
+            Enemy,
+            Enemy,
+            Enemy,
+            SwarmEnemy,
+            Enemy,
+            Rhinocoricorn,
+            Enemy,
+            Pegacorn,
+            Enemy,
+            SwarmEnemy,
+            SwarmEnemy,
+        ],
     }
 ];

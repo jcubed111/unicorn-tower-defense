@@ -230,7 +230,7 @@ const orderedTowerTypes = [
         displayName = 'Sniper';
         chargeTime = 5;
         /** @type {number} */ range = 2 + this.level;
-        damage = 8 * this.level;
+        damage = 5 * this.level;
     }),
 
     withTowerPattern('bb|bb', class extends Tower{
@@ -313,7 +313,7 @@ const orderedTowerTypes = [
     withTowerPattern('grb', class extends Tower{
         displayName = 'Beam';
         range = 0;
-        chargeTime = 1.5;
+        chargeTime = 2;
         damage = this.level * 2;
         chargeRateModifier = 1 + this.level * 0.05;
         extraDescription = `Beam`;
@@ -394,10 +394,10 @@ const orderedTowerTypes = [
     withTowerPattern('rb', class extends Tower{
         displayName = 'Charge';
         range = 2;
-        chargeTime = 3;
+        chargeTime = 3.5;
         damage = 2 * this.level;
         /** @type {number} */
-        maxCharge = this.level + 1;
+        maxCharge = this.level + 2;
 
         extraDescription = [this.maxCharge, 'capacity'];
 

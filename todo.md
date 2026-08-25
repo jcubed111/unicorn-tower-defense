@@ -3,7 +3,7 @@ TODO:
 
 - wave start sound effect
 - add more movement to intro screen? Unicorns running around?
-
+- toast when new tower discovered
 
 - Level ideas:
     - intro (easy)
