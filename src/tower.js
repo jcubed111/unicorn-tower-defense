@@ -142,11 +142,11 @@ class Tower{
         );
     }
 
-    renderRangeGuide(ctx) {
+    renderRangeGuide(ctx, r = this.range) {
         renderCircleIndicator(
             ctx,
             this.center,
-            this.range,
+            r,
             0.5,
             colorAsString(this.getColor()),
             1,
@@ -384,6 +384,33 @@ const orderedTowerTypes = [
                 this.over,
             ]);
             this.boltAt(target);
+        }
+    }),
+
+    withTowerPattern('rb|r ', class extends Tower{
+        displayName = 'Ring';
+        range = 5;
+        minRange = 3;
+        chargeTime = 5;
+        /** @type {number} */
+        damage = 1 + this.level;
+        extraDescription = [this.minRange, 'minimum range', 'AoE'];
+
+        getTargetsInRange() {
+            return super.getTargetsInRange()
+                .filter(e => dist2Vec(e.pos, this.center) >= this.minRange ** 2);
+        }
+
+        hit(targetsInRange) {
+            targetsInRange.forEach(target => {
+                target.takeDamage(this.damage);
+                this.boltAt(target);
+            });
+        }
+
+        renderRangeGuide(ctx) {
+            super.renderRangeGuide(ctx, this.minRange);
+            super.renderRangeGuide(ctx);
         }
     }),
 
