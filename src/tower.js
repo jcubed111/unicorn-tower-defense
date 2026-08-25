@@ -69,7 +69,7 @@ function towerGridToElement(towerGrid, outerColor, isDiscovered = true) {
                     pos,
                     isDiscovered ? tower : [4, 1],
                     isDiscovered ? outerColor : [150, 150, 150, 255],
-                    ([x, y]) => towerGrid[x]?.[y]?.[0] > 0,
+                    pos => grid2dAt(towerGrid, pos)?.[0] > 0,
                 )) {
                     renderSprite(ctx, pos, s);
                 }

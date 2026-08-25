@@ -153,7 +153,7 @@ class Enemy{
     getTarget(square) {
         return minByTiesRand(
             CARDINAL_DIRS.map(dir => addVec(square, dir)),
-            ([x, y]) => GameState.terrain.descentMap[x]?.[y] ?? 1e8,
+            pos => grid2dAt(GameState.terrain.descentMap, pos) ?? 1e8,
         ).map(v => v + randFloat(0.4, 0.6));
     }
 }

@@ -66,6 +66,10 @@ const minByTiesRand = (arr, cb) => {
 
 /* 2d Grid Helpers */
 const grid2d = (size, fill) => range(size).map(i => range(size).fill(fill));
+// Get a grid element using a [x, y] vector. Assumes [x][y] order.
+// WARNING: We use `~~`, which breaks for *fractional* negatives.
+// Afaik that's not a problem anywhere.
+const grid2dAt = (grid, [x, y]) => grid[~~x]?.[~~y];
 // this is really memory expensive :( Don't use if you don't need the output; use forEachGrid2d instead
 const mapGrid2d = (grid, cb) => grid.map((row, i) => row.map((cell, j) => cb(cell, [i, j], grid)));
 const forEachGrid2d = (grid, cb) => grid.forEach((row, i) => row.forEach((cell, j) => cb(cell, [i, j], grid)));

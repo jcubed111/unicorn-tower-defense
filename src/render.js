@@ -62,7 +62,7 @@ function renderTerrainBase(ctx, dt, terrain) {
                 pos,
                 terrain.rawTowers[x][y],
                 maybeComputedTower.getColor(),
-                ([x, y]) => terrain.computedTowersByLocation[x]?.[y] == maybeComputedTower,
+                pos => grid2dAt(terrain.computedTowersByLocation, pos) == maybeComputedTower,
             )) {
                 renderSprite(ctx, pos, s);
 
@@ -195,14 +195,13 @@ function render(dt) {
         );
 
     }else if(GameState.hoveringPos) {
-        const [x, y] = GameState.hoveringPos;
         const dist2 = e => dist2Vec(e.pos, GameState.hoveringPos);
         const inRange = [...terrain.enemies].filter(e => dist2(e) <= 0.25);
         const maybeEnemy = inRange.length && minByTiesRand(inRange, dist2);
         GameState.hoverInfoEl.replaceChildren(
             maybeEnemy
                 ? maybeEnemy.asHoverEl()
-                : (terrain.tileHoverEls[~~x]?.[~~y] ?? '')
+                : (grid2dAt(terrain.tileHoverEls, GameState.hoveringPos) ?? '')
         );
 
     }else{

@@ -122,8 +122,9 @@ const initHtml = () => {
 
     // Listeners
     const recomputeHovering = e => {
-        const [x, y] = GameState.hoveringPos = GameState.terrain.eventToPos(e);
-        GameState.hoveringTower = GameState.terrain.computedTowersByLocation[~~x]?.[~~y] ?? null;
+        GameState.hoveringPos = GameState.terrain.eventToPos(e);
+        GameState.hoveringTower =
+            grid2dAt(GameState.terrain.computedTowersByLocation, GameState.hoveringPos) ?? null;
     };
 
     GameState.mainCanvas.addEventListener('click', e => {

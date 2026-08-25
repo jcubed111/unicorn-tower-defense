@@ -67,17 +67,21 @@ class Terrain{
             throw 1;
         }
         // error if any enemy is inside (or behind) a wall
+        // For enemies above y=0, check the y=0 square
         for(const e of this.enemies) {
             const [x, y] = e.getSquare();
-            if(e.landBased && y >= 0 && this.descentMap[x][y] >= DESCENT_WALL) throw 1;
+            if(e.landBased && grid2dAt(this.descentMap, [x, y < 0 ? 0 : y]) >= DESCENT_WALL) {
+                throw 1;
+            }
         }
         // reset target if enemy is walking into a wall
         for(const e of this.enemies) {
-            if(e.landBased && e.targetLocation) {
-                const [tx, ty] = e.targetLocation;
-                if(this.descentMap[~~tx][~~ty] >= DESCENT_WALL) {
-                    e.targetLocation = null;
-                }
+            if(
+                e.landBased
+                && e.targetLocation
+                && grid2dAt(this.descentMap, e.targetLocation) >= DESCENT_WALL
+            ) {
+                e.targetLocation = null;
             }
         }
 

@@ -185,9 +185,9 @@ const ParticleSystem = new class{
     spawnFireCircleAt(center, radius, density) {
         range(probRound(density * radius * 15 * 6))
             .map(_ => addVec(center, randVec(radius)))
-            .filter(([x, y]) =>
-                GameState.terrain.isGround[~~x]?.[~~y]
-                && !GameState.terrain.computedTowersByLocation[~~x]?.[~~y]
+            .filter(pos =>
+                grid2dAt(GameState.terrain.isGround, pos)
+                && !grid2dAt(GameState.terrain.computedTowersByLocation, pos)
             )
             .forEach(pos =>
                 this.addParticle(new FireParticle(

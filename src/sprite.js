@@ -33,7 +33,7 @@ class Sprite{
             ),
         );
         // as indexed drops transparent pixels
-        this.asIndexed = grid2dToIndexed(data2d).filter(([x,y,c]) => c[3] > 0);
+        this.asIndexed = grid2dToIndexed(data2d).filter(([, , c]) => c[3] > 0);
     }
 
     _withColorCache = {};
