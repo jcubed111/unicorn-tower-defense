@@ -48,6 +48,9 @@ const randVec = mag => {
 // Vectors are [x, y] tuples.
 const addVec = (...vs) => vs.reduce((a, b) => [a[0] + b[0], a[1] + b[1]]);
 const scaleVec = (v, s) => [v[0] * s, v[1] * s];
+const dist2Vec = (a, b) => (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2;
+// In ccw rotation order from (0, -1)
+const CARDINAL_DIRS = [[0, -1], [-1, 0], [0, 1], [1, 0]];
 
 /* Array Helpers */
 const range = end => [...Array(end).keys()];
@@ -94,14 +97,15 @@ const grid2dToIndexed = grid => grid.flatMap((col, x) => col.map((cell, y) => [x
 
 /* Color helpers */
 // All the color helpers assume colors are 4 components, with EVERY component in [0, 255]
-const lerpColor = (a, b, f) => a.map((v, i) => v * (1 - f) + b[i] * f);
+// (lerpArr is the exception: it's length-agnostic, and is used on vectors too)
+const lerpArr = (a, b, f) => a.map((v, i) => v * (1 - f) + b[i] * f);
 const clampColorComponent = v => v < 0 ? 0 : v > 255 ? 255 : ~~v;
 const colorAsString = c => c['s'] ??= `#` + c.map(v => clampColorComponent(v).toString(16).padStart(2, '0')).join('');
 const multiplyColor = (a, b) => a.map((v, i) => v * b[i] / 255);
 const lerpGrad = (grad, f) => {
     const steps = grad.length - 1;
     const stepIndex = ~~(steps * f);
-    return lerpColor(
+    return lerpArr(
         grad[stepIndex] ?? grad[0],
         grad[stepIndex + 1] ?? grad.at(-1),
         f * steps - stepIndex,

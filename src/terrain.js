@@ -57,9 +57,7 @@ class Terrain{
 
             if(this.descentMap[x][y] <= val) continue;
             this.descentMap[x][y] = val;
-            next.push(...[[1, 0], [0, 1], [-1, 0], [0, -1]].map(
-                dir => [addVec(pos, dir), val + 1],
-            ));
+            next.push(...CARDINAL_DIRS.map(dir => [addVec(pos, dir), val + 1]));
         }
         this.spawnLocations = range(this.size)
             .filter(x => this.descentMap[x][0] < DESCENT_WALL)

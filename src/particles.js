@@ -61,7 +61,7 @@ class EnergyFadeParticle extends Particle{
     constructor(pos, baseColor, lifespan = 2) {
         super(pos);
         this.grad = [
-            lerpColor(WHITE, baseColor, 0.5),
+            lerpArr(WHITE, baseColor, 0.5),
             baseColor,
             withAlpha(baseColor, 0),
         ];
@@ -122,10 +122,10 @@ const ParticleSystem = new class{
 
     spawnParticlePixelLine(aPos, bPos, makeParticleCb, density = 1) {
         const a = scaleVec(aPos, 15).map(Math.floor);
-        const delta = addVec(scaleVec(bPos, 15).map(Math.floor), scaleVec(a, -1));
-        const num = Math.max(...delta.map(Math.abs));
+        const b = scaleVec(bPos, 15).map(Math.floor);
+        const num = Math.max(...addVec(b, scaleVec(a, -1)).map(Math.abs));
         range(num + 1).filter(_ => Math.random() < density).map(i => this.addParticle(makeParticleCb(
-            addVec(a, scaleVec(delta, i / num)).map(Math.round),
+            lerpArr(a, b, i / num).map(Math.round),
         )));
     }
 

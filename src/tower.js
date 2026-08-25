@@ -16,7 +16,7 @@ function * getTowerSprites(pos, rawCell, outerColor, isSameAt) {
 
     }else{
         const innerSprite = sprites[rawTowerType * 4 + rawTowerLevel - 1];
-        const innerColor = lerpColor(
+        const innerColor = lerpArr(
             outerColor,
             normalizedTowerRgb(rawTowerType == 1, rawTowerType == 2, rawTowerType == 3),
             0.5,
@@ -24,8 +24,8 @@ function * getTowerSprites(pos, rawCell, outerColor, isSameAt) {
         yield innerSprite.withColor(innerColor);
     }
 
-    // the side sprite for each direction, in rotation order
-    for(const [sideRot, dir] of [[0, -1], [-1, 0], [0, 1], [1, 0]].entries()) {
+    // the side sprite for each direction; the CARDINAL_DIRS index is the rotation
+    for(const [sideRot, dir] of CARDINAL_DIRS.entries()) {
         yield sprites[+isSameAt(addVec(pos, dir))].withRot(sideRot).withColor(outerColor);
     }
 }
@@ -182,9 +182,9 @@ class Tower{
         }
     }
 
-    getTargetsInRange([x, y] = this.center, range = this.range) {
+    getTargetsInRange(pos = this.center, range = this.range) {
         return [...GameState.terrain.enemies].filter(
-            e => (e.pos[0] - x) ** 2 + (e.pos[1] - y) ** 2 < range ** 2
+            e => dist2Vec(e.pos, pos) < range ** 2
                 && e.pos[1] > 0
                 && e.hp > 0
         );

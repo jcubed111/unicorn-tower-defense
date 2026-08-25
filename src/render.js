@@ -196,7 +196,7 @@ function render(dt) {
 
     }else if(GameState.hoveringPos) {
         const [x, y] = GameState.hoveringPos;
-        const dist2 = e => (e.pos[0] - x) ** 2 + (e.pos[1] - y) ** 2;
+        const dist2 = e => dist2Vec(e.pos, GameState.hoveringPos);
         const inRange = [...terrain.enemies].filter(e => dist2(e) <= 0.25);
         const maybeEnemy = inRange.length && minByTiesRand(inRange, dist2);
         GameState.hoverInfoEl.replaceChildren(

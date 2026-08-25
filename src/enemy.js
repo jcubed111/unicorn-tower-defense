@@ -152,7 +152,7 @@ class Enemy{
 
     getTarget(square) {
         return minByTiesRand(
-            [[1, 0], [-1, 0], [0, -1], [0, 1]].map(dir => addVec(square, dir)),
+            CARDINAL_DIRS.map(dir => addVec(square, dir)),
             ([x, y]) => GameState.terrain.descentMap[x]?.[y] ?? 1e8,
         ).map(v => v + randFloat(0.4, 0.6));
     }
@@ -242,7 +242,7 @@ class Rainbowicorn extends Enemy{
     *getSprites() {
         for(const s of super.getSprites()) {
             // Cycle through the rainbow colors
-            yield s.withColor(lerpColor(WHITE, [
+            yield s.withColor(lerpArr(WHITE, [
                 [180, 54, 46, 255],
                 [203, 134, 13, 255],
                 [195, 176, 12, 255],
@@ -264,12 +264,8 @@ class Rainbowicorn extends Enemy{
     getTarget(square) {
         const [sx, sy] = square;
         const w = GameState.terrain.descentMap[sx]?.[sy];
-        let bridgeDir = [
-            [0, 1],
-            [1, 0],
-            [-1, 0],
-            [0, -1],
-        ].find(([dx, dy]) =>
+        // TODO: use min by descent map instead of find
+        let bridgeDir = CARDINAL_DIRS.find(([dx, dy]) =>
             GameState.terrain.isGround[sx]?.[sy] == 1
             && GameState.terrain.isGround[sx + dx]?.[sy + dy] == 0
             && GameState.terrain.isGround[sx + 2 * dx]?.[sy + 2 * dy] == 1
