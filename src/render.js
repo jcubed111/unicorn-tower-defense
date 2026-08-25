@@ -144,10 +144,11 @@ function render(dt) {
             const [x, y] = e.pos.map(n => n - 0.5);
             renderSprite(ctx, x, y, s, e.facing);
             if(e.fireEffects.length) {
+                const fireAmt = Math.max(...e.fireEffects.map(f => f[0])) ** 0.5;
                 ParticleSystem.sparkleSpriteAt(
                     s,
                     [x, y],
-                    dt / 2,
+                    dt / 2 * fireAmt,
                     (x, y) => new FireParticle([x, y]),
                 );
             }

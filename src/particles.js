@@ -80,6 +80,8 @@ class ResetUnicornParticle extends EnergyFadeParticle{
 }
 
 class FireParticle extends Particle{
+    /** @type {number} */
+    lifespan = randFloat(2, 3);
     grad = [
         [255, 211, 101, 255], [255, 102, 0, 255], [185, 34, 0, 255],
         [75, 75, 75, 255], [49, 49, 49, 255], [5, 5, 5, 0]
@@ -170,5 +172,20 @@ const ParticleSystem = new class{
         range(num).forEach(_ => {
             this.addParticle(new ManaGainParticle([x * 15, y * 15]));
         });
+    }
+
+    spawnFireCircleAt([cx, cy], radius, density) {
+        range(probRound(density * radius * 15 * 6))
+            .map(_ => randVec(radius))
+            .map(([x, y]) => [x + cx, y + cy])
+            .filter(([x, y]) =>
+                GameState.terrain.isGround[~~x]?.[~~y]
+                && !GameState.terrain.computedTowersByLocation[~~x]?.[~~y]
+            )
+            .forEach(([x, y]) =>
+                this.addParticle(new FireParticle(
+                    [~~(x * 15), ~~(y * 15)],
+                ))
+            );
     }
 }

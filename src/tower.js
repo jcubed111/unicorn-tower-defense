@@ -131,10 +131,13 @@ class Tower{
                     (1 / this.chargeTime).toFixed(2),
                     styled('span', 'C--secondary', 'hits / sec'),
                 ],
-                this.extraDescription?.pop && [  // using .pop as proxy for "isArray"
-                    wrapEl(styled('span', '', this.extraDescription[0]), el => el.style.color = colorAsString(this.getColor())),
-                    wrapEl(styled('span', '', this.extraDescription[1]), el => el.style.color = colorAsString(this.getColor())),
-                ],
+                this.extraDescription?.pop &&  // using .pop as proxy for "isArray"
+                    this.extraDescription.map(content =>
+                        wrapEl(
+                            styled('span', '', content),
+                            el => el.style.color = colorAsString(this.getColor())
+                        ),
+                    ),
             ),
             this.extraDescription && !this.extraDescription.pop &&  // using .pop as proxy for "isArray"
                 wrapEl(div('', this.extraDescription), el => el.style.color = colorAsString(this.getColor()))
@@ -182,9 +185,9 @@ class Tower{
         }
     }
 
-    getTargetsInRange([x, y] = this.center) {
+    getTargetsInRange([x, y] = this.center, range = this.range) {
         return [...GameState.terrain.enemies].filter(
-            e => (e.pos[0] - x) ** 2 + (e.pos[1] - y) ** 2 < this.range ** 2
+            e => (e.pos[0] - x) ** 2 + (e.pos[1] - y) ** 2 < range ** 2
                 && e.pos[1] > 0
                 && e.hp > 0
         );
@@ -194,6 +197,7 @@ class Tower{
         const target = randChoice(targetsInRange);
         target.takeDamage(this.damage);
         this.boltAt(target);
+        return target;
     }
 
     boltAt(target, from = this.center) {
@@ -218,6 +222,33 @@ const orderedTowerTypes = [
     //     displayName = 'Fear';
     //     // TODO
     // }),
+
+    withTowerPattern(' g |rrr| b ', class extends Tower{
+        displayName = 'Meteor';
+        damage = 4 * this.level;
+        fireDamagePerSec = this.level / 3;
+        chargeTime = 5;
+        range = 3 + this.level / 2;
+        extraDescription = [
+            this.fireDamagePerSec.toFixed(2), `fire / sec`,
+            5, 'fire duration',
+            3, 'splash range',
+        ];
+
+        hit(targetsInRange) {
+            const target = super.hit(targetsInRange);
+            const fireDuration = 5;
+            const fireSplash = 3;
+
+            ParticleSystem.spawnFireCircleAt(target.pos, fireSplash, 1);
+            this.getTargetsInRange(target.pos, fireSplash).forEach(t => {
+                t.fireEffects.push([
+                    this.fireDamagePerSec,
+                    fireDuration,
+                ])
+            });
+        }
+    }),
 
     withTowerPattern(' b |grg', class extends Tower{
         displayName = 'Heavy';
@@ -248,12 +279,12 @@ const orderedTowerTypes = [
         }
     }),
 
-    withTowerPattern('g |gg| g', class extends Tower{
+    withTowerPattern('g |gg| b', class extends Tower{
         displayName = 'Allegro';
-        // simple bolt tower
+        // high speed bolt tower
         range = 3.5;
         chargeTime = 2 / this.level;
-        damage = 3;
+        damage = 2 + (this.level >> 2);
     }),
 
     withTowerPattern('rg|bb', class extends Tower{
@@ -292,21 +323,9 @@ const orderedTowerTypes = [
             });
         }
 
-        renderSpecialEffects(dt, ctx) {
+        renderSpecialEffects(dt) {
             // Put a ring of fire at this tower's range
-            range(probRound(dt * this.range * 15 * 6)).forEach(i => {
-                const [cx, cy] = this.center;
-                const [rx, ry] = randVec(this.range);
-                const px = cx + rx, py = cy + ry;
-                if(
-                    GameState.terrain.isGround[~~px]?.[~~py]
-                    && !GameState.terrain.computedTowersByLocation[~~px]?.[~~py]
-                ) {
-                    ParticleSystem.addParticle(new FireParticle(
-                        [~~((cx + rx) * 15), ~~((cy + ry) * 15)],
-                    ))
-                }
-            });
+            ParticleSystem.spawnFireCircleAt(this.center, this.range, dt);
         }
     }),
 

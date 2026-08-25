@@ -172,9 +172,12 @@ h1{
     .C--hoverInfoArea{
         min-height: 40rem;
         padding: 3rem;
+        position: relative;
     }
         .C--floatRight{
-            float: right;
+            position: absolute;
+            top: 3rem;
+            right: 3rem;
         }
         .C--infoTitle{
             font-size: 4rem;
