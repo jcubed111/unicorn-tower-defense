@@ -56,6 +56,11 @@ function renderTerrainBase(ctx, dt, terrain) {
             }
         }
 
+        // Marked tiles
+        grid2dAt(terrain.markedTileSprites, pos).forEach(
+            s => renderSprite(ctx, pos, s)
+        );
+
         // Tower
         if(maybeComputedTower) {
             for(const s of getTowerSprites(

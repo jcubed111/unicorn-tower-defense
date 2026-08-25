@@ -93,13 +93,7 @@ const runBattle = async (n, wasRestarted) => {
     })();
 
     const pass = await new Promise(resolve => {
-        GameState.terrain = new Terrain(
-            levelData[n].goalLocation,
-            levelData[n].terrainString,
-            levelData[n].waves,
-            resolve,
-        );
-        levelData[n].extraSetup?.(GameState.terrain);
+        GameState.terrain = getTerrainForLevel(n, resolve);
     });
 
     const isPerfect = GameState.terrain.health == STARTING_HEALTH;

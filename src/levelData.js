@@ -45,6 +45,17 @@ const setLevelPassed = (n, isPerfect) => {
     }
 };
 
+const getTerrainForLevel = (n, resolveCb) => {
+    const terrain = new Terrain(
+        levelData[n].goalLocation,
+        levelData[n].terrainString,
+        levelData[n].waves,
+        resolveCb,
+    );
+    levelData[n].extraSetup?.(terrain);
+    return terrain;
+}
+
 const levelData = [
     {},
     // Level 1
@@ -165,11 +176,11 @@ const levelData = [
 
     // Level 5 (parallel to 4) Armor focus
     {
-        extraSetup() {
-            GameState.terrain.rawTowers[10][13] = [3, 1];
-            GameState.terrain.rawTowers[11][13] = [3, 1];
-            GameState.terrain.rawTowers[10][14] = [3, 1];
-            GameState.terrain.recomputeDerivedValues();
+        extraSetup(terrain) {
+            terrain.rawTowers[10][13] = [3, 1];
+            terrain.rawTowers[11][13] = [3, 1];
+            terrain.rawTowers[10][14] = [3, 1];
+            terrain.recomputeDerivedValues();
         },
         terrainString: '....///////............0...........///.0.///......//...0...//.....//./////.////..///./////.////..///./////.////..///./////.////..///./////.////..///...0...///....////.0.////..........0..///.....///.///........././3/././/......///.///.//......./............',
         goalLocation: [3, 15],
@@ -251,6 +262,37 @@ const levelData = [
             Enemy,
             SwarmEnemy,
             SwarmEnemy,
+        ],
+    },
+    // Level 10
+    {
+        terrainString: '.......0.............73;..///........0.../////.....73;.../////.....0...../////....///.....///..../////....2.2..../////11115.2..../////......2..../////.....///.../////..../////...///..733/////........0../////.....////../////....//////..///.....//////.......',
+        goalLocation: [4, 15],
+        extraSetup(terrain) {
+            terrain.markLocation(
+                [5, 8],
+                [
+                    sprites[26].withColor([0, 0, 0, 255]),
+                    sprites[6].withColor([255, 0, 0, 255]),
+                ],
+                div('',
+                    div('C--infoTitle', 'Red Ward'),
+                    'Prevents the placement of red runes',
+                ),
+            );
+            terrain.extraTowerValidation = (pos, towerType) => towerType != 1;
+        },
+        waves: [
+            Enemy,
+            SwarmEnemy,
+            Enemy,
+            Rhinocoricorn,
+            Enemy,
+            RunnerEnemy,
+            Enemy,
+            Rhinocoricorn,
+            Enemy,
+            Rhinocoricorn,
         ],
     }
 ];

@@ -213,7 +213,7 @@ const orderedTowerTypes = [
     // IMPORTANT: this needs to be ordered from highest priority -> lowest. Usually this means larger towers come first.
 
     // TODO: 5-cell towers (1 or 2?)
-    // TODO: 'rrr| b | g ' maybe?
+    // TODO: another red+blue tower
 
     // withTowerPattern('bbrbb', class extends Tower{
     //     displayName = 'Fear';

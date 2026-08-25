@@ -28,15 +28,24 @@ class Terrain{
     screenShake = 0;  // px; decays over time in render
     timeRate = 1;
 
+    // Holds special terrain info
     tileHoverEls = grid2d(this.size, null);  // Grid2d<Element | null>
+    markedTileSprites = grid2d(this.size, []);
 
     constructor(goalLocation, terrainString, waves, onEndCb) {
         terrainString.split('').forEach((c, i) => this.isGround[i % this.size][~~(i / this.size)] = c.charCodeAt(0) - 46);
-        this.goalLocation = goalLocation;
         this.onEndCb = onEndCb;
+        this.invalidPlacementLocations = [
+            this.goalLocation = goalLocation
+        ];
         this._setWaves(waves);
-
         this.recomputeDerivedValues();
+    }
+
+    markLocation([x, y], sprites, hoverInfo) {
+        this.tileHoverEls[x][y] = hoverInfo;
+        this.markedTileSprites[x][y] = sprites;
+        this.invalidPlacementLocations.push([x, y]);
     }
 
     recomputeDerivedValues() {
@@ -158,17 +167,24 @@ class Terrain{
         return scaleVec([e.clientX - x, e.clientY - y], this.size / height);
     }
 
+    extraTowerValidation(pos, towerType) {
+        return true;
+    }
+
     placeTower(pos, towerType) {  // -> boolean, whether the tower could be placed
         if(!towerType) return true;  // so we don't make an error noise
         const [x, y] = pos;
         const cost = this.towerDrawCosts[towerType];
         const [current, currentLevel] = grid2dAt(this.rawTowers, pos);
         if(
-            (current && current != towerType )
+            (current && current != towerType)
             || currentLevel >= MAX_TOWER_LEVEL
             || grid2dAt(this.isGround, pos) != 1
-            || (x == this.goalLocation[0] && y == this.goalLocation[1])
+            || this.invalidPlacementLocations.some(
+                p2 => dist2Vec(p2, pos) == 0
+            )
             || cost > this.mana
+            || !this.extraTowerValidation(pos, towerType)
         ) {
             return false;
         }
@@ -420,12 +436,7 @@ class LevelSelectTerrain extends MockTerrain{
                     div('', `${levelData[level]?.waves?.length} Waves`),
                     makeSpriteCanvas(ctx => {
                         renderTerrainBase(ctx, 0,
-                            new Terrain(
-                                levelData[level]?.goalLocation,
-                                levelData[level]?.terrainString,
-                                [],
-                                _ => 0,
-                            ),
+                            getTerrainForLevel(level, _ => 0),
                         );
                     }, 16, 16, 45),
                 );
