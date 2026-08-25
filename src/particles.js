@@ -1,5 +1,7 @@
 const MANA_POOL_POS = [16, 0];
 const HEART_POS = [18, 0]
+// Where mana gain particles land, in sprite pixels
+const MANA_POOL_PARTICLE_TARGET = addVec(scaleVec(MANA_POOL_POS, 15), [7, 7]);
 
 
 class Particle{
@@ -14,10 +16,7 @@ class Particle{
     }
     posFn() {
         const dist = this.age - 0.25 * Math.log(1 + 3.6 * this.age);
-        return [
-            this.pos[0] + this.asymptoticDriftVel[0] * dist,
-            this.pos[1] + this.asymptoticDriftVel[1] * dist,
-        ];
+        return addVec(this.pos, scaleVec(this.asymptoticDriftVel, dist));
     }
 
     constructor(pos) {
@@ -46,12 +45,11 @@ class ManaGainParticle extends Particle{
 
     posFn() {
         const t = this.age / this.lifespan;
-        const [x, y] = this.pos;
-        const [bx, by] = this.ctrlB;
-        return [
-            x + t * t * (MANA_POOL_POS[0] * 15 - x + 7) + 2 * t * (1 - t) * bx,
-            y + t * t * (MANA_POOL_POS[1] * 15 - y + 7) + 2 * t * (1 - t) * by,
-        ];
+        return addVec(
+            scaleVec(this.pos, 1 - t * t),
+            scaleVec(MANA_POOL_PARTICLE_TARGET, t * t),
+            scaleVec(this.ctrlB, 2 * t * (1 - t)),
+        );
     }
 
     colorFn(agePct, ageSec) {
@@ -96,10 +94,7 @@ class ExplodeFadeParticle extends Particle{
     }
 
     posFn() {
-        return [
-            this.pos[0] + this.vel[0] * this.age,
-            this.pos[1] + this.vel[1] * this.age,
-        ];
+        return addVec(this.pos, scaleVec(this.vel, this.age));
     }
 }
 
@@ -126,27 +121,32 @@ const ParticleSystem = new class{
     }
 
     spawnParticlePixelLine(aPos, bPos, makeParticleCb, density = 1) {
-        const [ax, ay, bx, by] = [...aPos, ...bPos].map(v => Math.floor(v * 15));
-        const num = Math.max(...[ax - bx, ay - by].map(Math.abs));
-        range(num + 1).filter(_ => Math.random() < density).map(i => this.addParticle(makeParticleCb([
-            ax + (bx - ax) * i / num,
-            ay + (by - ay) * i / num,
-        ].map(Math.round))));
+        const a = scaleVec(aPos, 15).map(Math.floor);
+        const delta = addVec(scaleVec(bPos, 15).map(Math.floor), scaleVec(a, -1));
+        const num = Math.max(...delta.map(Math.abs));
+        range(num + 1).filter(_ => Math.random() < density).map(i => this.addParticle(makeParticleCb(
+            addVec(a, scaleVec(delta, i / num)).map(Math.round),
+        )));
     }
 
-    sparkleRect([sx, sy], [w, h], density, color) {
-        const makeParticleCb = pos => new EnergyFadeParticle(pos, color);
-        this.spawnParticlePixelLine([sx, sy], [sx + w, sy], makeParticleCb, density);
-        this.spawnParticlePixelLine([sx, sy + h], [sx + w, sy + h], makeParticleCb, density);
-        this.spawnParticlePixelLine([sx, sy], [sx, sy + h], makeParticleCb, density);
-        this.spawnParticlePixelLine([sx + w, sy], [sx + w, sy + h], makeParticleCb, density);
+    sparkleRect(pos, size, density, color) {
+        const makeParticleCb = p => new EnergyFadeParticle(p, color);
+        const [w, h] = size;
+        const acrossX = addVec(pos, [w, 0]);
+        const acrossY = addVec(pos, [0, h]);
+        const far = addVec(pos, size);
+        this.spawnParticlePixelLine(pos, acrossX, makeParticleCb, density);
+        this.spawnParticlePixelLine(acrossY, far, makeParticleCb, density);
+        this.spawnParticlePixelLine(pos, acrossY, makeParticleCb, density);
+        this.spawnParticlePixelLine(acrossX, far, makeParticleCb, density);
     }
 
-    explodeSpritesAt([x, y], ...sprites) {
+    explodeSpritesAt(pos, ...sprites) {
         sprites.forEach(sprite =>
-            sprite.asIndexed.forEach(([fx, fy, color]) => {
+            // sprite data2d is row-major, so asIndexed entries are [y, x, color]
+            sprite.asIndexed.forEach(([fy, fx, color]) => {
                 this.addParticle(new ExplodeFadeParticle(
-                    [x * 15 + fx, y * 15 + fy],
+                    addVec(scaleVec(pos, 15), [fx, fy]),
                     color,
                 ));
             })
@@ -155,36 +155,35 @@ const ParticleSystem = new class{
 
     sparkleSpriteAt(
         sprite,
-        [x, y],
+        pos,
         chance,
-        makeParticleCb = (x, y, c) => new EnergyFadeParticle([x, y], c),
+        makeParticleCb = (p, c) => new EnergyFadeParticle(p, c),
     ) {
         range(probRound(chance * sprite.asIndexed.length))
             .map(_ => randChoice(sprite.asIndexed))
             .forEach(([fy, fx, color]) =>
                 ParticleSystem.addParticle(
-                    makeParticleCb(x * 15 + fx, y * 15 + fy, color)
+                    makeParticleCb(addVec(scaleVec(pos, 15), [fx, fy]), color)
                 )
             )
     }
 
-    explodeManaAt([x, y], num) {
+    explodeManaAt(pos, num) {
         range(num).forEach(_ => {
-            this.addParticle(new ManaGainParticle([x * 15, y * 15]));
+            this.addParticle(new ManaGainParticle(scaleVec(pos, 15)));
         });
     }
 
-    spawnFireCircleAt([cx, cy], radius, density) {
+    spawnFireCircleAt(center, radius, density) {
         range(probRound(density * radius * 15 * 6))
-            .map(_ => randVec(radius))
-            .map(([x, y]) => [x + cx, y + cy])
+            .map(_ => addVec(center, randVec(radius)))
             .filter(([x, y]) =>
                 GameState.terrain.isGround[~~x]?.[~~y]
                 && !GameState.terrain.computedTowersByLocation[~~x]?.[~~y]
             )
-            .forEach(([x, y]) =>
+            .forEach(pos =>
                 this.addParticle(new FireParticle(
-                    [~~(x * 15), ~~(y * 15)],
+                    scaleVec(pos, 15).map(v => ~~v),
                 ))
             );
     }

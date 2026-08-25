@@ -47,7 +47,8 @@ class Terrain{
         this.descentMap = grid2d(this.size, DESCENT_MAX);
         const next = [[this.goalLocation, 0]];
         while(next.length) {
-            let [[x, y], val] = next.shift();
+            let [pos, val] = next.shift();
+            const [x, y] = pos;
             if(x < 0 || y < 0 || x >= this.size || y >= this.size || !this.isGround[x][y]) continue;
 
             // make the descent map work through walls, but make it cost a ton. This allows monsters
@@ -56,12 +57,9 @@ class Terrain{
 
             if(this.descentMap[x][y] <= val) continue;
             this.descentMap[x][y] = val;
-            next.push(
-                [[x + 1, y], val + 1],
-                [[x, y + 1], val + 1],
-                [[x - 1, y], val + 1],
-                [[x, y - 1], val + 1],
-            );
+            next.push(...[[1, 0], [0, 1], [-1, 0], [0, -1]].map(
+                dir => [addVec(pos, dir), val + 1],
+            ));
         }
         this.spawnLocations = range(this.size)
             .filter(x => this.descentMap[x][0] < DESCENT_WALL)
@@ -100,7 +98,7 @@ class Terrain{
                         let fits = true;
                         let prevTower;  // outside closure so we can use it for charge retention
                         const usedPrevTowerCounts = new Map();  // Map[Tower, usedCells: number]
-                        // towerCells: Grid2d<[type, level, x, y]>
+                        // towerCells: Grid2d<[type, level, pos]>
                         // typed as such so it fits nicely into `towerGridToElement`
                         const towerCells = mapGrid2d(sourcePatternForm, (maybeNeededTower, [dx, dy]) => {
                             if(!maybeNeededTower) return null;
@@ -118,8 +116,7 @@ class Terrain{
                             }
                             return [
                                 ...this.rawTowers[x + dx][y + dy],
-                                x + dx,
-                                y + dy,
+                                [x + dx, y + dy],
                             ];
                         });
                         if(!fits) return;
@@ -139,7 +136,7 @@ class Terrain{
                         );
                         forEachGrid2d(towerCells, maybeTower => {
                             if(!maybeTower) return;
-                            const [t, l, x, y] = maybeTower;
+                            const [x, y] = maybeTower[2];
                             unjoinedTowerColors[x][y] = 0;
                             this.computedTowersByLocation[x][y] = tower;
                         });
@@ -153,11 +150,8 @@ class Terrain{
 
     eventToPos(e) {  // -> [x, y]
         const { x, y, height } = e.target.getBoundingClientRect();
-        return [
-            // this.size == the height, not the width.
-            (e.clientX - x) / height * this.size,
-            (e.clientY - y) / height * this.size,
-        ];
+        // this.size == the height, not the width.
+        return scaleVec([e.clientX - x, e.clientY - y], this.size / height);
     }
 
     placeTower([x, y], towerType) {  // -> boolean, whether the tower could be placed
@@ -231,11 +225,11 @@ class Terrain{
                 this.enemies.delete(e);
                 this.mana += ~~(e.maxHp * e.manaOnKillMult);
                 ParticleSystem.explodeManaAt(
-                    e.pos.map(v => v - 0.5),
+                    addVec(e.pos, [-0.5, -0.5]),
                     ~~(e.maxHp * e.manaOnKillMult),
                 );
                 ParticleSystem.explodeSpritesAt(
-                    e.pos.map(v => v - 0.5),
+                    addVec(e.pos, [-0.5, -0.5]),
                     ...e.getSprites(),
                 );
                 AudioSystem.playEnemyDeath();
@@ -251,8 +245,10 @@ class Terrain{
                 }
                 if(this.health >= e.banishDamage) {
                     this.health -= e.banishDamage;
-                    const [sx, sy] = randChoice(e.resetSpawnLocations ?? this.spawnLocations);
-                    const resetLocation = [sx + 0.5, sy + 1.5];
+                    const resetLocation = addVec(
+                        randChoice(e.resetSpawnLocations ?? this.spawnLocations),
+                        [0.5, 1.5],
+                    );
                     ParticleSystem.spawnParticlePixelLine(
                         e.pos,
                         resetLocation,
@@ -272,9 +268,8 @@ class Terrain{
     lose() {
         if(this.health >= 0) {
             this.screenShake += 6;
-            const [gx, gy] = this.goalLocation;
             ParticleSystem.explodeSpritesAt(
-                [gx, gy - 0.333],  // needs to match wizard pos in render
+                addVec(this.goalLocation, [0, -0.333]),  // needs to match wizard pos in render
                 sprites[31],
             );
         }
@@ -372,7 +367,7 @@ class Terrain{
         const rate = this.mana / (this.mana + 200);
         const colorRate = 255 * this.mana / (this.mana + 50);
         const col = [~~colorRate, ~~colorRate, ~~colorRate, 255];
-        renderSprite(ctx, ...MANA_POOL_POS, sprites[25].withColor(col));
+        renderSprite(ctx, MANA_POOL_POS, sprites[25].withColor(col));
         ParticleSystem.sparkleSpriteAt(
             sprites[25],
             MANA_POOL_POS,
@@ -380,7 +375,7 @@ class Terrain{
         );
 
         // Draw heart
-        renderSprite(ctx, ...HEART_POS, sprites[29]);
+        renderSprite(ctx, HEART_POS, sprites[29]);
     }
 }
 
@@ -438,21 +433,21 @@ class LevelSelectTerrain extends MockTerrain{
     renderSpecialEffects(dt, ctx) {
         ctx.font = '8px sans-serif';
         ctx.textAlign = 'center';
-        forEachGrid2d(this.levelIndices, (i, [x, y]) => {
+        forEachGrid2d(this.levelIndices, (i, pos) => {
             if(!i) return;
             if(this.levelIsUnlocked[i]) {
                 if(this.perfectedLevelSet.has(i)) {
-                    renderSprite(ctx, x, y - 0.1, sprites[21]);
+                    renderSprite(ctx, addVec(pos, [0, -0.1]), sprites[21]);
                     ctx.fillStyle = '#fff';
                 }else if(this.passedLevelSet.has(i)) {
-                    renderSprite(ctx, x, y - 0.1, sprites[36]);
+                    renderSprite(ctx, addVec(pos, [0, -0.1]), sprites[36]);
                     ctx.fillStyle = '#06b04e';
                 }else{
                     ctx.fillStyle = '#fff';
                 }
-                ctx.fillText(i, x * 15 + 7.5, y * 15 + 10);
+                ctx.fillText(i, ...addVec(scaleVec(pos, 15), [7.5, 10]));
             }else{
-                renderSprite(ctx, x, y, sprites[32].withColor([10, 56, 10, 255]));
+                renderSprite(ctx, pos, sprites[32].withColor([10, 56, 10, 255]));
             }
         });
     }

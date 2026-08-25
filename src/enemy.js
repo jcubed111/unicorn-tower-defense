@@ -32,7 +32,7 @@ class Enemy{
     constructor(level, pos) {
         this.level = level;
         this.armor = level >> 2;
-        this.pos = pos.map(v => v + 0.5);
+        this.pos = addVec(pos, [0.5, 0.5]);
     }
 
     setLocation(toPos) {
@@ -128,23 +128,19 @@ class Enemy{
                 return;
             }
 
-            this.targetLocation = this.getTarget(sx, sy);;
+            this.targetLocation = this.getTarget([sx, sy]);
         }
 
 
-        const [x, y] = this.pos;
-        const [tx, ty] = this.targetLocation;
-        const dx = tx - x, dy = ty - y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
+        const delta = addVec(this.targetLocation, scaleVec(this.pos, -1));
+        const [dx, dy] = delta;
+        const dist = Math.hypot(dx, dy);
         const moveAmount = speed * dt;
         if(dist <= moveAmount) {
-            this.pos = [tx, ty];
+            this.pos = this.targetLocation;
             this.targetLocation = null;
         }else{
-            this.pos = [
-                x + dx * moveAmount / dist,
-                y + dy * moveAmount / dist,
-            ];
+            this.pos = addVec(this.pos, scaleVec(delta, moveAmount / dist));
         }
 
         // update facing direction
@@ -154,14 +150,9 @@ class Enemy{
         this.facing += (Math.atan2(dx, -dy) - this.facing) * (1 - 2 ** (-5 * moveAmount));
     }
 
-    getTarget(sx, sy) {
+    getTarget(square) {
         return minByTiesRand(
-            [
-                [sx + 1, sy],
-                [sx - 1, sy],
-                [sx, sy - 1],
-                [sx, sy + 1],
-            ],
+            [[1, 0], [-1, 0], [0, -1], [0, 1]].map(dir => addVec(square, dir)),
             ([x, y]) => GameState.terrain.descentMap[x]?.[y] ?? 1e8,
         ).map(v => v + randFloat(0.4, 0.6));
     }
@@ -222,16 +213,17 @@ class Pegacorn extends Enemy{
         yield sprites[37 + ((GameState.terrain.terrainTotalTime * 3 * this.speed) & 1)];
     }
 
-    getTarget(sx, sy) {
+    getTarget(square) {
+        const [sx, sy] = square;
         const [gx, gy] = GameState.terrain.goalLocation;
-        return randChoice(
+        return addVec(square, randChoice(
             [
-                gx > sx && sy >= 0 && [sx + 1.5, sy + 0.5],
-                gx < sx && sy >= 0 && [sx - 0.5, sy + 0.5],
-                gy > sy && [sx + 0.5, sy + 1.5],
-                gy < sy && [sx + 0.5, sy - 0.5],
+                gx > sx && sy >= 0 && [1.5, 0.5],
+                gx < sx && sy >= 0 && [-0.5, 0.5],
+                gy > sy && [0.5, 1.5],
+                gy < sy && [0.5, -0.5],
             ].filter(t => t)
-        );
+        ));
     }
 }
 
@@ -269,7 +261,8 @@ class Rainbowicorn extends Enemy{
         }
     }
 
-    getTarget(sx, sy) {
+    getTarget(square) {
+        const [sx, sy] = square;
         const w = GameState.terrain.descentMap[sx]?.[sy];
         let bridgeDir = [
             [0, 1],
@@ -289,15 +282,15 @@ class Rainbowicorn extends Enemy{
 
             ParticleSystem.sparkleSpriteAt(
                 sprites[33].withRot(dx == 0 ? 0 : 1),
-                [sx + dx, sy + dy],
+                addVec(square, bridgeDir),
                 0.25,
             );
-            // ParticleSystem.explodeSpritesAt([sx + dx, sy + dy], sprite);
+            // ParticleSystem.explodeSpritesAt(addVec(square, bridgeDir), sprite);
 
             // always move to the new bridge
-            return [sx + dx + 0.5, sy + dy + 0.5];
+            return addVec(square, bridgeDir, [0.5, 0.5]);
         }
 
-        return super.getTarget(sx, sy);
+        return super.getTarget(square);
     }
 }

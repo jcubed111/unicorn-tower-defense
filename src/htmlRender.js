@@ -1,7 +1,7 @@
 
 const scrollBackImage = makeSpriteCanvas(ctx => {
-    renderSprite(ctx, 0, 0, sprites[24]);
-    renderSprite(ctx, 0, 1, sprites[28]);
+    renderSprite(ctx, [0, 0], sprites[24]);
+    renderSprite(ctx, [0, 1], sprites[28]);
 }, 1, 2).toDataURL();
 const scrollDiv = (...divArgs) => {
     const el = div(...divArgs);
@@ -127,9 +127,10 @@ const initHtml = () => {
     };
 
     GameState.mainCanvas.addEventListener('click', e => {
-        const [x, y] = GameState.terrain.eventToPos(e);
-        GameState.terrain.placeTower([~~x, ~~y], GameState.drawType)
-            || AudioSystem.playInvalidAction();
+        GameState.terrain.placeTower(
+            GameState.terrain.eventToPos(e).map(v => ~~v),
+            GameState.drawType,
+        ) || AudioSystem.playInvalidAction();
         recomputeHovering(e);
     });
     GameState.mainCanvas.addEventListener('mousemove', e => {

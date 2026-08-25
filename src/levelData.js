@@ -67,28 +67,28 @@ const levelData = [
                 sprites[18].withRot(2),
                 // // This is +0.5% over just reusing an existing sprite
                 // makeSpriteCanvas(ctx => {
-                //     renderSprite(ctx, 0, 0, sprites[15]);
-                //     renderSprite(ctx, 1, 0, sprites[15]);
-                //     renderSprite(ctx, 2, 0, sprites[3]);
-                //     renderSprite(ctx, 2, 0, sprites[18].withRot(2));
-                //     renderSprite(ctx, 3, 0, sprites[3]);
+                //     renderSprite(ctx, [0, 0], sprites[15]);
+                //     renderSprite(ctx, [1, 0], sprites[15]);
+                //     renderSprite(ctx, [2, 0], sprites[3]);
+                //     renderSprite(ctx, [2, 0], sprites[18].withRot(2));
+                //     renderSprite(ctx, [3, 0], sprites[3]);
 
-                //     renderSprite(ctx, 0, 1, sprites[15]);
-                //     renderSprite(ctx, 1, 1, sprites[3]);
-                //     renderSprite(ctx, 2, 1, sprites[2]);
-                //     renderSprite(ctx, 3, 1, sprites[7]);
+                //     renderSprite(ctx, [0, 1], sprites[15]);
+                //     renderSprite(ctx, [1, 1], sprites[3]);
+                //     renderSprite(ctx, [2, 1], sprites[2]);
+                //     renderSprite(ctx, [3, 1], sprites[7]);
 
-                //     renderSprite(ctx, 0, 2, sprites[15]);
-                //     renderSprite(ctx, 1, 2, sprites[3]);
-                //     renderSprite(ctx, 1, 2, sprites[30]);
-                //     renderSprite(ctx, 1, 2, sprites[27]);
-                //     renderSprite(ctx, 2, 2, sprites[3]);
-                //     renderSprite(ctx, 3, 2, sprites[15]);
+                //     renderSprite(ctx, [0, 2], sprites[15]);
+                //     renderSprite(ctx, [1, 2], sprites[3]);
+                //     renderSprite(ctx, [1, 2], sprites[30]);
+                //     renderSprite(ctx, [1, 2], sprites[27]);
+                //     renderSprite(ctx, [2, 2], sprites[3]);
+                //     renderSprite(ctx, [3, 2], sprites[15]);
 
-                //     renderSprite(ctx, 0, 3, sprites[15]);
-                //     renderSprite(ctx, 1, 3, sprites[7]);
-                //     renderSprite(ctx, 2, 3, sprites[7]);
-                //     renderSprite(ctx, 3, 3, sprites[15]);
+                //     renderSprite(ctx, [0, 3], sprites[15]);
+                //     renderSprite(ctx, [1, 3], sprites[7]);
+                //     renderSprite(ctx, [2, 3], sprites[7]);
+                //     renderSprite(ctx, [3, 3], sprites[15]);
                 // }, 4, 4),
                 `Defeat the attacking unicorns and escape with your\n`,
                 styled('b', '', `RIGHTEOUSLY STOLEN BOOTY`),

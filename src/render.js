@@ -1,6 +1,6 @@
 function renderCircleIndicator(
     ctx,
-    x, y,
+    pos,
     radius,
     lineWidth,
     lineColor,
@@ -14,14 +14,14 @@ function renderCircleIndicator(
     // allows us to show, eg 1.5 as 0.5, while still working for 0-1
     // Used by charge tower
     pct -= ~~(pct - .0001);
-    ctx.arc(x * 15, y * 15, radius * 15, 0, Math.PI * 2 * pct);
+    ctx.arc(...scaleVec(pos, 15), radius * 15, 0, Math.PI * 2 * pct);
     ctx.stroke();
 }
 
 function renderRectIndicator(
     ctx,
-    x, y,
-    rx, ry,
+    pos,
+    radii,
     lineWidth,
     lineColor,
 ) {
@@ -29,18 +29,17 @@ function renderRectIndicator(
     ctx.strokeStyle = lineColor;
     ctx.lineCap = 'butt';
     ctx.strokeRect(
-        (x - rx) * 15,
-        (y - ry) * 15,
-        rx * 30,
-        ry * 30,
+        ...scaleVec(addVec(pos, scaleVec(radii, -1)), 15),
+        ...scaleVec(radii, 30),
     );
 }
 
 function renderTerrainBase(ctx, dt, terrain) {
-    forEachGrid2d(terrain.isGround, (isGround, [x, y]) => {
+    forEachGrid2d(terrain.isGround, (isGround, pos) => {
+        const [x, y] = pos;
         // ground edge
         if(isGround != 1 && terrain.isGround[x][y - 1] == 1) {
-            renderSprite(ctx, x, y, sprites[performance.now() & 1024 ? 7 : 11]);
+            renderSprite(ctx, pos, sprites[performance.now() & 1024 ? 7 : 11]);
         }
         if(isGround) {
             const sprite = isGround == 1
@@ -49,10 +48,10 @@ function renderTerrainBase(ctx, dt, terrain) {
                     : sprites[(x + 3 * y) % 7 ? 3 : 2]
                 // rainbow
                 : sprites[33 + ((isGround - 2) >> 2)].withRot((isGround - 2) & 3)
-            renderSprite(ctx, x, y, sprite);
+            renderSprite(ctx, pos, sprite);
             // sparkle the rainbow paths
             if(isGround != 1) {
-                ParticleSystem.sparkleSpriteAt(sprite, [x, y], dt / 100);
+                ParticleSystem.sparkleSpriteAt(sprite, pos, dt / 100);
             }
         }
 
@@ -60,17 +59,17 @@ function renderTerrainBase(ctx, dt, terrain) {
         const maybeComputedTower = terrain.computedTowersByLocation[x][y];
         if(maybeComputedTower) {
             for(const s of getTowerSprites(
-                x, y,
+                pos,
                 terrain.rawTowers[x][y],
                 maybeComputedTower.getColor(),
-                (x, y) => terrain.computedTowersByLocation[x]?.[y] == maybeComputedTower,
+                ([x, y]) => terrain.computedTowersByLocation[x]?.[y] == maybeComputedTower,
             )) {
-                renderSprite(ctx, x, y, s);
+                renderSprite(ctx, pos, s);
 
                 // sparkle: each pixel should generate a particle every 20 seconds.
                 ParticleSystem.sparkleSpriteAt(
                     s,
-                    [x, y],
+                    pos,
                     maybeComputedTower._particleFirstRender ? 0.5 : dt / 20,
                 );
             }
@@ -124,32 +123,31 @@ function render(dt) {
     forEachGrid2d(terrain.computedTowersByLocation, t => t._particleFirstRender = false);
 
     // Draw wizard
-    const [gx, gy] = terrain.goalLocation;
     if(terrain.health >= 0) {
-        renderSprite(ctx, gx, gy, sprites[30]);
+        renderSprite(ctx, terrain.goalLocation, sprites[30]);
         // needs to match explode location in Terrain.step
-        renderSprite(ctx, gx, gy - 0.333, sprites[31]);
+        renderSprite(ctx, addVec(terrain.goalLocation, [0, -0.333]), sprites[31]);
     }else{
-        renderSprite(ctx, gx, gy, sprites[30].withColor([0, 0, 0, 127]));
+        renderSprite(ctx, terrain.goalLocation, sprites[30].withColor([0, 0, 0, 127]));
     }
 
     // Draw enemies
     for(const e of terrain.enemies) {
         // enemy armor
         if(e.armor) {
-            renderCircleIndicator(ctx, ...e.pos, 0.4, Math.log2(e.armor + 1), '#b3ea', 1);
+            renderCircleIndicator(ctx, e.pos, 0.4, Math.log2(e.armor + 1), '#b3ea', 1);
         }
 
         for(const s of e.getSprites()) {
-            const [x, y] = e.pos.map(n => n - 0.5);
-            renderSprite(ctx, x, y, s, e.facing);
+            const pos = addVec(e.pos, [-0.5, -0.5]);
+            renderSprite(ctx, pos, s, e.facing);
             if(e.fireEffects.length) {
                 const fireAmt = Math.max(...e.fireEffects.map(f => f[0])) ** 0.5;
                 ParticleSystem.sparkleSpriteAt(
                     s,
-                    [x, y],
+                    pos,
                     dt / 2 * fireAmt,
-                    (x, y) => new FireParticle([x, y]),
+                    p => new FireParticle(p),
                 );
             }
         }
@@ -157,10 +155,16 @@ function render(dt) {
     // Draw enemy hp
     for(const e of terrain.enemies) {
         if(e.hp < e.maxHp) {
-            const [x, y] = e.pos;
             const radius = 0.27 * e.maxHp / (e.maxHp + 10); // in (0, 1)
 
-            renderCircleIndicator(ctx, x, y - 0.4, radius, 1, '#f26', e.hp / e.maxHp);
+            renderCircleIndicator(
+                ctx,
+                addVec(e.pos, [0, -0.4]),
+                radius,
+                1,
+                '#f26',
+                e.hp / e.maxHp,
+            );
         }
     }
 
@@ -177,11 +181,10 @@ function render(dt) {
 
     }else if(GameState.hoveringTower && GameState.hoveringPos) {
         // We use `&& hoveringPos` here to distinguish from non-world towers (eg the runebook)
-        const [x, y] = GameState.hoveringTower.center;
         GameState.hoveringTower.renderRangeGuide(ctx);
         renderCircleIndicator(
             ctx,
-            x, y,
+            GameState.hoveringTower.center,
             0.125,
             0.5,
             '#fff',
@@ -208,8 +211,8 @@ function render(dt) {
 
     // Hovering rune placement indicator
     if(GameState.hoveringPos && GameState.drawType) {
-        const [fx, fy] = GameState.hoveringPos;
-        const x = ~~fx, y = ~~fy;
+        const pos = GameState.hoveringPos.map(v => ~~v);
+        const [x, y] = pos;
         if(terrain.isGround[x]?.[y] == 1) {
             const [towerType, towerLevel] = terrain.rawTowers[x][y];
             const spriteOffsetForLevel = towerType == GameState.drawType ? towerLevel : 0;
@@ -221,8 +224,7 @@ function render(dt) {
                 ][GameState.drawType - 1] + spriteOffsetForLevel;
                 renderSprite(
                     ctx,
-                    x,
-                    y,
+                    pos,
                     sprites[spriteIndex]
                         .withColor(HALF_WHITE)
                         .withRot(GameState.drawType == 7 ? (performance.now() >> 9) & 3 : 0),

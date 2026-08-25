@@ -9,7 +9,7 @@ const normalizedTowerRgb = (r, g, b) => {
     return [r / m * 255 + 76 * b / m, g / m * 204 + b / m * 61, b / m * 255, 255].map(clampColorComponent);
 }
 
-function * getTowerSprites(x, y, rawCell, outerColor, isSameAt) {
+function * getTowerSprites(pos, rawCell, outerColor, isSameAt) {
     const [rawTowerType, rawTowerLevel] = rawCell;
     if(rawTowerType == 4) {
         yield sprites[32];
@@ -24,13 +24,9 @@ function * getTowerSprites(x, y, rawCell, outerColor, isSameAt) {
         yield innerSprite.withColor(innerColor);
     }
 
-    for(const [sideRot, isSameTower] of [
-        [0, isSameAt(x,     y - 1)],
-        [1, isSameAt(x - 1, y)],
-        [2, isSameAt(x,     y + 1)],
-        [3, isSameAt(x + 1, y)],
-    ]) {
-        yield sprites[+isSameTower].withRot(sideRot).withColor(outerColor);
+    // the side sprite for each direction, in rotation order
+    for(const [sideRot, dir] of [[0, -1], [-1, 0], [0, 1], [1, 0]].entries()) {
+        yield sprites[+isSameAt(addVec(pos, dir))].withRot(sideRot).withColor(outerColor);
     }
 }
 
@@ -67,15 +63,15 @@ function towerGridToElement(towerGrid, outerColor, isDiscovered = true) {
     // towerGrid: Grid2d<[towerType, level] | null>
     // If not discovered, renders as `?`s
     return makeSpriteCanvas(ctx => {
-        forEachGrid2d(towerGrid, (tower, [x, y]) => {
+        forEachGrid2d(towerGrid, (tower, pos) => {
             if(tower) {
                 for(const s of getTowerSprites(
-                    x, y,
+                    pos,
                     isDiscovered ? tower : [4, 1],
                     isDiscovered ? outerColor : [150, 150, 150, 255],
-                    (x, y) => towerGrid[x]?.[y]?.[0] > 0,
+                    ([x, y]) => towerGrid[x]?.[y]?.[0] > 0,
                 )) {
-                    renderSprite(ctx, x, y, s);
+                    renderSprite(ctx, pos, s);
                 }
             }
         });
@@ -96,17 +92,19 @@ class Tower{
     _particleFirstRender = true;
 
     constructor(componentTowers, startingCharge = 0) {
-        this.componentTowers = componentTowers; // Grid2d<[type, level, x, y]>
+        this.componentTowers = componentTowers; // Grid2d<[type, level, pos]>
         this.center = [0, 0];
         this.level = 0;
         this.charge = startingCharge;
         forEachGrid2d(componentTowers, maybeTower => {
-            this.level += maybeTower?.[1] ?? 0;
-            this.center[0] += maybeTower?.[2] ?? 0;
-            this.center[1] += maybeTower?.[3] ?? 0;
-            this.size += !!maybeTower;
+            if(!maybeTower) return;
+            this.level += maybeTower[1];
+            // pattern grids (Tower.sourcePattern.asGrid) carry no pos; they're
+            // only built for the runebook, so their center is meaningless anyway.
+            this.center = addVec(this.center, maybeTower[2] ?? [0, 0]);
+            this.size++;
         });
-        this.center = this.center.map(c => c / this.size + 0.5);
+        this.center = addVec(scaleVec(this.center, 1 / this.size), [0.5, 0.5]);
     }
 
     _asHoverElResult;
@@ -147,7 +145,7 @@ class Tower{
     renderRangeGuide(ctx) {
         renderCircleIndicator(
             ctx,
-            ...this.center,
+            this.center,
             this.range,
             0.5,
             colorAsString(this.getColor()),
@@ -176,7 +174,6 @@ class Tower{
     step(dt) {
         this.charge = Math.min(this.charge + dt, this.chargeTime);
         if(this.charge >= this.chargeTime) {
-            const [x, y] = this.center;
             const possibleTargets = this.getTargetsInRange();
             if(possibleTargets.length) {
                 this.hit(possibleTargets);
@@ -346,8 +343,8 @@ const orderedTowerTypes = [
         renderRangeGuide(ctx) {
             renderRectIndicator(
                 ctx,
-                ...this.center,
-                ...this.getRangePair(),
+                this.center,
+                this.getRangePair(),
                 0.5,
                 colorAsString(this.getColor()),
             );
@@ -423,7 +420,6 @@ const orderedTowerTypes = [
         step(dt) {
             this.charge = Math.min(this.charge + dt, this.chargeTime * this.maxCharge);
             while(this.charge >= this.chargeTime) {
-                const [x, y] = this.center;
                 const possibleTargets = this.getTargetsInRange();
                 const i = ~~(this.charge / this.chargeTime) - 1;
                 if(possibleTargets.length) {
@@ -439,19 +435,18 @@ const orderedTowerTypes = [
         }
 
         getChargeOrbLocation(i) {
-            const [x, y] = this.center;
-            return [
-                x + Math.cos(performance.now() / 6e3 + i * Math.PI * 2 / this.maxCharge) * 0.7,
-                y + Math.sin(performance.now() / 6e3 + i * Math.PI * 2 / this.maxCharge) * 0.7,
-            ];
+            const angle = performance.now() / 6e3 + i * Math.PI * 2 / this.maxCharge;
+            return addVec(
+                this.center,
+                scaleVec([Math.cos(angle), Math.sin(angle)], 0.7),
+            );
         }
 
         renderSpecialEffects(dt, ctx) {
             range(~~(this.charge / this.chargeTime)).map(i => {
-                const [x, y] = this.getChargeOrbLocation(i);
                 ctx.fillStyle = '#fff';
                 ctx.beginPath();
-                ctx.arc(x * 15, y * 15, 1.5, 0, Math.PI * 2);
+                ctx.arc(...scaleVec(this.getChargeOrbLocation(i), 15), 1.5, 0, Math.PI * 2);
                 ctx.fill();
             });
         }

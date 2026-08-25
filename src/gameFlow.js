@@ -46,8 +46,8 @@ const showLevelEndMenu = (levelNum, isSuccess, isPerfect) => {
     const img =
         isPerfect
             ? makeSpriteCanvas(ctx => {
-                renderSprite(ctx, 0, 0, sprites[21]);
-                renderSprite(ctx, 0, 0.5, sprites[31]);
+                renderSprite(ctx, [0, 0], sprites[21]);
+                renderSprite(ctx, [0, 0.5], sprites[31]);
             }, 1, 1.5)
             : sprites[isSuccess ? 31 : 27];
 

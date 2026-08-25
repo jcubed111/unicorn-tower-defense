@@ -57,12 +57,12 @@ class Sprite{
     }
 }
 
-function renderSprite(ctx, x, y, sprite, rot=0) {
+function renderSprite(ctx, pos, sprite, rot=0) {
     // renderSprite expects a ctx where 15 units = 1 tile
     ctx.imageSmoothingEnabled = false;
     ctx.save();
     ctx.scale(tileSize, tileSize);
-    ctx.translate(x + 0.5, y + 0.5);
+    ctx.translate(...addVec(pos, [0.5, 0.5]));
     ctx.rotate(rot);
     ctx.scale(sprite.scale, sprite.scale);
     ctx.drawImage(sprite.asImage, -0.5, -0.5, 1, 1);

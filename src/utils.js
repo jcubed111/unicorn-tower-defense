@@ -44,6 +44,11 @@ const randVec = mag => {
     return [Math.cos(angle) * mag, Math.sin(angle) * mag];
 };
 
+/* Vector2 helpers */
+// Vectors are [x, y] tuples.
+const addVec = (...vs) => vs.reduce((a, b) => [a[0] + b[0], a[1] + b[1]]);
+const scaleVec = (v, s) => [v[0] * s, v[1] * s];
+
 /* Array Helpers */
 const range = end => [...Array(end).keys()];
 // NOTE: doesn't handle non-perfect sizes
