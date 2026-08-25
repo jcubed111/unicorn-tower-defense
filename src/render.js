@@ -76,7 +76,7 @@ function renderTerrainBase(ctx, dt, terrain) {
                 ParticleSystem.sparkleSpriteAt(
                     s,
                     pos,
-                    maybeComputedTower._particleFirstRender ? 0.5 : dt / 20,
+                    (maybeComputedTower._particleFirstRender && dt) ? 0.5 : dt / 20,
                 );
             }
         }

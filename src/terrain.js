@@ -197,7 +197,6 @@ class Terrain{
         }catch{
             // recomputeDerivedValues throws if the map no longer has any valid paths.
             // undo the placement and return false.
-            console.log("undoing placement. TODO: play sound")
             this.rawTowers[x][y] = [current, currentLevel];
             this.recomputeDerivedValues();
             return false;

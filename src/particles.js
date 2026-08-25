@@ -16,7 +16,6 @@ class Particle{
     lifespan = 2;
 
     grad = [];
-    _colorCache;
     _globalColorCacheKey;  // needs to be set in child
 
     colorFn(agePct, ageSec) {
@@ -37,10 +36,10 @@ class Particle{
 
     render(ctx) {
         if(!this._globalColorCacheKey) console.error('Need _globalColorCacheKey in particle')
-        this._colorCache ??= globalColorCache[this._globalColorCacheKey] ??= range(256).map(
+        const _colorCache = globalColorCache[this._globalColorCacheKey] ??= range(256).map(
             i => colorAsString(this.colorFn(i / 255, i / 255 * this.lifespan))
         );
-        ctx.fillStyle = this._colorCache[~~(this.age / this.lifespan * 256)];
+        ctx.fillStyle = _colorCache[~~(this.age / this.lifespan * 256)];
         ctx.fillRect(...this.posFn(), 1, 1);
     }
 }
