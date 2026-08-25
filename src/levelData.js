@@ -264,7 +264,7 @@ const levelData = [
             SwarmEnemy,
         ],
     },
-    // Level 10
+    // Level 10: no red
     {
         terrainString: '.......0.............73;..///........0.../////.....73;.../////.....0...../////....///.....///..../////....2.2..../////11115.2..../////......2..../////.....///.../////..../////...///..733/////........0../////.....////../////....//////..///.....//////.......',
         goalLocation: [4, 15],
@@ -277,7 +277,7 @@ const levelData = [
                 ],
                 div('',
                     div('C--infoTitle', 'Red Ward'),
-                    'Prevents the placement of red runes',
+                    'Prevents the placement of red runes on this map',
                 ),
             );
             terrain.extraTowerValidation = (pos, towerType) => towerType != 1;
@@ -294,5 +294,36 @@ const levelData = [
             Enemy,
             Rhinocoricorn,
         ],
-    }
+    },
+    // Level 11: no green
+    {
+        terrainString: '..........///..............///...736.///...///...0.//////...///..4////////..///...///..////.///..///....///.///..///...////.///..//...////..///..///.////...///..///..//...////...///......///...7/////../////6..0.//////////.2..415.//////.415.................',
+        goalLocation: [7, 10],
+        extraSetup(terrain) {
+            terrain.markLocation(
+                [7, 8],
+                [
+                    sprites[26].withColor([0, 0, 0, 255]),
+                    sprites[10].withColor([0, 204, 0, 255]),
+                ],
+                div('',
+                    div('C--infoTitle', 'Green Ward'),
+                    'Prevents the placement of green runes on this map',
+                ),
+            );
+            terrain.extraTowerValidation = (pos, towerType) => towerType != 2;
+        },
+        waves: [
+            Enemy,
+            Rhinocoricorn,
+            Enemy,
+            SwarmEnemy,
+            Pegacorn,
+            RunnerEnemy,
+            Enemy,
+            SwarmEnemy,
+            Enemy,
+            RunnerEnemy,
+        ],
+    },
 ];
