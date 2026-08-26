@@ -242,6 +242,7 @@ class Terrain{
             const [sx, sy] = e.getSquare();
             const [tx, ty] = this.goalLocation;
             if(e.hp <= 0) {
+                e.onDeath();
                 this.enemies.delete(e);
                 this.mana += ~~(e.maxHp * e.manaOnKillMult);
                 ParticleSystem.explodeManaAt(

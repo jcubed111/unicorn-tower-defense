@@ -92,6 +92,10 @@ class Enemy{
         this.hp -= Math.max(0, amt - this.armor);
     }
 
+    onDeath() {
+        // pass
+    }
+
     step(dt) {
         // Damage over time
         // Technically there can be rounding errors in the fire calc, but they're in favor
@@ -224,6 +228,41 @@ class Pegacorn extends Enemy{
                 gy < sy && [0.5, -0.5],
             ].filter(t => t)
         ));
+    }
+}
+
+class Megacorn extends Enemy{
+    displayName = 'Megacorn';
+    hpToNumRatio = 15;
+    delayPerMonster = 1.0;
+    armor = this.level;
+    *getSprites() {
+        for(const s of super.getSprites()) {
+            yield s.withScale(1.4);
+        }
+    }
+}
+
+class Broodicorn extends Enemy{
+    displayName = 'Broodicorn';
+    hpToNumRatio = 15;
+    totalHpModifier = 0.5;
+    delayPerMonster = 2.0;
+    armor = this.level >> 2;
+    extraDescription = 'Explodes into 8 Minicorns on death';
+
+    *getSprites() {
+        for(const s of super.getSprites()) {
+            yield s.withScale(1.15).withColor([180, 120, 90, 255]);
+        }
+    }
+
+    onDeath() {
+        for(const i of range(8)) {
+            const e = new SwarmEnemy(this.level, this.pos);
+            e.hp = e.maxHp = (this.maxHp >> 3) || 1;
+            GameState.terrain.enemies.add(e);
+        }
     }
 }
 

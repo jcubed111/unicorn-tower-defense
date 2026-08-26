@@ -331,11 +331,45 @@ const levelData = [
             Rhinocoricorn,
             Enemy,
             Rhinocoricorn,
+            Enemy,
+            Megacorn,
         ],
     },
-    // Level: 13: OPTIONAL no blue
-        // preLevelStoryContent: runOrbPonder(Fire),
-    null,
+    // Level: 13: OPTIONAL: no blue
+    {
+        preLevelStoryContent: runOrbPonder(Fire),
+        extraSetup(terrain) {
+            terrain.markLocation(
+                [3, 12],
+                [
+                    sprites[26].withColor([0, 0, 0, 255]),
+                    sprites[10].withColor([112, 99, 255, 255]),
+                ],
+                div('',
+                    div('C--infoTitle', 'Blue Ward'),
+                    'Prevents the placement of blue runes on this map',
+                ),
+            );
+            terrain.extraTowerValidation = (pos, towerType) => towerType != 3;
+        },
+        terrainString: '....///.............///.///.........///3///.///.....///.///.///...73///.///.///...0.///.///3///...0.///.///.///...0.///.///.///...0.....///.///...0..733;.0.///../////....0..0.../////.////////../////3////////../////.////////../////..........................',
+        goalLocation: [1, 14],
+        waves: [
+            SwarmEnemy,
+            Enemy,
+            SwarmEnemy,
+            RunnerEnemy,
+            Enemy,
+            SwarmEnemy,
+            Enemy,
+            Broodicorn,
+            Enemy,
+            RunnerEnemy,
+            Enemy,
+            SwarmEnemy,
+            RunnerEnemy,
+        ],
+    },
     // Level 14: no green
     {
         preLevelStoryContent: runOrbPonder(Ring),
@@ -360,8 +394,11 @@ const levelData = [
             Rhinocoricorn,
             Enemy,
             SwarmEnemy,
+            Enemy,
             Pegacorn,
             RunnerEnemy,
+            Enemy,
+            Broodicorn,
             Enemy,
             SwarmEnemy,
             Enemy,

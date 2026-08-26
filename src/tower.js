@@ -330,7 +330,7 @@ const orderedTowerTypes = [
         damage = -1;  // so we don't show at all
         fireDamagePerSec = this.level / 3;
         chargeTime = 0.25;
-        range = 1.75 + this.level / 4;
+        range = 2 + this.level / 6;
         extraDescription = [this.fireDamagePerSec.toFixed(2), `fire / sec`];
 
         hit(targetsInRange) {

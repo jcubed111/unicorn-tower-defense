@@ -128,13 +128,14 @@ const ParticleSystem = new class{
 
     render(dt, ctx) {
         if(dt > 1/25 && this.particles.size > 200) {
+            const toRemove = this.particles.size / 10;
             console.log("Slow frame, removing particles. Was: ", this.particles.size);
             // Note that iterating a set is in insertion order, so this removes
             // the 100 oldest particles.
             let i = 0;
             for(const p of this.particles) {
                 this.particles.delete(p);
-                if(++i > 100) break;
+                if(++i > toRemove) break;
             }
         }
 

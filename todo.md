@@ -12,7 +12,8 @@ TODO:
     - all-ish armor
     - Pegacorn focus
     - fixed unicorn path (rainbow bridge?) - almost have this
-    - no blue runes (14)
+
+- change behavior to not allow blocking _any_ entrance?
 
 - show waves when hovering wave button?
 
