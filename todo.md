@@ -5,6 +5,7 @@ TODO:
 - add more movement to intro screen? Unicorns running around?
 - subtract fire acc from hp bar display?
 - give charge a 0.2 range boost per level?
+- make enemies always respawn at og spawn point (or parents for broodicorn)
 
 - Level ideas:
     - wide open path

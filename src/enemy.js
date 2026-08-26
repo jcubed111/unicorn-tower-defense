@@ -246,10 +246,10 @@ class Megacorn extends Enemy{
     }
 }
 
-class Broodicorn extends Enemy{
-    displayName = 'Broodicorn';
+class Rooicorn extends Enemy{
+    displayName = 'Rooicorn';
     hpToNumRatio = 15;
-    totalHpModifier = 0.5;
+    totalHpModifier = 0.4;
     delayPerMonster = 2.0;
     armor = this.level >> 2;
     extraDescription = 'Explodes into 8 Minicorns on death';
@@ -262,7 +262,7 @@ class Broodicorn extends Enemy{
 
     onDeath() {
         for(const i of range(8)) {
-            const e = new SwarmEnemy(this.level, this.pos);
+            const e = new SwarmEnemy(this.level, this.getSquare());
             e.hp = e.maxHp = (this.maxHp >> 3) || 1;
             GameState.terrain.enemies.add(e);
         }
@@ -275,6 +275,11 @@ class BossEnemy extends Enemy{
     hpToNumRatio = 1000;
     armor = this.level >> 1;
     manaOnKillMult = 2;
+    *getSprites() {
+        for(const s of super.getSprites()) {
+            yield s.withColor([50, 40, 40, 255]);
+        }
+    }
 }
 
 class Rainbowicorn extends Enemy{

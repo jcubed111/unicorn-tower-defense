@@ -396,7 +396,7 @@ const levelData = [
             Enemy,
             SwarmEnemy,
             Enemy,
-            Broodicorn,
+            Rooicorn,
             Enemy,
             RunnerEnemy,
             Enemy,
@@ -432,7 +432,7 @@ const levelData = [
             Pegacorn,
             RunnerEnemy,
             Enemy,
-            Broodicorn,
+            Rooicorn,
             Enemy,
             SwarmEnemy,
             Enemy,
@@ -440,12 +440,37 @@ const levelData = [
         ],
     },
 
-    // Level: 15
+    // Level: 15: Boss level; pegasii and rainbowicorns and broodicorns oh my
+    {
+        preLevelStoryContent: runOrbPonder(Allegro),
+        terrainString: '............////....736.736.////.//.0.2.0.2.////.//3;.:3;.:3////.//..............//3////////3336....///..///...2.//3////////.915.//././.././.2...//././.././.2...//3////////.:36.0..///..///...2.0..////////1115.4115.0..0............////...//......//////..//.',
+        goalLocation: [5, 15],
+        waves: [
+            Enemy,
+            Enemy,
+            RunnerEnemy,
+            Pegacorn,
+            Rooicorn,
+            Enemy,
+            Rainbowicorn,
+            Enemy,
+            Rooicorn,
+            Pegacorn,
+            Pegacorn,
+            Rainbowicorn,
+            Rooicorn,
+            Enemy,
+            Enemy,
+            BossEnemy,
+        ],
+    }
+
     // Level: 16
+    // ....///...//..2....////...//..2.../////...//..2../////...///..2..////...////..2..///.../////..2..///33/////...2..///...///....2..////.../....//../////..0...///.../////.0..////....///////////....7//////////...///5.///////....///.............///.............
+    // [0, 15]
     // Level: 17
     // Level: 18
 
-        // preLevelStoryContent: runOrbPonder(Allegro),
         // preLevelStoryContent: runOrbPonder(Heavy),
         // preLevelStoryContent: runOrbPonder(Meteor),
 ];
