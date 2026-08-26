@@ -295,9 +295,25 @@ const levelData = [
             SwarmEnemy,
         ],
     },
-    // Level: 10 - runners
-    null,
-        // preLevelStoryContent: runOrbPonder(Slow),
+    // Level: 10 - all runners
+    {
+        preLevelStoryContent: runOrbPonder(Slow),
+        terrainString: '../////.........../////...///...../////../////..../////../////..../////../////...7//////..///....0.//////.0.0....48.//////////....0.0..////////...///........//../////3////////../////.////////../////3///////....///...0..............///.............///......',
+        goalLocation: [8, 15],
+        waves: [
+            RunnerEnemy,
+            RunnerEnemy,
+            RunnerEnemy,
+            RunnerEnemy,
+            RunnerEnemy,
+            RunnerEnemy,
+            RunnerEnemy,
+            RunnerEnemy,
+            RunnerEnemy,
+            RunnerEnemy,
+            RunnerEnemy,
+        ],
+    },
     // Level: 11 - armored
     null,
         // preLevelStoryContent: runOrbPonder(AntiArmor),

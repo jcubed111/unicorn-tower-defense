@@ -13,8 +13,6 @@ TODO:
     - Pegacorn focus
     - fixed unicorn path (rainbow bridge?) - almost have this
 
-- change behavior to not allow blocking _any_ entrance?
-
 - show waves when hovering wave button?
 
 - spells
