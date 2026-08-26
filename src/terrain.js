@@ -40,6 +40,9 @@ class Terrain{
         ];
         this._setWaves(waves);
         this.recomputeDerivedValues();
+        this.spawnLocations = range(this.size)
+            .filter(x => this.isGround[x][0])
+            .map(x => [x, -1]);
     }
 
     markLocation([x, y], sprites, hoverInfo) {
@@ -69,18 +72,15 @@ class Terrain{
             this.descentMap[x][y] = val;
             next.push(...CARDINAL_DIRS.map(dir => [addVec(pos, dir), val + 1]));
         }
-        this.spawnLocations = range(this.size)
-            .filter(x => grid2dAt(this.descentMap, [x, 0]) < DESCENT_WALL)
-            .map(x => [x, -1]);
-        if(this.spawnLocations.length == 0) {
-            // error if there isn't any top spawn point
+        if(this.spawnLocations.some(([x]) => this.descentMap[x][0] >= DESCENT_WALL)) {
+            // error if any spawn point is blocked
             throw 1;
         }
         // error if any enemy is inside (or behind) a wall
-        // For enemies above y=0, check the y=0 square
+        // We don't need to check enemies above y=0, since we already ensure
+        // that every spawn point is unblocked
         for(const e of this.enemies) {
-            const [x, y] = e.getSquare();
-            if(e.landBased && grid2dAt(this.descentMap, [x, y < 0 ? 0 : y]) >= DESCENT_WALL) {
+            if(e.landBased && grid2dAt(this.descentMap, e.getSquare()) >= DESCENT_WALL) {
                 throw 1;
             }
         }
