@@ -308,19 +308,19 @@ const orderedTowerTypes = [
 
     AntiArmor = withTowerPattern('rg|bb', class extends Tower{
         displayName = 'Anti-Armor';
-        range = 4;
-        chargeTime = 8 / this.level;
-        damage = 0;
-        armorReduction = 1;
-        extraDescription = [this.armorReduction, `armor remove`];
-
-        getTargetsInRange() {
-            return super.getTargetsInRange().filter(t => t.armor > 0);
-        }
+        range = 3 + this.level / 4;
+        chargeTime = 6 / this.level;
+        damage = 4;
+        armorRemove = this.level >> 1;
+        extraDescription = [this.armorRemove, `armor remove`];
 
         hit(targetsInRange) {
-            const target = randChoice(targetsInRange);
-            target.armor = Math.max(0, target.armor - this.armorReduction);
+            // The only tower with a targeting algo lol
+            const target = randChoice(
+                targetsInRange.filter(t => t.armor > 0)
+            ) ?? randChoice(targetsInRange);
+            target.armor = Math.max(0, target.armor - this.armorRemove);
+            target.takeDamage(this.damage);
             this.boltAt(target);
         }
     }),

@@ -166,9 +166,9 @@ class Rhinocoricorn extends Enemy{
     displayName = 'Rhinocoricorn';
     speed = 1.33;
     armor = (this.level + 1) >> 1;
-    totalHpModifier = 0.6;
+    // totalHpModifier = 0.7;
     hpToNumRatio = 1.5;
-    manaOnKillMult = 2;
+    // manaOnKillMult = 1.5;
     // TODO: better rhino sprites?
     *getSprites() {
         for(const s of super.getSprites()) {
@@ -224,8 +224,11 @@ class Pegacorn extends Enemy{
             [
                 gx > sx && sy >= 0 && [1.5, 0.5],
                 gx < sx && sy >= 0 && [-0.5, 0.5],
-                gy > sy && [0.5, 1.5],
                 gy < sy && [0.5, -0.5],
+                // this one is doubled so it's more likely ot move down
+                // otherwise they tend to line up north of the wizard
+                gy > sy && [0.5, 1.5],
+                gy > sy && [0.5, 1.5],
             ].filter(t => t)
         ));
     }

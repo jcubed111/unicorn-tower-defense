@@ -312,11 +312,29 @@ const levelData = [
             RunnerEnemy,
             RunnerEnemy,
             RunnerEnemy,
+            RunnerEnemy,
         ],
     },
     // Level: 11 - armored
-    null,
-        // preLevelStoryContent: runOrbPonder(AntiArmor),
+    {
+        preLevelStoryContent: runOrbPonder(AntiArmor),
+        terrainString: './////////////....///////////.....///////////.../../////////....//./////////....//..///////...../...///////........../////..//......./////.////....../////.////...//..///...//...////.///........////.///.........//.../.............../.............../........',
+        goalLocation: [7, 15],
+        waves: [
+            Rhinocoricorn,
+            Rhinocoricorn,
+            Rhinocoricorn,
+            Rhinocoricorn,
+            Rhinocoricorn,
+            Rhinocoricorn,
+            Rhinocoricorn,
+            Rhinocoricorn,
+            Rhinocoricorn,
+            Rhinocoricorn,
+            Rhinocoricorn,
+            Rhinocoricorn,
+        ],
+    },
     // Level 12: no red
     {
         preLevelStoryContent: runOrbPonder(Sniper),
