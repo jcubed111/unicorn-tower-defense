@@ -3,15 +3,8 @@ TODO:
 
 - wave start sound effect
 - add more movement to intro screen? Unicorns running around?
-- toast when new tower discovered
 - subtract fire acc from hp bar display?
 - give charge a 0.2 range boost per level?
-
-- "Pondering your orb reveals a vision..."
-    - combine crystal ball image with an undiscovered tower picture
-    - replace one square of the tower with '?', but keep the color.
-    - each level has a set tower it _can_ reaveal if undiscovered.
-    - try to make it make sense, eg, the no-red level reveals sniper
 
 - Level ideas:
     - wide open path
@@ -19,10 +12,7 @@ TODO:
     - all-ish armor
     - Pegacorn focus
     - fixed unicorn path (rainbow bridge?) - almost have this
-    - no blue runes
-        - maybe switch 10+11 -> 12+13, then make 14 (optional) the no blue one?
-
-- bg music
+    - no blue runes (14)
 
 - show waves when hovering wave button?
 

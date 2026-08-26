@@ -13,7 +13,9 @@ const ENEMY_DEATH = [.002, .07, .05, .3];
 
 const AudioSystem = new class {
     ctx = new window.AudioContext();
+    /** @type {!GainNode} */
     sfxGain = this.ctx.createGain();
+    /** @type {!GainNode} */
     bgMusicGain = this.ctx.createGain();
 
     constructor() {
