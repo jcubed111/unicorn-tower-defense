@@ -7,8 +7,6 @@ class Enemy{
     manaOnKillMult = 1;  // is set to 0 if banished
     landBased = true;
 
-    resetSpawnLocations;  // used to override terrain default. Unsafeish. Given as tile ints one tile off the map
-
     /* used by wave generator */
     delayPerMonster = 1;
     // Change the wave's total hp by this factor. Higher values make the wave harder.
@@ -32,7 +30,7 @@ class Enemy{
     constructor(level, pos) {
         this.level = level;
         this.armor = level >> 2;
-        this.pos = addVec(pos, [0.5, 0.5]);
+        this.respawnLocation = addVec(this.pos = addVec(pos, [0.5, 0.5]), [0, 1]);
     }
 
     setLocation(toPos) {
@@ -206,10 +204,8 @@ class Pegacorn extends Enemy{
     manaOnKillMult = 1.5;
     landBased = false;
 
-    constructor(level, pos) {
-        const locs = range(14).map(i => [i + 1, -1]);
-        super(level, randChoice(locs));
-        this.resetSpawnLocations = locs;
+    constructor(level) {
+        super(level, [~~randFloat(1, 15), -1]);
     }
 
     *getSprites() {
@@ -252,6 +248,7 @@ class Rooicorn extends Enemy{
     totalHpModifier = 0.4;
     delayPerMonster = 2.0;
     armor = this.level >> 2;
+    speed = 1.5;
     extraDescription = 'Explodes into 8 Minicorns on death';
 
     *getSprites() {
@@ -264,6 +261,7 @@ class Rooicorn extends Enemy{
         for(const i of range(8)) {
             const e = new SwarmEnemy(this.level, this.getSquare());
             e.hp = e.maxHp = (this.maxHp >> 3) || 1;
+            e.respawnLocation = this.respawnLocation;
             GameState.terrain.enemies.add(e);
         }
     }

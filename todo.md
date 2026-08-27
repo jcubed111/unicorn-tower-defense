@@ -4,8 +4,8 @@ TODO:
 - wave start sound effect
 - add more movement to intro screen? Unicorns running around?
 - subtract fire acc from hp bar display?
-- give charge a 0.2 range boost per level?
-- make enemies always respawn at og spawn point (or parents for broodicorn)
+- should enemies have a slight shade variation per enemy?
+
 
 - Level ideas:
     - wide open path

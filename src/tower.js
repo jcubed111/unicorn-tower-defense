@@ -244,20 +244,20 @@ const orderedTowerTypes = [
 
     Meteor = withTowerPattern(' g |rrr| b ', class extends Tower{
         displayName = 'Meteor';
-        damage = 4 * this.level;
+        damage = 3 * this.level;
         fireDamagePerSec = this.level / 3;
         chargeTime = 5;
         range = 3 + this.level / 2;
         extraDescription = [
             this.fireDamagePerSec.toFixed(2), `fire / sec`,
             5, 'fire duration',
-            3, 'splash range',
+            2.5, 'splash range',
         ];
 
         hit(targetsInRange) {
             const target = super.hit(targetsInRange);
             const fireDuration = 5;
-            const fireSplash = 3;
+            const fireSplash = 2.5;
 
             ParticleSystem.spawnFireCircleAt(target.pos, fireSplash, 1);
             this.getTargetsInRange(target.pos, fireSplash).forEach(t => {
@@ -280,7 +280,7 @@ const orderedTowerTypes = [
         displayName = 'Sniper';
         chargeTime = 5;
         /** @type {number} */ range = 2 + this.level;
-        damage = 5 * this.level;
+        damage = 6 * this.level;
     }),
 
     Slow = withTowerPattern('bb|bb', class extends Tower{
@@ -438,7 +438,7 @@ const orderedTowerTypes = [
 
     ManaLeech = withTowerPattern('gb', class extends Tower{
         displayName = 'Mana Leech';
-        range = 2;
+        range = 2 + this.level / 4;
         chargeTime = 2;
         damage = 2 * this.level;
         manaLeech = this.level - 1;
@@ -549,7 +549,7 @@ const orderedTowerTypes = [
     Green = withTowerPattern('g', class extends Tower{
         displayName = 'Green';
         // simple bolt tower
-        range = 2.75 + 0.25 * this.level;
+        range = 2.75 + this.level / 4;
         chargeTime = 2;
         damage = 1 + 2 * this.level;
         isDiscovered() { return true; }

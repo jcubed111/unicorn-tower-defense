@@ -266,19 +266,15 @@ class Terrain{
                 }
                 if(this.health >= e.banishDamage) {
                     this.health -= e.banishDamage;
-                    const resetLocation = addVec(
-                        randChoice(e.resetSpawnLocations ?? this.spawnLocations),
-                        [0.5, 1.5],
-                    );
                     ParticleSystem.spawnParticlePixelLine(
                         e.pos,
-                        resetLocation,
+                        e.respawnLocation,
                         pos => new ResetUnicornParticle(pos, [], 2),
                     );
                     this.screenShake += 2;
                     e.manaOnKillMult = 0;
                     e.banishDamage *= 2;
-                    e.setLocation(resetLocation);
+                    e.setLocation(e.respawnLocation);
                 }else{
                     this.lose();
                 }
@@ -323,8 +319,8 @@ class Terrain{
 
         this.upcomingWaves = enemyConstructors.map((WaveCls, waveIndex) => {
             // Derive the wave metrics
-            const targetTotalHp = 15 + 2.5 * waveIndex ** 2;
             const sampleEnemy = new WaveCls(waveIndex, [0, 0]);
+            const targetTotalHp = (15 + 2.5 * waveIndex ** 2) * sampleEnemy.totalHpModifier;
 
             // delay per monster
             const enemyDelay = sampleEnemy.delayPerMonster;
