@@ -33,9 +33,11 @@ window.onload = () => {
             // * -> 0
             // 0 -> 1
             GameState.terrain.timeRate = +!GameState.terrain.timeRate;
-        }else if(e.key == 'Tab') {
-            GameState.terrain.startNextWaveNow();
         }
+        // Using tab here is weird cause it focuses elements and is really close to `q`
+        // else if(e.key == 'Tab') {
+        //     GameState.terrain.startNextWaveNow();
+        // }
     });
 
     // Unicorn head island terrain
