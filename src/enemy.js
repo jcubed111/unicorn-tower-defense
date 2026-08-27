@@ -328,9 +328,16 @@ class Narwhalicorn extends Enemy{
     armor = 0;
     landBased = false;
 
-    constructor(level) {
-        super(level, [0, -1]);
+    constructor(level, path) {
+        super(level, path[0]);
         this.hp = this.maxHp = this.level ** 2;
+        this.path = [...path];
+    }
+
+    step(dt) {
+        // Water enemies can't be aflame
+        this.fireEffects = [];
+        super.step(dt);
     }
 
     getSprites() {
@@ -338,15 +345,9 @@ class Narwhalicorn extends Enemy{
     }
 
     getTarget(square) {
-        // const endGoal = [15, 15];
-        const [sx, sy] = square;
-        return addVec([0.5, 0.5], randChoice(
-            CARDINAL_DIRS
-                .map(dir => addVec(square, dir))
-                .filter(pos =>
-                    grid2dAt(GameState.terrain.isGround, pos) != undefined
-                    && grid2dAt(GameState.terrain.isGround, pos) != 1
-                )
-        ));
+        if(!this.path.length) {
+            GameState.terrain.enemies.delete(this);
+        }
+        return addVec(this.path.shift() ?? square, [0.5, 0.5]);
     }
 }

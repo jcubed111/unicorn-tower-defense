@@ -45,6 +45,7 @@ const getTerrainForLevel = (n, resolveCb) => {
         level.waves,
         resolveCb,
         level.narwhalWaveIndices,
+        level.narwhalPath,
     );
     level.extraSetup?.(terrain);
     return terrain;
@@ -235,6 +236,7 @@ const levelData = [
             BossEnemy,
         ],
         narwhalWaveIndices: [5],
+        narwhalPath: [[0, -1], [0, 3], [8, 7], [8, 16]],
     },
     // Level 7: Optional - no 2x2 tower spots
     {
