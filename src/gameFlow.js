@@ -83,7 +83,7 @@ const runBattle = async (n, wasRestarted) => {
     // returns true to restart
 
     if(!wasRestarted) {
-        await levelData[n].preLevelStoryContent?.();
+        await levelData[n][0]?.();
     }
 
     setCloudTransition(false);

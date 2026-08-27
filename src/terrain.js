@@ -33,15 +33,18 @@ class Terrain{
     tileHoverEls = grid2d(this.size, null);  // Grid2d<Element | null>
     markedTileSprites = grid2d(this.size, []);
 
+    // NOTE: This constructor needs to match the same order as levelData
     constructor(
+        onEndCb,
+        preLevelStoryContent,  // slot 0, not used here
         goalLocation,
+        waves,
         // Terrain strings are written two rows at a time, column by column within
         // the pair: r0c0, r1c0, r0c1, r1c1.
         terrainString,
-        waves,
-        onEndCb,
         // narwhalData is stored collapsed as [path, ...waveIndices]
-        narwhalData=[],
+        narwhalData,
+        extraSetup,
     ) {
         terrainString.split('').forEach((c, i) => this.isGround[i >> 1 & 15][(i & 1) + (i >> 5) * 2] = c.charCodeAt(0) - 46);
         this.onEndCb = onEndCb;
@@ -53,6 +56,7 @@ class Terrain{
         this.spawnLocations = range(this.size)
             .filter(x => this.isGround[x][0])
             .map(x => [x, -1]);
+        extraSetup?.(this);
     }
 
     markLocation([x, y], sprites, hoverInfo) {
@@ -364,7 +368,7 @@ class Terrain{
             ([waveIndex, sampleEnemy, numTotal, hp, WaveCls]) => [
                 waveIndex == 0 ? STARTING_WAVE_DELAY : WAVE_DELAY,
                 () => {
-                    if(narwhalData.includes(waveIndex)) {
+                    if(narwhalData?.includes(waveIndex)) {
                         this.enemies.add(new Narwhalicorn(waveIndex, narwhalData[0]));
                     }
                     GameState.toastWaveInfo(
@@ -427,7 +431,7 @@ class Terrain{
 
 class MockTerrain extends Terrain{
     constructor(terrainString, onEndCb = _ => 0) {
-        super([-1, -1], terrainString, [], onEndCb);
+        super(onEndCb, 0, [-1, -1], [], terrainString);
     }
     // override the methods we don't want to use
     renderSpecialEffects() {}
@@ -457,7 +461,7 @@ class LevelSelectTerrain extends MockTerrain{
             if(level && this.levelIsUnlocked[level] && levelData[level]) {
                 this.tileHoverEls[x][y] = div('',
                     div('C--infoTitle', `Level ${level}`),
-                    div('', `${levelData[level]?.waves?.length} Waves`),
+                    div('', `${levelData[level]?.[2]?.length} Waves`),
                     makeSpriteCanvas(ctx => {
                         renderTerrainBase(ctx, 0,
                             getTerrainForLevel(level, _ => 0),
