@@ -39,7 +39,13 @@ const setLevelPassed = (n, isPerfect) => {
 
 const getTerrainForLevel = (n, resolveCb) => {
     const level = levelData[n];
-    const terrain = new Terrain(level.goalLocation, level.terrainString, level.waves, resolveCb);
+    const terrain = new Terrain(
+        level.goalLocation,
+        level.terrainString,
+        level.waves,
+        resolveCb,
+        level.narwhalWaveIndices,
+    );
     level.extraSetup?.(terrain);
     return terrain;
 }
@@ -75,6 +81,7 @@ const levelData = [
     // Level 1
     {
         // extraSetup() {}
+        // narwhalWaveIndices: [],
         preLevelStoryContent: async () => {
             await showEventText()(
                 wrapEventImage(sprites[31]),
@@ -227,6 +234,7 @@ const levelData = [
             Enemy,
             BossEnemy,
         ],
+        narwhalWaveIndices: [5],
     },
     // Level 7: Optional - no 2x2 tower spots
     {

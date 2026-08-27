@@ -33,7 +33,7 @@ class Terrain{
     tileHoverEls = grid2d(this.size, null);  // Grid2d<Element | null>
     markedTileSprites = grid2d(this.size, []);
 
-    constructor(goalLocation, terrainString, waves, onEndCb) {
+    constructor(goalLocation, terrainString, waves, onEndCb, narwhalWaveIndices=[]) {
         // Terrain strings are written two rows at a time, column by column within
         // the pair: r0c0, r1c0, r0c1, r1c1, ... Roadroller's contexts only reach
         // ~9 bytes back, so plain row-major hides the tile directly below (16
@@ -44,7 +44,7 @@ class Terrain{
         this.invalidPlacementLocations = [
             this.goalLocation = goalLocation
         ];
-        this._setWaves(waves);
+        this._setWaves(waves, narwhalWaveIndices);
         this.recomputeDerivedValues();
         this.spawnLocations = range(this.size)
             .filter(x => this.isGround[x][0])
@@ -307,7 +307,7 @@ class Terrain{
         }
     }
 
-    _setWaves(enemyConstructors) {
+    _setWaves(enemyConstructors, narwhalWaveIndices) {
         this.totalWaves = enemyConstructors.length;
         let ignoreButton = false;
         GameState.startNextWaveButton.addEventListener('click', e => {
@@ -360,6 +360,9 @@ class Terrain{
             ([waveIndex, sampleEnemy, numTotal, hp, WaveCls]) => [
                 waveIndex == 0 ? STARTING_WAVE_DELAY : WAVE_DELAY,
                 () => {
+                    if(narwhalWaveIndices.includes(waveIndex)) {
+                        this.enemies.add(new Narwhalicorn(waveIndex));
+                    }
                     GameState.toastWaveInfo(
                         `Wave ${waveIndex + 1}`,
                         div('C--secondary', `${sampleEnemy.displayName} × ${numTotal}`),

@@ -321,3 +321,32 @@ class Rainbowicorn extends Enemy{
         return super.getTarget(square);
     }
 }
+
+class Narwhalicorn extends Enemy{
+    displayName = 'Narwhalicorn';
+    speed = 1.0;
+    armor = 0;
+    landBased = false;
+
+    constructor(level) {
+        super(level, [0, -1]);
+        this.hp = this.maxHp = this.level ** 2;
+    }
+
+    getSprites() {
+        return [sprites[28].withColor([0, 0, 0, 70])];
+    }
+
+    getTarget(square) {
+        // const endGoal = [15, 15];
+        const [sx, sy] = square;
+        return addVec([0.5, 0.5], randChoice(
+            CARDINAL_DIRS
+                .map(dir => addVec(square, dir))
+                .filter(pos =>
+                    grid2dAt(GameState.terrain.isGround, pos) != undefined
+                    && grid2dAt(GameState.terrain.isGround, pos) != 1
+                )
+        ));
+    }
+}
