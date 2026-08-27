@@ -331,21 +331,24 @@ class Terrain{
         });
 
         const makeWaveListHoverInfo = (startingWaveIndex, num = 6) => {
-            this.defaultHoverInfoContent = div('',
-                div('C--infoTitle', 'Upcoming Waves'),
-                div('C--infoGrid C--infoGridThree',
-                    ...solvedWaves
-                        .slice(startingWaveIndex, startingWaveIndex + num)
-                        .map(([waveIndex, sampleEnemy, numTotal, hp, WaveCls]) => {
-                            return [
-                                div('C--secondary', waveIndex + 1, '.'),
-                                div('', sampleEnemy.displayName),
-                                div('', '× ', numTotal),
-                                // div('C--secondary', hp, 'hp'),
-                            ];
-                        }),
+            this.defaultHoverInfoContent =
+                startingWaveIndex < solvedWaves.length
+                ? div('',
+                    div('C--infoTitle', 'Upcoming Waves'),
+                    div('C--infoGrid C--infoGridThree',
+                        ...solvedWaves
+                            .slice(startingWaveIndex, startingWaveIndex + num)
+                            .map(([waveIndex, sampleEnemy, numTotal, hp, WaveCls]) => {
+                                return [
+                                    div('C--secondary', waveIndex + 1, '.'),
+                                    div('', sampleEnemy.displayName),
+                                    div('', '× ', numTotal),
+                                    // div('C--secondary', hp, 'hp'),
+                                ];
+                            }),
+                    )
                 )
-            );
+                : '';
         }
 
         makeWaveListHoverInfo(0);
@@ -358,7 +361,7 @@ class Terrain{
                         `Wave ${waveIndex + 1}`,
                         div('C--secondary', `${sampleEnemy.displayName} × ${numTotal}`),
                     );
-                    makeWaveListHoverInfo(waveIndex);
+                    makeWaveListHoverInfo(waveIndex + 1);
                     range(numTotal).forEach(i => {
                         this.actionQueue.add([
                             this.terrainTotalTime + i * sampleEnemy.delayPerMonster,
