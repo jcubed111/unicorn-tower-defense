@@ -243,12 +243,12 @@ class Rooicorn extends Enemy{
     }
 
     onDeath() {
-        for(const i of range(8)) {
+        range(8).forEach(i => {
             const e = new SwarmEnemy(this.level, this.getSquare());
             e.hp = e.maxHp = (this.maxHp >> 3) || 1;
             e.respawnLocation = this.respawnLocation;
             GameState.terrain.enemies.add(e);
-        }
+        });
     }
 }
 
@@ -299,7 +299,7 @@ class Rainbowicorn extends Enemy{
                 && grid2dAt(GameState.terrain.isGround, landPos) == 1
                 && grid2dAt(GameState.terrain.descentMap, landPos) < w - 1
                 && gapPos;  // return the gap pos
-        }).find(f => f);
+        }).filter(f => f)[0];
 
         if(bridgePos) {
             const [bx, by] = bridgePos;

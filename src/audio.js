@@ -180,7 +180,7 @@ const AudioSystem = new class {
         const beatLength = 30 / tempo;
         const t0 = this.ctx.currentTime;
         let beat = 0;
-        for(const [midi, duration] of notes) {
+        notes.forEach(([midi, duration]) => {
             this.scheduleNote(
                 t0 + beat * beatLength,
                 50 + midi,
@@ -190,7 +190,7 @@ const AudioSystem = new class {
                 1,  // send to background output
             );
             beat += duration;
-        }
+        });
         await time(beat * beatLength * 1e3);
     }
 };

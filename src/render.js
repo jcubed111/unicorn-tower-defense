@@ -143,7 +143,7 @@ function render(dt) {
     }
 
     // Draw enemies
-    for(const e of terrain.enemies) {
+    terrain.enemies.forEach(e => {
         // enemy armor
         if(e.armor) {
             renderCircleIndicator(ctx, e.pos, 0.4, Math.log2(e.armor + 1), '#b3ea', 1);
@@ -162,9 +162,9 @@ function render(dt) {
                 );
             }
         });
-    }
+    });
     // Draw enemy hp
-    for(const e of terrain.enemies) {
+    terrain.enemies.forEach(e => {
         if(e.hp < e.maxHp) {
             const radius = 0.27 * e.maxHp / (e.maxHp + 10); // in (0, 1)
 
@@ -177,7 +177,7 @@ function render(dt) {
                 e.hp / e.maxHp,
             );
         }
-    }
+    });
 
     // Terrain specific effects
     GameState.terrain.renderSpecialEffects(dt, ctx);
