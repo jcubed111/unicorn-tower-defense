@@ -46,7 +46,7 @@ class Enemy{
         // can't cache since it changes with hp
         return div('',
             div('C--floatRight',
-                spriteListToEl(...this.getSprites()),
+                spriteListToEl(this.getSprites()),
             ),
             div('C--infoTitle', `${this.displayName}`),
             div('C--secondary', `Wave ${this.level + 1}`),
@@ -78,12 +78,12 @@ class Enemy{
         return this.pos.map(Math.floor);
     }
 
-    *getSprites() {
-        if(this.slowEffects.length) {
-            yield sprites[20].withColor([59, 124, 255, 255]);
-        }
+    getSprites() {
         const s = sprites[16 + ((GameState.terrain.terrainTotalTime * 3 * this.speed) & 3)];
-        yield this.poisonEffects.length ? s.withColor([150, 255, 150, 255]) : s;
+        return [
+            ...(this.slowEffects.length ? [sprites[20].withColor([59, 124, 255, 255])] : []),
+            this.poisonEffects.length ? s.withColor([150, 255, 150, 255]) : s,
+        ];
     }
 
     takeDamage(amt) {
@@ -162,10 +162,8 @@ class Rhinoicorn extends Enemy{
     hpToNumRatio = 1.5;
     // manaOnKillMult = 1.5;
     // TODO: better rhino sprites?
-    *getSprites() {
-        for(const s of super.getSprites()) {
-            yield s.withColor([160, 160, 160, 255]);
-        }
+    getSprites() {
+        return super.getSprites().map(s => s.withColor([160, 160, 160, 255]));
     }
 }
 
@@ -174,10 +172,8 @@ class SwarmEnemy extends Enemy{
     hpToNumRatio = 0.2;
     delayPerMonster = 0.5;
     armor = 0;
-    *getSprites() {
-        for(const s of super.getSprites()) {
-            yield s.withScale(0.7);
-        }
+    getSprites() {
+        return super.getSprites().map(s => s.withScale(0.7));
     }
 }
 
@@ -202,9 +198,8 @@ class Pegacorn extends Enemy{
         super(level, [~~randFloat(1, 15), -1]);
     }
 
-    *getSprites() {
-        yield* super.getSprites();
-        yield sprites[37 + ((GameState.terrain.terrainTotalTime * 3 * this.speed) & 1)];
+    getSprites() {
+        return [...super.getSprites(), sprites[37 + ((GameState.terrain.terrainTotalTime * 3 * this.speed) & 1)]];
     }
 
     getTarget(square) {
@@ -229,10 +224,8 @@ class Megacorn extends Enemy{
     hpToNumRatio = 15;
     delayPerMonster = 1.0;
     armor = this.level;
-    *getSprites() {
-        for(const s of super.getSprites()) {
-            yield s.withScale(1.4);
-        }
+    getSprites() {
+        return super.getSprites().map(s => s.withScale(1.4));
     }
 }
 
@@ -245,10 +238,8 @@ class Rooicorn extends Enemy{
     speed = 1.5;
     extraDescription = 'Explodes into 8 Minicorns on death';
 
-    *getSprites() {
-        for(const s of super.getSprites()) {
-            yield s.withScale(1.15).withColor([180, 120, 90, 255]);
-        }
+    getSprites() {
+        return super.getSprites().map(s => s.withScale(1.15).withColor([180, 120, 90, 255]));
     }
 
     onDeath() {
@@ -267,10 +258,8 @@ class BossEnemy extends Enemy{
     hpToNumRatio = 1000;
     armor = this.level >> 1;
     manaOnKillMult = 2;
-    *getSprites() {
-        for(const s of super.getSprites()) {
-            yield s.withColor([50, 40, 40, 255]);
-        }
+    getSprites() {
+        return super.getSprites().map(s => s.withColor([50, 40, 40, 255]));
     }
 }
 
@@ -278,17 +267,16 @@ class Rainbowicorn extends Enemy{
     displayName = 'Rainbowicorn';
     hpToNumRatio = 20;
 
-    *getSprites() {
-        for(const s of super.getSprites()) {
-            // Cycle through the rainbow colors
-            yield s.withColor(lerpArr(WHITE, [
+    getSprites() {
+        // Cycle through the rainbow colors
+        return super.getSprites().map(s => s.withColor(lerpArr(WHITE, [
                 [180, 54, 46, 255],
                 [203, 134, 13, 255],
                 [195, 176, 12, 255],
                 [6, 176, 78, 255],
                 [70, 68, 206, 255],
                 [172, 71, 191, 255],
-            ][(~~GameState.terrain.terrainTotalTime) % 6], 0.5));
+        ][(~~GameState.terrain.terrainTotalTime) % 6], 0.5)));
             // Writing out the lerp uses (marginally) fewer bytes
             // than the precomputed versions:
             // [236, 204, 202, 255],
@@ -297,7 +285,6 @@ class Rainbowicorn extends Enemy{
             // [192, 235, 210, 255],
             // [208, 208, 242, 255],
             // [234, 209, 239, 255],
-        }
     }
 
     getTarget(square) {

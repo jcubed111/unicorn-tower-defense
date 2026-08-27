@@ -9,25 +9,20 @@ const normalizedTowerRgb = (r, g, b) => {
     return [r / m * 255 + 76 * b / m, g / m * 204 + b / m * 61, b / m * 255, 255].map(clampColorComponent);
 }
 
-function * getTowerSprites(pos, rawCell, outerColor, isSameAt) {
+function getTowerSprites(pos, rawCell, outerColor, isSameAt) {
     const [rawTowerType, rawTowerLevel] = rawCell;
-    if(rawTowerType == 4) {
-        yield sprites[32];
-
-    }else{
-        const innerSprite = sprites[rawTowerType * 4 + rawTowerLevel - 1];
-        const innerColor = lerpArr(
-            outerColor,
-            normalizedTowerRgb(rawTowerType == 1, rawTowerType == 2, rawTowerType == 3),
-            0.5,
-        );
-        yield innerSprite.withColor(innerColor);
-    }
-
-    // the side sprite for each direction; the CARDINAL_DIRS index is the rotation
-    for(const [sideRot, dir] of CARDINAL_DIRS.entries()) {
-        yield sprites[+isSameAt(addVec(pos, dir))].withRot(sideRot).withColor(outerColor);
-    }
+    return [
+        rawTowerType == 4
+            ? sprites[32]
+            : sprites[rawTowerType * 4 + rawTowerLevel - 1].withColor(lerpArr(
+                outerColor,
+                normalizedTowerRgb(rawTowerType == 1, rawTowerType == 2, rawTowerType == 3),
+                0.5,
+            )),
+        // the side sprite for each direction; the CARDINAL_DIRS index is the rotation
+        ...CARDINAL_DIRS.map((dir, sideRot) =>
+            sprites[+isSameAt(addVec(pos, dir))].withRot(sideRot).withColor(outerColor)),
+    ];
 }
 
 function withTowerPattern(stringRepr, Cls) {
@@ -65,14 +60,14 @@ function towerGridToElement(towerGrid, outerColor, isDiscovered = true) {
     return makeSpriteCanvas(ctx => {
         forEachGrid2d(towerGrid, (tower, pos) => {
             if(tower) {
-                for(const s of getTowerSprites(
+                getTowerSprites(
                     pos,
                     isDiscovered ? tower : [4, 1],
                     isDiscovered ? outerColor : [150, 150, 150, 255],
                     pos => grid2dAt(towerGrid, pos)?.[0] > 0,
-                )) {
-                    renderSprite(ctx, pos, s);
-                }
+                ).forEach(
+                    s => renderSprite(ctx, pos, s)
+                );
             }
         });
     }, towerGrid.length, towerGrid[0].length);

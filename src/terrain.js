@@ -253,7 +253,10 @@ class Terrain{
                 const reward = ~~(e.maxHp * e.manaOnKillMult);
                 this.mana += reward;
                 ParticleSystem.explodeManaAt(e.pos, reward);
-                ParticleSystem.explodeSpritesAt(addVec(e.pos, [-0.5, -0.5]), ...e.getSprites());
+                ParticleSystem.explodeSpritesAt(
+                    addVec(e.pos, [-0.5, -0.5]),
+                    ...e.getSprites()
+                );
                 AudioSystem.playEnemyDeath();
                 this.screenShake += 0.2;
 

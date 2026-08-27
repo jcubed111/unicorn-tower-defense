@@ -12,7 +12,7 @@ const makeSpriteCanvas = (ctxCb, w = 1, h = 1, cssWidthRem = w * 7.5) => {
     return canvas;
 }
 
-const spriteListToEl = (...sprites) => makeSpriteCanvas(
+const spriteListToEl = sprites => makeSpriteCanvas(
     ctx =>
         sprites.forEach(s => ctx.drawImage(s.asImage, 0, 0))
 );

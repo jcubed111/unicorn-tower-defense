@@ -61,13 +61,13 @@ function renderTerrainBase(ctx, dt, terrain) {
 
         // Tower
         if(maybeComputedTower) {
-            for(const s of getTowerSprites(
+            getTowerSprites(
                 pos,
                 grid2dAt(terrain.rawTowers, pos),
                 maybeComputedTower.getColor(),
                 neighborPos =>
                     grid2dAt(terrain.computedTowersByLocation, neighborPos) == maybeComputedTower,
-            )) {
+            ).forEach(s => {
                 renderSprite(ctx, pos, s);
 
                 // sparkle: each pixel should generate a particle every 20 seconds.
@@ -76,7 +76,7 @@ function renderTerrainBase(ctx, dt, terrain) {
                     pos,
                     (maybeComputedTower._particleFirstRender && dt) ? 0.5 : dt / 20,
                 );
-            }
+            });
         }
 
         // // render descent map for debug
@@ -149,7 +149,7 @@ function render(dt) {
             renderCircleIndicator(ctx, e.pos, 0.4, Math.log2(e.armor + 1), '#b3ea', 1);
         }
 
-        for(const s of e.getSprites()) {
+        e.getSprites().forEach(s => {
             const pos = addVec(e.pos, [-0.5, -0.5]);
             renderSprite(ctx, pos, s, e.facing);
             if(e.fireEffects.length) {
@@ -161,7 +161,7 @@ function render(dt) {
                     p => new FireParticle(p),
                 );
             }
-        }
+        });
     }
     // Draw enemy hp
     for(const e of terrain.enemies) {
