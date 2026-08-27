@@ -35,23 +35,20 @@ class Terrain{
 
     constructor(
         goalLocation,
+        // Terrain strings are written two rows at a time, column by column within
+        // the pair: r0c0, r1c0, r0c1, r1c1.
         terrainString,
         waves,
         onEndCb,
-        narwhalWaveIndices=[],
-        narwhalPath=[],
+        // narwhalData is stored collapsed as [path, ...waveIndices]
+        narwhalData=[],
     ) {
-        // Terrain strings are written two rows at a time, column by column within
-        // the pair: r0c0, r1c0, r0c1, r1c1, ... Roadroller's contexts only reach
-        // ~9 bytes back, so plain row-major hides the tile directly below (16
-        // away) from the model; the pair interleave puts it 1 away. Worth ~26B.
-        // The level editor writes this order too -- see levelEditor/main.js.
         terrainString.split('').forEach((c, i) => this.isGround[i >> 1 & 15][(i & 1) + (i >> 5) * 2] = c.charCodeAt(0) - 46);
         this.onEndCb = onEndCb;
         this.invalidPlacementLocations = [
             this.goalLocation = goalLocation
         ];
-        this._setWaves(waves, narwhalWaveIndices, narwhalPath);
+        this._setWaves(waves, narwhalData);
         this.recomputeDerivedValues();
         this.spawnLocations = range(this.size)
             .filter(x => this.isGround[x][0])
@@ -314,7 +311,7 @@ class Terrain{
         }
     }
 
-    _setWaves(enemyConstructors, narwhalWaveIndices, narwhalPath) {
+    _setWaves(enemyConstructors, narwhalData) {
         this.totalWaves = enemyConstructors.length;
         let ignoreButton = false;
         GameState.startNextWaveButton.addEventListener('click', e => {
@@ -367,8 +364,8 @@ class Terrain{
             ([waveIndex, sampleEnemy, numTotal, hp, WaveCls]) => [
                 waveIndex == 0 ? STARTING_WAVE_DELAY : WAVE_DELAY,
                 () => {
-                    if(narwhalWaveIndices.includes(waveIndex)) {
-                        this.enemies.add(new Narwhalicorn(waveIndex, narwhalPath));
+                    if(narwhalData.includes(waveIndex)) {
+                        this.enemies.add(new Narwhalicorn(waveIndex, narwhalData[0]));
                     }
                     GameState.toastWaveInfo(
                         `Wave ${waveIndex + 1}`,

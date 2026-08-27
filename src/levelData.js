@@ -44,8 +44,7 @@ const getTerrainForLevel = (n, resolveCb) => {
         level.terrainString,
         level.waves,
         resolveCb,
-        level.narwhalWaveIndices,
-        level.narwhalPath,
+        level.narwhalData,
     );
     level.extraSetup?.(terrain);
     return terrain;
@@ -82,7 +81,8 @@ const levelData = [
     // Level 1
     {
         // extraSetup() {}
-        // narwhalWaveIndices: [],
+        // narwhalData is stored collapsed as [path, ...waveIndices]
+        // narwhalData: [[[x, y], ...], waveIndex, waveIndex2, etc.],
         preLevelStoryContent: async () => {
             await showEventText()(
                 wrapEventImage(sprites[31]),
@@ -235,8 +235,10 @@ const levelData = [
             Enemy,
             BossEnemy,
         ],
-        narwhalWaveIndices: [5],
-        narwhalPath: [[0, -1], [0, 3], [8, 7], [8, 16]],
+        narwhalData: [
+            [[0, -1], [0, 3], [8, 7], [8, 16]],
+            5,
+        ],
     },
     // Level 7: Optional - no 2x2 tower spots
     {

@@ -327,6 +327,7 @@ class Narwhalicorn extends Enemy{
     speed = 1.0;
     armor = 0;
     landBased = false;
+    manaOnKillMult = 3;
 
     constructor(level, path) {
         super(level, path[0]);
