@@ -116,62 +116,60 @@ class Terrain{
         this.computedTowersByLocation = grid2d(this.size, 0);
         this.computedTowersArr = [];
 
-        orderedTowerTypes.forEach(CandidateTower => {
-            range(this.size).map(x => {
-                range(this.size).map(y => {
-                    CandidateTower.sourcePattern.allForms.forEach(sourcePatternForm => {
-
-                        // Do the whole test/gen op as one map
-                        let fits = true;
-                        let prevTower;  // outside closure so we can use it for charge retention
-                        // one entry per cell used, so a tower's entry count is its cell count
-                        const usedPrevTowerCells = [];
-                        // towerCells: Grid2d<[type, level, pos]>
-                        // typed as such so it fits nicely into `towerGridToElement`
-                        const towerCells = mapGrid2d(sourcePatternForm, (maybeNeededTower, d) => {
-                            if(!maybeNeededTower) return null;
-                            const cellPos = addVec([x, y], d);
-                            if(maybeNeededTower[0] != grid2dAt(unjoinedTowerColors, cellPos)) {
-                                fits = false;
-                                return null;
-                            }
-                            // count how many cells of each previous tower we used
-                            prevTower = grid2dAt(prevComputedTowersByLocation, cellPos);
-                            if(prevTower) usedPrevTowerCells.push(prevTower);
-                            return [
-                                ...grid2dAt(this.rawTowers, cellPos),
-                                cellPos,
-                            ];
-                        });
-                        if(!fits) return;
-                        // We don't allow breaking towers during re-joining, so a new tower is
-                        // only valid if it uses every piece of each of the previous towers.
-                        if(usedPrevTowerCells.some(
-                            t => usedPrevTowerCells.filter(u => u == t).length != t.size
-                        )) {
-                            return;
+        orderedTowerTypes.forEach(CandidateTower =>
+            // We can pick any Grid2d[this.size] here, but this.rawTowers was used above
+            mapGrid2d(this.rawTowers, (_, pos) =>
+                CandidateTower.sourcePattern.allForms.forEach(sourcePatternForm => {
+                    // Do the whole test/gen op as one map
+                    let fits = true;
+                    let prevTower;  // outside closure so we can use it for charge retention
+                    // one entry per cell used, so a tower's entry count is its cell count
+                    const usedPrevTowerCells = [];
+                    // towerCells: Grid2d<[type, level, pos]>
+                    // typed as such so it fits nicely into `towerGridToElement`
+                    const towerCells = mapGrid2d(sourcePatternForm, (maybeNeededTower, d) => {
+                        if(!maybeNeededTower) return null;
+                        const cellPos = addVec(pos, d);
+                        if(maybeNeededTower[0] != grid2dAt(unjoinedTowerColors, cellPos)) {
+                            fits = false;
+                            return null;
                         }
+                        // count how many cells of each previous tower we used
+                        prevTower = grid2dAt(prevComputedTowersByLocation, cellPos);
+                        if(prevTower) usedPrevTowerCells.push(prevTower);
+                        return [
+                            ...grid2dAt(this.rawTowers, cellPos),
+                            cellPos,
+                        ];
+                    });
+                    if(!fits) return;
+                    // We don't allow breaking towers during re-joining, so a new tower is
+                    // only valid if it uses every piece of each of the previous towers.
+                    if(usedPrevTowerCells.some(
+                        t => usedPrevTowerCells.filter(u => u == t).length != t.size
+                    )) {
+                        return;
+                    }
 
-                        const key = JSON.stringify(towerCells);
-                        const tower = this.computedTowerCache[key] ??= new CandidateTower(
-                            towerCells,
-                            // Keep charge when upgrading to a higher level of the same tower.
-                            // This works because prevTower will have a deterministic value in this
-                            // case, and will be a different type if this isn't a level upgrade.
-                            prevTower.constructor === CandidateTower ? prevTower.charge : 0,
-                        );
-                        forEachGrid2d(towerCells, maybeTower => {
-                            if(!maybeTower) return;
-                            const [x, y] = maybeTower[2];
-                            unjoinedTowerColors[x][y] = 0;
-                            this.computedTowersByLocation[x][y] = tower;
-                        });
-                        this.computedTowersArr.push(tower);
-                        tower.setDiscovered();
-                    })
+                    const key = JSON.stringify(towerCells);
+                    const tower = this.computedTowerCache[key] ??= new CandidateTower(
+                        towerCells,
+                        // Keep charge when upgrading to a higher level of the same tower.
+                        // This works because prevTower will have a deterministic value in this
+                        // case, and will be a different type if this isn't a level upgrade.
+                        prevTower.constructor === CandidateTower ? prevTower.charge : 0,
+                    );
+                    forEachGrid2d(towerCells, maybeTower => {
+                        if(!maybeTower) return;
+                        const [x, y] = maybeTower[2];
+                        unjoinedTowerColors[x][y] = 0;
+                        this.computedTowersByLocation[x][y] = tower;
+                    });
+                    this.computedTowersArr.push(tower);
+                    tower.setDiscovered();
                 })
-            });
-        });
+            )
+        );
     }
 
     eventToPos(e) {  // -> [x, y]
