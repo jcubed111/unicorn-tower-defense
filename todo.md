@@ -5,7 +5,8 @@ TODO:
 - add more movement to intro screen? Unicorns running around?
 - subtract fire acc from hp bar display?
 - should enemies have a slight shade variation per enemy?
-
+- change "Levels" to "Continue" in win screen only
+- make sure to clear upcoming waves info after last wave
 
 - Level ideas:
     - wide open path
@@ -13,8 +14,6 @@ TODO:
     - all-ish armor
     - Pegacorn focus
     - fixed unicorn path (rainbow bridge?) - almost have this
-
-- show waves when hovering wave button?
 
 - spells
     - would help with spending mana in final wave

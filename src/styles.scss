@@ -72,13 +72,13 @@ h1{
     position: absolute;
     inset: 0;
     transition: --s 0.5s linear;
-    --s: 1;
+    --s:1;
     @extend %flexCol;
     @extend %flexCenterAll;
 }
     .C--cloudBlockerHide{ // cloud blocker
         pointer-events: none;
-        --s: 0;
+        --s:0;
     }
 
     .C--eventTextScroll{
@@ -105,17 +105,17 @@ h1{
 
 .C--waveInfoToast{
     border: 1rem solid;
-    background: linear-gradient(to right, #1110, #1116, #1116, #1110);
+    background: linear-gradient(90deg,#1110,#1116,#1116,#1110);
     inset: 12rem 75rem auto 15rem;
     pointer-events: none;
-    border-image: linear-gradient(to right, #1110, #111e, #111e, #1110) 1;
+    border-image: linear-gradient(90deg,#1110,#111e,#111e,#1110) 1;
     gap: 2rem;
     padding: 3rem;
     opacity: 1;
     transition: top 0.4s ease-in-out, opacity 0.4s;
 }
     .C--waveInfoToastOut{
-        top: 0rem;
+        top: 0;
         opacity: 0;
     }
     .C--larger{

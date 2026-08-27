@@ -26,7 +26,7 @@ JS_DEV := $(JS_FILES:src/%=dev/%)
 
 # how many parallel Roadroller searches to race. Each is ~20s and they run
 # concurrently, so more is nearly free until you run out of cores.
-PACK_RUNS := 8
+PACK_RUNS := 16
 
 # how many itertions to zip for. Less is faster; seems to max out after 10k
 # ZIP_ITERS := 10000
@@ -99,6 +99,7 @@ build/index.html: src/index.html
 	@echo $@ "<-" $^
 	@ npx html-minifier \
 		--collapse-whitespace \
+		--remove-attribute-quotes \
 		--remove-comments \
 		--remove-optional-tags \
 		--remove-redundant-attributes \

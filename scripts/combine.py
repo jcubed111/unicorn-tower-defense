@@ -33,9 +33,17 @@ def unique_class_name(i):
         i = (i // 26) - 1
     return result
 
+# Hand out the one-character names to the classes that appear most often.
+# (Past 26 classes the names go to two characters, so ordering is worth a few
+# bytes.) Sorting also makes the build deterministic: iterating the set
+# directly leaves the assignment at the mercy of PYTHONHASHSEED.
+all_class_names = css_class_names | js_class_names
 class_name_remapping = {
     c: unique_class_name(i)
-    for i, c in enumerate(css_class_names | js_class_names)
+    for i, c in enumerate(sorted(
+        all_class_names,
+        key=lambda c: (-(css + js).count(c), c),
+    ))
 }
 
 def replace_classes(source):

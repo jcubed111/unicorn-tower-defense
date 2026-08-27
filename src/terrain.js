@@ -7,7 +7,6 @@ class Terrain{
     rawTowers = grid2d(this.size, [0, 0]); // [x][y] -> Tuple<0 | 1 (r) | 2 (g) | 3 (b), level: number = 0>
     mana = STARTING_MANA;
     health = STARTING_HEALTH;  // hits you can take before dying
-    wavesComplete = false;
 
     computedTowersArr = [];
     computedTowersByLocation = grid2d(this.size, 0);  // Grid2d<Tower | 0>
@@ -35,7 +34,12 @@ class Terrain{
     markedTileSprites = grid2d(this.size, []);
 
     constructor(goalLocation, terrainString, waves, onEndCb) {
-        terrainString.split('').forEach((c, i) => this.isGround[i % this.size][~~(i / this.size)] = c.charCodeAt(0) - 46);
+        // Terrain strings are written two rows at a time, column by column within
+        // the pair: r0c0, r1c0, r0c1, r1c1, ... Roadroller's contexts only reach
+        // ~9 bytes back, so plain row-major hides the tile directly below (16
+        // away) from the model; the pair interleave puts it 1 away. Worth ~26B.
+        // The level editor writes this order too -- see levelEditor/main.js.
+        terrainString.split('').forEach((c, i) => this.isGround[i >> 1 & 15][(i & 1) + (i >> 5) * 2] = c.charCodeAt(0) - 46);
         this.onEndCb = onEndCb;
         this.invalidPlacementLocations = [
             this.goalLocation = goalLocation
@@ -316,7 +320,7 @@ class Terrain{
             setTimeout(_ => ignoreButton = false, 250);
         });
 
-        // Array<[waveIndex, sampleEnemy, numTotal, hp, Cls, ...description]>
+        // Array<[waveIndex, sampleEnemy, numTotal, hp, Cls]>
         const solvedWaves = enemyConstructors.map((WaveCls, waveIndex) => {
             // Derive the wave metrics
             const sampleEnemy = new WaveCls(waveIndex, [0, 0]);
@@ -328,16 +332,7 @@ class Terrain{
             const enemyHp = Math.round(targetTotalHp / numEnemies)
                 || 1;  // always have at least 1 hp
 
-            return [
-                waveIndex,
-                sampleEnemy,
-                numEnemies,
-                enemyHp,
-                WaveCls,
-                `${numEnemies} ×`,
-                sampleEnemy.displayName,
-                `(${enemyHp}hp)`,  // TODO: show armor here?
-            ];
+            return [waveIndex, sampleEnemy, numEnemies, enemyHp, WaveCls];
         });
 
         const makeWaveListHoverInfo = (startingWaveIndex, num = 6) => {

@@ -405,22 +405,40 @@ function tileChar(shape) {
     : String.fromCharCode(BLUE_OUTSIDE_BASE + (corner + 2) % 4);
 }
 
+// Where a row-major cell index lands in the ascii.
+//
+// The ascii is not written row by row. It goes two rows at a time, column by
+// column within the pair -- r0c0, r1c0, r0c1, r1c1, ... -- so that a cell and
+// the one below it are one character apart instead of sixteen. The game's
+// compressor (Roadroller) models each byte from roughly the previous nine, so
+// row-major puts the tile below a cell out of its reach entirely; the pair
+// interleave brings it inside. Worth ~26 bytes zipped.
+//
+// src/terrain.js reads this same order back -- keep the two in step.
+function asciiPos(index) {
+  return ((index >> 5) << 5) + ((index & 15) << 1) + ((index >> 4) & 1);
+}
+
 // Written as one unbroken line so it can be pasted straight into source;
 // whitespace is ignored when parsing back, so multi-line art still reads in fine.
+// Trailing empties are dropped: the game inits every tile to 0, so they only
+// ever cost bytes. Parsing back handles the short string fine.
 function valuesToAscii(shapes) {
-  let out = '';
+  const out = [];
   for (let i = 0; i < N * N; i++) {
-    if (values[i] === WHITE) out += CHAR_WHITE;
-    else if (values[i] !== BLUE) out += CHAR_EMPTY;
-    else out += shapes[i] ? tileChar(shapes[i]) : CHAR_UNKNOWN_TILE;
+    let ch;
+    if (values[i] === WHITE) ch = CHAR_WHITE;
+    else if (values[i] !== BLUE) ch = CHAR_EMPTY;
+    else ch = shapes[i] ? tileChar(shapes[i]) : CHAR_UNKNOWN_TILE;
+    out[asciiPos(i)] = ch;
   }
-  return out;
+  return out.join('').replace(/\.+$/, '');
 }
 
 function asciiToValues(str) {
   const chars = str.replace(/\s+/g, '');
   const vals = [];
-  for (let i = 0; i < N * N; i++) vals.push(VALUE_FOR_CHAR[chars[i]] || EMPTY);
+  for (let i = 0; i < N * N; i++) vals.push(VALUE_FOR_CHAR[chars[asciiPos(i)]] || EMPTY);
   return vals;
 }
 

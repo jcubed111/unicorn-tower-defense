@@ -26,4 +26,4 @@ const transformed = stdin.replace(/(rgb[a]?\([^)]+\)|hsl[a]?\([^)]+\))/gi, match
 });
 
 
-fs.writeSync(1, transformed); // stdout
+fs.writeSync(1, transformed.replace(/ !important/g, "!important").replace(/, /g, ",")); // stdout
