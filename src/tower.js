@@ -447,12 +447,10 @@ const orderedTowerTypes = [
 
         hit(targetsInRange) {
             const target = randChoice(targetsInRange);
-            if(target.manaOnKillMult > 0) {
-                ParticleSystem.explodeManaAt(target.pos, this.manaLeech);
-                GameState.terrain.mana += this.manaLeech;
-            }
             target.takeDamage(this.damage);
             this.boltAt(target);
+            ParticleSystem.explodeManaAt(target.pos, this.manaLeech);
+            GameState.terrain.mana += this.manaLeech;
         }
     }),
 

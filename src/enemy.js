@@ -160,8 +160,8 @@ class Enemy{
     }
 }
 
-class Rhinocoricorn extends Enemy{
-    displayName = 'Rhinocoricorn';
+class Rhinoicorn extends Enemy{
+    displayName = 'Rhinoicorn';
     speed = 1.33;
     armor = (this.level + 1) >> 1;
     // totalHpModifier = 0.7;
@@ -188,7 +188,7 @@ class SwarmEnemy extends Enemy{
 }
 
 class RunnerEnemy extends Enemy{
-    displayName = 'Dash-i-corn';
+    displayName = 'Dashicorn';
     speed = 4;
     hpToNumRatio = 0.5;
     delayPerMonster = 0.25;
@@ -268,7 +268,7 @@ class Rooicorn extends Enemy{
 }
 
 class BossEnemy extends Enemy{
-    displayName = 'Bossy Corn';
+    displayName = 'Shadowcorn';
     banishDamage = 5;
     hpToNumRatio = 1000;
     armor = this.level >> 1;

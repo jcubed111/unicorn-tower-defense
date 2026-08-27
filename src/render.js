@@ -184,8 +184,7 @@ function render(dt) {
     if(GameState.hoveringElOverride) {
         GameState.hoverInfoEl.replaceChildren(GameState.hoveringElOverride);
 
-    }else if(GameState.hoveringTower && GameState.hoveringPos) {
-        // We use `&& hoveringPos` here to distinguish from non-world towers (eg the runebook)
+    }else if(GameState.hoveringTower) {
         GameState.hoveringTower.renderRangeGuide(ctx);
         renderCircleIndicator(
             ctx,
@@ -199,18 +198,17 @@ function render(dt) {
             GameState.hoveringTower.asHoverEl(),
         );
 
-    }else if(GameState.hoveringPos) {
-        const dist2 = e => dist2Vec(e.pos, GameState.hoveringPos);
-        const inRange = [...terrain.enemies].filter(e => dist2(e) <= 0.25);
-        const maybeEnemy = inRange.length && minByTiesRand(inRange, dist2);
-        GameState.hoverInfoEl.replaceChildren(
-            maybeEnemy
-                ? maybeEnemy.asHoverEl()
-                : (grid2dAt(terrain.tileHoverEls, GameState.hoveringPos) ?? '')
-        );
-
     }else{
-        GameState.hoverInfoEl.replaceChildren();
+        const dist2 = e => dist2Vec(e.pos, GameState.hoveringPos);
+        const maybeEnemy = GameState.hoveringPos && minByTiesRand(
+            [...terrain.enemies].filter(e => dist2(e) <= 0.25),
+            dist2,
+        );
+        GameState.hoverInfoEl.replaceChildren(
+            maybeEnemy?.asHoverEl()
+            ?? grid2dAt(terrain.tileHoverEls, GameState.hoveringPos ?? [-1, -1])
+            ?? GameState.terrain.defaultHoverInfoContent
+        );
     }
 
     // Hovering rune placement indicator

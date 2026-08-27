@@ -28,6 +28,8 @@ class Terrain{
     screenShake = 0;  // px; decays over time in render
     timeRate = 1;
 
+    defaultHoverInfoContent;  // Element, thing to put in hover box when nothing is hovered
+
     // Holds special terrain info
     tileHoverEls = grid2d(this.size, null);  // Grid2d<Element | null>
     markedTileSprites = grid2d(this.size, []);
@@ -314,45 +316,72 @@ class Terrain{
             setTimeout(_ => ignoreButton = false, 250);
         });
 
-        console.log('--------------------')
-        console.log('Wave list:')
-
-        this.upcomingWaves = enemyConstructors.map((WaveCls, waveIndex) => {
+        // Array<[waveIndex, sampleEnemy, numTotal, hp, Cls, ...description]>
+        const solvedWaves = enemyConstructors.map((WaveCls, waveIndex) => {
             // Derive the wave metrics
             const sampleEnemy = new WaveCls(waveIndex, [0, 0]);
             const targetTotalHp = (15 + 2.5 * waveIndex ** 2) * sampleEnemy.totalHpModifier;
 
-            // delay per monster
-            const enemyDelay = sampleEnemy.delayPerMonster;
             // number of enemies
             const numEnemies = Math.round((targetTotalHp / sampleEnemy.hpToNumRatio) ** 0.5)
                 || 1;  // always produce at least 1 enemy
             const enemyHp = Math.round(targetTotalHp / numEnemies)
                 || 1;  // always have at least 1 hp
 
-            console.log(
-                'Wave', waveIndex + 1, ':',
-                numEnemies, 'x',
+            return [
+                waveIndex,
+                sampleEnemy,
+                numEnemies,
+                enemyHp,
+                WaveCls,
+                `${numEnemies} ×`,
                 sampleEnemy.displayName,
-                '@', enemyHp, 'hp', sampleEnemy.armor, 'armor');
-
-            return [waveIndex == 0 ? STARTING_WAVE_DELAY : WAVE_DELAY, () => {
-                GameState.toastWaveInfo(
-                    `Wave ${waveIndex + 1}`,
-                    div('C--secondary', `${sampleEnemy.displayName} × ${numEnemies}`),
-                );
-                range(numEnemies).forEach(i => {
-                    this.actionQueue.add([
-                        this.terrainTotalTime + i * enemyDelay,
-                        () => {
-                            const e = new WaveCls(waveIndex, randChoice(this.spawnLocations));
-                            e.hp = e.maxHp = enemyHp;
-                            this.enemies.add(e);
-                        },
-                    ]);
-                });
-            }];
+                `(${enemyHp}hp)`,  // TODO: show armor here?
+            ];
         });
+
+        const makeWaveListHoverInfo = (startingWaveIndex, num = 6) => {
+            this.defaultHoverInfoContent = div('',
+                div('C--infoTitle', 'Upcoming Waves'),
+                div('C--infoGrid C--infoGridThree',
+                    ...solvedWaves
+                        .slice(startingWaveIndex, startingWaveIndex + num)
+                        .map(([waveIndex, sampleEnemy, numTotal, hp, WaveCls]) => {
+                            return [
+                                div('C--secondary', waveIndex + 1, '.'),
+                                div('', sampleEnemy.displayName),
+                                div('', '× ', numTotal),
+                                // div('C--secondary', hp, 'hp'),
+                            ];
+                        }),
+                )
+            );
+        }
+
+        makeWaveListHoverInfo(0);
+
+        this.upcomingWaves = solvedWaves.map(
+            ([waveIndex, sampleEnemy, numTotal, hp, WaveCls]) => [
+                waveIndex == 0 ? STARTING_WAVE_DELAY : WAVE_DELAY,
+                () => {
+                    GameState.toastWaveInfo(
+                        `Wave ${waveIndex + 1}`,
+                        div('C--secondary', `${sampleEnemy.displayName} × ${numTotal}`),
+                    );
+                    makeWaveListHoverInfo(waveIndex);
+                    range(numTotal).forEach(i => {
+                        this.actionQueue.add([
+                            this.terrainTotalTime + i * sampleEnemy.delayPerMonster,
+                            () => {
+                                const e = new WaveCls(waveIndex, randChoice(this.spawnLocations));
+                                e.hp = e.maxHp = hp;
+                                this.enemies.add(e);
+                            },
+                        ]);
+                    });
+                },
+            ],
+        );
     }
 
     renderSpecialEffects(dt, ctx) {
@@ -440,6 +469,7 @@ class LevelSelectTerrain extends MockTerrain{
                 this.tileHoverEls[x][y] = div('', `Locked`);
             }
         });
+        this.defaultHoverInfoContent = div('', 'Select a level')
     }
 
     renderSpecialEffects(dt, ctx) {
