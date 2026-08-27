@@ -87,7 +87,12 @@ function renderTerrainBase(ctx, dt, terrain) {
 }
 
 function render(dt) {
-    const mainCanvas = GameState.mainCanvas;
+    // NOTE: GameState.mainCanvas is written out in full below rather than
+    // aliased to a local. Roadroller predicts the repeated `GameState.mainCanvas`
+    // almost for free, while the alias costs a declaration and makes the
+    // surrounding contexts more varied -- measured at 13 bytes worse zipped.
+    // `terrain` is aliased because de-aliasing it too came out 3 bytes worse
+    // again; the two interact, so re-measure before changing either.
     const terrain = GameState.terrain;
     dt *= terrain.timeRate || 0.1;  // For rendering, never make time completely stop
 
@@ -102,15 +107,15 @@ function render(dt) {
     // Set rem to 1/2 tile size
     document.documentElement.style.fontSize =
         (GameState.pxCssSize = pxSize / window.devicePixelRatio) + 'px';
-    mainCanvas.width = 1.25 * (
-        mainCanvas.height = pxSize * tileSize * terrain.size
+    GameState.mainCanvas.width = 1.25 * (
+        GameState.mainCanvas.height = pxSize * tileSize * terrain.size
     );
-    const cssEdgeSize = mainCanvas.height / window.devicePixelRatio;
-    mainCanvas.style.width = 1.25 * cssEdgeSize + 'px';
-    mainCanvas.style.height = cssEdgeSize + 'px';
+    const cssEdgeSize = GameState.mainCanvas.height / window.devicePixelRatio;
+    GameState.mainCanvas.style.width = 1.25 * cssEdgeSize + 'px';
+    GameState.mainCanvas.style.height = cssEdgeSize + 'px';
     // GameState.sidebarEl.style.width = (cssEdgeSize >> 2) + 'px';
 
-    const ctx = mainCanvas.getContext('2d');
+    const ctx = GameState.mainCanvas.getContext('2d');
     ctx.setTransform(pxSize, 0, 0, pxSize, 0, 0);
 
     if(terrain.screenShake > 0.1) {
