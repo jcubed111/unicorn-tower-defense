@@ -8,7 +8,6 @@ function renderCircleIndicator(
 ) {
     ctx.lineWidth = lineWidth;
     ctx.strokeStyle = lineColor;
-    ctx.lineCap = 'butt';
     ctx.beginPath();
     // pct % 1, except 0 -> 0, and whole numbers -> 1.
     // allows us to show, eg 1.5 as 0.5, while still working for 0-1
@@ -27,7 +26,6 @@ function renderRectIndicator(
 ) {
     ctx.lineWidth = lineWidth;
     ctx.strokeStyle = lineColor;
-    ctx.lineCap = 'butt';
     ctx.strokeRect(
         ...scaleVec(addVecWithBScaled(pos, radii, -1), 15),
         ...scaleVec(radii, 30),
@@ -91,6 +89,7 @@ function renderTerrainBase(ctx, dt, terrain) {
 function render(dt) {
     const mainCanvas = GameState.mainCanvas;
     const terrain = GameState.terrain;
+    dt *= terrain.timeRate || 0.1;  // For rendering, never make time completely stop
 
     // size of a visual pixel in canvas pixels
     const pxSize = Math.floor(
@@ -103,8 +102,9 @@ function render(dt) {
     // Set rem to 1/2 tile size
     document.documentElement.style.fontSize =
         (GameState.pxCssSize = pxSize / window.devicePixelRatio) + 'px';
-    mainCanvas.width = 1.25 * pxSize * tileSize * terrain.size;
-    mainCanvas.height = pxSize * tileSize * terrain.size;
+    mainCanvas.width = 1.25 * (
+        mainCanvas.height = pxSize * tileSize * terrain.size
+    );
     const cssEdgeSize = mainCanvas.height / window.devicePixelRatio;
     mainCanvas.style.width = 1.25 * cssEdgeSize + 'px';
     mainCanvas.style.height = cssEdgeSize + 'px';

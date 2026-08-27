@@ -35,7 +35,7 @@ class Particle{
     }
 
     render(ctx) {
-        if(!this._globalColorCacheKey) console.error('Need _globalColorCacheKey in particle')
+        console.assert(this._globalColorCacheKey, 'Need _globalColorCacheKey in particle');
         const _colorCache = globalColorCache[this._globalColorCacheKey] ??= range(256).map(
             i => colorAsString(this.colorFn(i / 255, i / 255 * this.lifespan))
         );
@@ -154,9 +154,12 @@ const ParticleSystem = new class{
         const a = scaleVec(aPos, 15).map(Math.floor);
         const b = scaleVec(bPos, 15).map(Math.floor);
         const num = Math.max(...addVecWithBScaled(b, a, -1).map(Math.abs));
-        range(num + 1).filter(_ => Math.random() < density).map(i => this.addParticle(makeParticleCb(
-            lerpArr(a, b, i / num).map(Math.round),
-        )));
+        range(num + 1).forEach(i =>
+            Math.random() < density
+                && this.addParticle(makeParticleCb(
+                    lerpArr(a, b, i / num).map(Math.round),
+                ))
+        );
     }
 
     sparkleRect(pos, size, density, color) {
@@ -189,13 +192,10 @@ const ParticleSystem = new class{
         chance,
         makeParticleCb = (p, c) => new EnergyFadeParticle(p, c),
     ) {
-        range(probRound(chance * sprite.asIndexed.length))
-            .map(_ => randChoice(sprite.asIndexed))
-            .forEach(([fy, fx, color]) =>
-                ParticleSystem.addParticle(
-                    makeParticleCb(addVecWithBScaled([fx, fy], pos, 15), color)
-                )
-            )
+        range(probRound(chance * sprite.asIndexed.length)).forEach(_ => {
+            const [fy, fx, color] = randChoice(sprite.asIndexed);
+            this.addParticle(makeParticleCb(addVecWithBScaled([fx, fy], pos, 15), color));
+        })
     }
 
     explodeManaAt(pos, num) {
@@ -205,16 +205,11 @@ const ParticleSystem = new class{
     }
 
     spawnFireCircleAt(center, radius, density) {
-        range(probRound(density * radius * 15 * 6))
-            .map(_ => addVec(center, randVec(radius)))
-            .filter(pos =>
-                grid2dAt(GameState.terrain.isGround, pos)
+        range(probRound(density * radius * 15 * 6)).forEach(_ => {
+            const pos = addVec(center, randVec(radius));
+            return grid2dAt(GameState.terrain.isGround, pos)
                 && !grid2dAt(GameState.terrain.computedTowersByLocation, pos)
-            )
-            .forEach(pos =>
-                this.addParticle(new FireParticle(
-                    scaleVec(pos, 15).map(v => ~~v),
-                ))
-            );
+                && this.addParticle(new FireParticle(scaleVec(pos, 15).map(v => ~~v)));
+        });
     }
 }

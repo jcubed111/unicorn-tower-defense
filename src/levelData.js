@@ -27,32 +27,20 @@ const levelDeps = [
 ];
 
 const getLevelIsUnlockedMap = () => {
-    const passedLevels = getPassedSet();
+    const passedLevels = getLevelSet('p');
     return levelDeps.map(deps => !deps || deps.some(d => passedLevels.has(d)));
 };
-const getPassedSet = () => {
-    return new Set(getLocalStorageItem('p') ?? [0]);
-};
-const getLevelPerfectedSet = () => {
-    return new Set(getLocalStorageItem('q') ?? [0]);
-};
+// 'p' = levels passed, 'q' = levels perfected. Level 0 is always in both.
+const getLevelSet = key => new Set(getLocalStorageItem(key) ?? [0]);
 const setLevelPassed = (n, isPerfect) => {
-    const passedLevels = getPassedSet();
-    setLocalStorageItem('p', [...passedLevels, n]);
-    if(isPerfect) {
-        const perfectedLevels = getLevelPerfectedSet();
-        setLocalStorageItem('q', [...perfectedLevels, n]);
-    }
+    setLocalStorageItem('p', [...getLevelSet('p'), n]);
+    if(isPerfect) setLocalStorageItem('q', [...getLevelSet('q'), n]);
 };
 
 const getTerrainForLevel = (n, resolveCb) => {
-    const terrain = new Terrain(
-        levelData[n].goalLocation,
-        levelData[n].terrainString,
-        levelData[n].waves,
-        resolveCb,
-    );
-    levelData[n].extraSetup?.(terrain);
+    const level = levelData[n];
+    const terrain = new Terrain(level.goalLocation, level.terrainString, level.waves, resolveCb);
+    level.extraSetup?.(terrain);
     return terrain;
 }
 

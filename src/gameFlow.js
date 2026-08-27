@@ -3,7 +3,7 @@ const setCloudTransition = async show => {
     if(GameState.cloudBlocker.classList.contains('C--cloudBlockerHide') != show) return;
     if(!show) ParticleSystem.clear();
     GameState.cloudBlocker.classList.toggle('C--cloudBlockerHide', !show);
-    await new Promise(res => setTimeout(res, 500));
+    await time(500);
 };
 
 const time = n => new Promise(res => setTimeout(res, n));
@@ -111,10 +111,7 @@ const runBattle = async (n, wasRestarted) => {
 };
 
 const loopBattle = async n => {
-    let restart = await runBattle(n, false);
-    while(restart) {
-        restart = await runBattle(n, true);
-    }
+    for(let wasRestarted = 0; await runBattle(n, wasRestarted); wasRestarted = 1) {};
 }
 
 const runLevelSelect = async () => {

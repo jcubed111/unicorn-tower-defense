@@ -109,6 +109,7 @@ class Tower{
 
     _asHoverElResult;
     asHoverEl() {
+        const color = colorAsString(this.getColor());
         return this._asHoverElResult ??= div('',
             div('C--floatRight', towerGridToElement(
                 this.componentTowers,
@@ -133,12 +134,12 @@ class Tower{
                     this.extraDescription.map(content =>
                         wrapEl(
                             styled('span', '', content),
-                            el => el.style.color = colorAsString(this.getColor())
+                            el => el.style.color = color
                         ),
                     ),
             ),
             this.extraDescription && !this.extraDescription.pop &&  // using .pop as proxy for "isArray"
-                wrapEl(div('', this.extraDescription), el => el.style.color = colorAsString(this.getColor()))
+                wrapEl(div('', this.extraDescription), el => el.style.color = color)
         );
     }
 

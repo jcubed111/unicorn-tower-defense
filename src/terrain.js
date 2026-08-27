@@ -198,7 +198,7 @@ class Terrain{
         try{
             this.recomputeDerivedValues();
             this.mana -= cost;
-            this.towerDrawCosts[towerType] += TOWER_INCREMENT_COSTS[towerType];
+            this.towerDrawCosts[towerType] += TOWER_INCREMENT_COST;
             return true;
         }catch{
             // recomputeDerivedValues throws if the map no longer has any valid paths.
@@ -250,15 +250,10 @@ class Terrain{
             if(e.hp <= 0) {
                 e.onDeath();
                 this.enemies.delete(e);
-                this.mana += ~~(e.maxHp * e.manaOnKillMult);
-                ParticleSystem.explodeManaAt(
-                    addVec(e.pos, [-0.5, -0.5]),
-                    ~~(e.maxHp * e.manaOnKillMult),
-                );
-                ParticleSystem.explodeSpritesAt(
-                    addVec(e.pos, [-0.5, -0.5]),
-                    ...e.getSprites(),
-                );
+                const reward = ~~(e.maxHp * e.manaOnKillMult);
+                this.mana += reward;
+                ParticleSystem.explodeManaAt(e.pos, reward);
+                ParticleSystem.explodeSpritesAt(addVec(e.pos, [-0.5, -0.5]), ...e.getSprites());
                 AudioSystem.playEnemyDeath();
                 this.screenShake += 0.2;
 
@@ -385,12 +380,9 @@ class Terrain{
         GameState.topLeftDisplay.innerText = `Wave ${i} / ${this.totalWaves}`;
 
         const timeToNext = this.upcomingWaves[0]?.[0] ?? -1;
-        GameState.startNextWaveButton.innerText =
-            timeToNext < 0
-                ? ``
-                : timeToNext > 0
-                    ? `Start Wave ${i + 1} (${Math.ceil(timeToNext)})`
-                    : `Start Wave ${i + 1}`;
+        GameState.startNextWaveButton.innerText = timeToNext < 0
+            ? ``
+            : `Start Wave ${i + 1}${timeToNext > 0 ? ` (${Math.ceil(timeToNext)})` : ``}`;
 
         if(i == 0) {
             ParticleSystem.sparkleRect(
@@ -406,9 +398,8 @@ class Terrain{
 
         // Draw mana pool
         const rate = this.mana / (this.mana + 200);
-        const colorRate = 255 * this.mana / (this.mana + 50);
-        const col = [~~colorRate, ~~colorRate, ~~colorRate, 255];
-        renderSprite(ctx, MANA_POOL_POS, sprites[25].withColor(col));
+        const c = ~~(255 * this.mana / (this.mana + 50));
+        renderSprite(ctx, MANA_POOL_POS, sprites[25].withColor([c, c, c, 255]));
         ParticleSystem.sparkleSpriteAt(
             sprites[25],
             MANA_POOL_POS,
@@ -436,8 +427,8 @@ class MockTerrain extends Terrain{
 class LevelSelectTerrain extends MockTerrain{
     levelIndices = grid2d(this.size, 0);
     levelIsUnlocked = getLevelIsUnlockedMap();
-    passedLevelSet = getPassedSet();
-    perfectedLevelSet = getLevelPerfectedSet();
+    passedLevelSet = getLevelSet('p');
+    perfectedLevelSet = getLevelSet('q');
 
     constructor(
         terrainString,

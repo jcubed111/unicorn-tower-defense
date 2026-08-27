@@ -1,3 +1,7 @@
+// Age every [amount, timeRemaining] effect by dt and drop the expired ones.
+const decayEffects = (effects, dt) =>
+    effects.flatMap(([v, t]) => (t -= dt) > 0 ? [[v, t]] : []);
+
 class Enemy{
     displayName = 'Unicorn';
     speed = 2;  // squares/sec
@@ -79,11 +83,7 @@ class Enemy{
             yield sprites[20].withColor([59, 124, 255, 255]);
         }
         const s = sprites[16 + ((GameState.terrain.terrainTotalTime * 3 * this.speed) & 3)];
-        if(this.poisonEffects.length) {
-            yield s.withColor([150, 255, 150, 255]);
-        }else{
-            yield s;
-        }
+        yield this.poisonEffects.length ? s.withColor([150, 255, 150, 255]) : s;
     }
 
     takeDamage(amt) {
@@ -98,26 +98,20 @@ class Enemy{
         // Damage over time
         // Technically there can be rounding errors in the fire calc, but they're in favor
         // of the player (eg, a fire effect might get applied for `dt` when it only has `dt / 2`s remaining)
-        this._dotAcc += dt * Math.max(0, ...this.fireEffects.map(f => f[0]));
-        this._dotAcc += dt * this.poisonEffects.map(f => f[0]).reduce((a, b) => a + b, 0);
+        this._dotAcc += dt * (Math.max(0, ...this.fireEffects.map(f => f[0]))
+            + this.poisonEffects.reduce((a, b) => a + b[0], 0));
         this.hp -= ~~this._dotAcc;
         this._dotAcc %= 1;
 
-        this.fireEffects = this.fireEffects
-            .map(([rate, dur]) => [rate, dur - dt])
-            .filter(([rate, dur]) => dur > 0);
-        this.poisonEffects = this.poisonEffects
-            .map(([rate, dur]) => [rate, dur - dt])
-            .filter(([rate, dur]) => dur > 0);
+        this.fireEffects = decayEffects(this.fireEffects, dt);
+        this.poisonEffects = decayEffects(this.poisonEffects, dt);
 
         // determine speed
         const speed = this.speed * Math.min(
             1,
             ...this.slowEffects.map(s => s[0]),
         );
-        this.slowEffects = this.slowEffects
-            .map(([a, t]) => [a, t - dt])
-            .filter(s => s[1] > 0);
+        this.slowEffects = decayEffects(this.slowEffects, dt);
 
         // Movement
         if(!this.targetLocation) {

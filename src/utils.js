@@ -39,10 +39,7 @@ const probRound = v => ~~v + (Math.random() < v % 1);
 // const randInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;
 const randChoice = arr => arr[~~(Math.random() * arr.length)];
 const randFloat = (a, b) => Math.random() * (b - a) + a;
-const randVec = mag => {
-    const angle = randFloat(0, Math.PI * 2);
-    return [Math.cos(angle) * mag, Math.sin(angle) * mag];
-};
+const randVec = (mag, a = randFloat(0, Math.PI * 2)) => [Math.cos(a) * mag, Math.sin(a) * mag];
 
 /* Vector2 helpers */
 // Vectors are [x, y] tuples.
@@ -59,10 +56,8 @@ const range = end => [...Array(end).keys()];
 // NOTE: doesn't handle non-perfect sizes
 const chunked = (size, arr) => range(arr.length / size).map(i => arr.slice(i * size, i * size + size));
 // const minBy = (arr, cb) => arr.reduce((a, b) => cb(a) < cb(b) ? a : b, arr[0]);
-const minByTiesRand = (arr, cb) => {
-    const best = Math.min(...arr.map(cb));
-    return randChoice(arr.filter(v => cb(v) == best));
-}
+const minByTiesRand = (arr, cb, best = Math.min(...arr.map(cb))) =>
+    randChoice(arr.filter(v => cb(v) == best));
 
 /* 2d Grid Helpers */
 const grid2d = (size, fill) => range(size).map(i => range(size).fill(fill));

@@ -21,9 +21,6 @@ class Sprite{
     constructor(data2d, scale=1) {
         this.data2d = data2d;
         this.scale = scale;
-        const height = data2d.length;
-        const width = data2d[0].length;
-
         this.asImage = makeSpriteCanvas(
             ctx => ctx.putImageData(
                 // flat(2) gives us a flat run of r,g,b,a,r,g,b,a,...

@@ -25,7 +25,7 @@ const GameState = {
 };
 
 const TOWER_BASE_COSTS =      [, 45, 30, 10];
-const TOWER_INCREMENT_COSTS = [,  5,  5,  5];
+const TOWER_INCREMENT_COST = 5;
 const MANA_PASSIVE_RATE = 1;
 const STARTING_MANA = 100;  // +STARTING_WAVE_DELAY in passive mana
 const STARTING_HEALTH = 15;
@@ -33,7 +33,7 @@ const STARTING_WAVE_DELAY = 30;
 const WAVE_DELAY = 20;
 
 const LS_PREFIX = 'com.jstimac.26.';
-const getLocalStorageItem = (key, def=null) => JSON.parse(window.localStorage[LS_PREFIX + key] ?? 'null') ?? def;
+const getLocalStorageItem = key => JSON.parse(window.localStorage[LS_PREFIX + key] ?? 'null');
 const setLocalStorageItem = (key, value) => window.localStorage[LS_PREFIX + key] = JSON.stringify(value);
 
 const withHoverInfo = (el, hoverInfoEl) => {
