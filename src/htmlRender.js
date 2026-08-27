@@ -1,7 +1,11 @@
 
 const scrollBackImage = makeSpriteCanvas(ctx => {
+    ctx.fillStyle = '#202020';
+    ctx.fillRect(0, 10, 10, 10);
+    ctx.fillStyle = '#404040';
+    ctx.fillRect(0, 10, 1, 10);
     renderSprite(ctx, [0, 0], sprites[24]);
-    renderSprite(ctx, [0, 1], sprites[28]);
+    renderSprite(ctx, [0, 1 + 1/15], sprites[24]);
 }, 1, 2).toDataURL();
 const scrollDiv = (...divArgs) => {
     const el = div(...divArgs);
