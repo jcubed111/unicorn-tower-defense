@@ -430,7 +430,12 @@ class MockTerrain extends Terrain{
     // override the methods we don't want to use
     renderSpecialEffects() {}
     recomputeDerivedValues() {}
-    step() {}
+    step(dt) {
+        // Only do the enemy step, so we can see narwhals move
+        this.enemies.forEach(e => {
+            e.step(dt);
+        });
+    }
     placeTower() { return true; }
 }
 

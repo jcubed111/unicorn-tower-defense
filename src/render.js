@@ -32,6 +32,8 @@ function renderRectIndicator(
     );
 }
 
+const WAVE_DENSITY_INV = 50;
+const waveHitInt = mapGrid2d(grid2d(16, 0), _ => ~~randFloat(0, WAVE_DENSITY_INV));
 function renderTerrainBase(ctx, dt, terrain) {
     forEachGrid2d(terrain.isGround, (isGround, pos) => {
         const [x, y] = pos;
@@ -51,6 +53,12 @@ function renderTerrainBase(ctx, dt, terrain) {
             // sparkle the rainbow paths
             if(isGround != 1) {
                 ParticleSystem.sparkleSpriteAt(sprite, pos, dt / 100);
+            }
+        }else{
+            const waveHitNum = x % 4 + y * 3 % 7 + (x + y) % 5;
+            const isWaveNow = (performance.now() >> 10) % WAVE_DENSITY_INV == grid2dAt(waveHitInt, pos);
+            if(isWaveNow) {
+                renderSprite(ctx, pos, sprites[15]);
             }
         }
 

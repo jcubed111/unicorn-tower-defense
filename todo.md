@@ -1,10 +1,12 @@
 TODO:
-- speed up, pause?
-
 - wave start sound effect
 - add more movement to intro screen? Unicorns running around?
 - subtract fire acc from hp bar display?
 - should enemies have a slight shade variation per enemy?
+- Add more narwal-i-corns
+    - one pre-boss one
+- add wave effects to ocean
+
 
 - Level ideas:
     - wide open path
@@ -22,7 +24,6 @@ TODO:
     - set tower target mode??
 
 - enemy types
-    - narwal-i-corn (swims, gives large mana. Dark shadow in water)
     - add dedicated rhino-i-corn sprite?
     - manticorn
 
@@ -36,8 +37,6 @@ TODO:
     - zombie? -> turns unicorns to allies on death
     - a 5 cell tower
 
-- add wave effects to ocean
-- keyboard controls for tower building
 - rainbow the title?
 
 NOTE: swapping scroll back for rune back would save 0.8%
