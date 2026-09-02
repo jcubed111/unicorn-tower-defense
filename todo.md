@@ -6,6 +6,8 @@ TODO:
 - Add more narwal-i-corns
     - one pre-boss one
 - add wave effects to ocean
+- make discovered tower notification flashier
+- meteor tower circle should show up on water too
 
 
 - Level ideas:
