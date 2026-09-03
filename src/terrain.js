@@ -208,6 +208,9 @@ class Terrain{
         }
         this.mana -= cost;
         this.towerDrawCosts[towerType] += TOWER_INCREMENT_COST;
+        if(DEBUG) {
+            window.debugTowerBuildLog.push(`buildTowerAt(${towerType}, [${x}, ${y}])`);
+        }
         return true;
     }
 
@@ -362,6 +365,9 @@ class Terrain{
             ([waveIndex, sampleEnemy, numTotal, hp, WaveCls]) => [
                 waveIndex == 0 ? STARTING_WAVE_DELAY : WAVE_DELAY,
                 () => {
+                    if(DEBUG) {
+                        window.debugTowerBuildLog.push(`waitForWaveIndex(${waveIndex})`);
+                    }
                     if(narwhalData?.indexOf(waveIndex) > 0) {
                         this.enemies.add(new Narwhalicorn(waveIndex, narwhalData[0]));
                     }

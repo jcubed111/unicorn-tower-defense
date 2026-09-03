@@ -24,6 +24,10 @@ JS_FILES := \
 
 JS_DEV := $(JS_FILES:src/%=dev/%)
 
+# main.js boots the game as soon as it loads, so the test harnesses in test/
+# take everything but that.
+JS_FILES_NO_MAIN := $(filter-out src/main.js,$(JS_FILES))
+
 # how many parallel Roadroller searches to race. Each is ~20s and they run
 # concurrently, so more is nearly free until you run out of cores.
 PACK_RUNS := 16
@@ -35,7 +39,7 @@ ZIP_ITERS := 100
 
 .PHONY: all report clean
 
-all: $(IMAGES_DEV) dev/index.html to-be-titled.zip report
+all: test/everythingButMain.js $(IMAGES_DEV) dev/index.html to-be-titled.zip report
 
 clean:
 	rm -rf dev/*
@@ -44,6 +48,7 @@ clean:
 	rm -rf dist/.[!.]*
 	rm -rf build/*
 	rm -rf build/.[!.]*
+	rm -f test/everythingButMain.js
 
 # dev/%.webp: dist/%.webp
 # 	cp $^ $@
@@ -60,6 +65,14 @@ dev/sprites.js: build/sprites.png scripts/compileSprites.js
 
 dev/index.html: build/index.html $(IMAGES_DEV) $(JS_DEV) scripts/combine-dev.py dev/styles.css
 	python3 scripts/combine-dev.py $(JS_DEV) > $@
+
+
+# Uncompressed, in load order, built straight from the sources (including
+# generated ones like dev/sprites.js) rather than from anything downstream of
+# the minifier. Listed first in `all` so it lands before compilation starts.
+test/everythingButMain.js: $(JS_FILES_NO_MAIN)
+	@echo $@ "<-" $^
+	@cat $^ > $@
 
 
 build/main-max.js: $(JS_FILES)

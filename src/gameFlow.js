@@ -93,9 +93,21 @@ const runBattle = async (n, wasRestarted) => {
         GameState.toastWaveInfo(`Level ${n}`);
     })();
 
+    if(DEBUG) {
+        window.debugTowerBuildLog = [];
+    }
+
     const pass = await new Promise(resolve => {
         GameState.terrain = getTerrainForLevel(n, resolve);
     });
+
+    if(DEBUG) {
+        console.debug(
+            `{ level: ${n}, solution: [\n`
+            + window.debugTowerBuildLog.map(l => `    ${l},\n`).join('')
+            + '] },'
+        );
+    }
 
     const isPerfect = GameState.terrain.health == STARTING_HEALTH;
     if(pass) {
