@@ -1,11 +1,13 @@
 TODO:
+- final victory screen
 - wave start sound effect
 - add more movement to intro screen? Unicorns running around?
 - subtract fire acc from hp bar display?
 - should enemies have a slight shade variation per enemy?
 - make discovered tower notification flashier
 - meteor tower circle should show up on water too
-
+- make wave start notification bigger
+- run notification when boss respawns to next phase
 
 - spells
     - would help with spending mana in final wave

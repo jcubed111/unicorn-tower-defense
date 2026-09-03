@@ -72,11 +72,26 @@ h1{
         margin: 4rem 5rem 0;
     }
 
+@property --t {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 0deg;
+}
+@keyframes o { to { --t: 360deg; } }
+.C--orbit{
+    position: relative;
+    --a: 0deg;  // starting angle
+    left: calc(30rem * cos(var(--a) + var(--t)));
+    top:  calc(30rem * sin(var(--a) + var(--t)));
+    animation: o 6s linear infinite;
+}
+
 @property --s {
     syntax: "<number>";
     inherits: true;
     initial-value: 0;
 }
+
 .C--fullscreen{
     // shared by cloudBlocker and mainMenu and waveInfoToast
     @extend %position-absolute;

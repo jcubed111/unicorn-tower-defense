@@ -57,11 +57,11 @@ class Terrain{
             this.goalLocation = goalLocation
         ];
         this._setWaves(waves, narwhalData);
+        extraSetup?.(this);
         this.recomputeDerivedValues();
         this.spawnLocations = range(this.size)
             .filter(x => this.isGround[x][0])
             .map(x => [x, -1]);
-        extraSetup?.(this);
     }
 
     markLocation([x, y], sprites, hoverInfo) {

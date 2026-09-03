@@ -72,6 +72,7 @@ const runOrbPonder = TowerType => () => {
 //   3 terrainString
 //   4 narwhalData   collapsed as [path, ...waveIndices]
 //   5 extraSetup(terrain)
+//   6 postLevelStoryContent()  // only on success, after clicking continue
 // The slot order is space-optimized, sorry future me :(
 const levelData = [
     [],
@@ -181,7 +182,6 @@ const levelData = [
             terrain.rawTowers[10][13] = [3, 1];
             terrain.rawTowers[11][13] = [3, 1];
             terrain.rawTowers[10][14] = [3, 1];
-            terrain.recomputeDerivedValues();
         },
     ],
 
@@ -385,15 +385,15 @@ const levelData = [
             Enemy,
             Rhinoicorn,
             Enemy,
+            Pegacorn,
+            Enemy,
             SwarmEnemy,
             Enemy,
-            Pegacorn,
+            Enemy,
+            SwarmEnemy,
             RunnerEnemy,
             Enemy,
-            Rooicorn,
-            Enemy,
             SwarmEnemy,
-            Enemy,
             RunnerEnemy,
         ],
         '...................././///./......703.6/.///////./...././///./....4.///////././/////./..//////....//////.......///////..//////....////./...////////.....//////...././///./.././.......///////.....70/.////////././/////////.62....4.1.5..././././././...4.1.5',
@@ -411,6 +411,7 @@ const levelData = [
                 ),
             );
             terrain.extraTowerValidation = (pos, towerType) => towerType != 2;
+            terrain.rawTowers[6][10] = [1, 1];
         },
     ],
 
@@ -529,5 +530,25 @@ const levelData = [
             [[9, 0], [9, 4], [5, 5], [5, 8], [7, 9], [7, 13], [4, 16]],
             5, 15,
         ],
+        ,  // extra setup
+        () => showEventText()(
+            div('C--orbPonderWrapper',
+                wrapEl(sprites[42].asImage, el => el.style.width = '40rem'),
+                ...orderedTowerTypes
+                    .filter(T => new T([]).isDiscovered())
+                    .sort((a, b) => a.sourcePattern.hueOrder - b.sourcePattern.hueOrder)
+                    .map((T, i, arr) =>
+                        wrapEl(
+                            T.sourcePattern.makeElement(1, 3),
+                            el => {
+                                el.className = 'C--orbit';
+                                el.style.cssText = `--a:${i / arr.length * 360}deg`;
+                                el.style.width = `${0.5 * el.width}rem`;
+                            },
+                        ),
+                    ),
+            ),
+            `The Golden Horn is finally yours!`,
+        ),
     ],
 ];

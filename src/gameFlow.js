@@ -122,6 +122,11 @@ const runBattle = async (n, wasRestarted) => {
         isPerfect,
     );
     await setCloudTransition(true);
+
+    if(pass) {
+        await levelData[n][6]?.();
+    }
+
     return result;
 };
 

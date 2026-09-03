@@ -25,7 +25,7 @@ function getTowerSprites(pos, rawCell, outerColor, isSameAt) {
     ];
 }
 
-function withTowerPattern(stringRepr, Cls) {
+function withTowerPattern(stringRepr, hueOrder, Cls) {
     // Decorates a Tower class to add it's pattern as a static.
     // Used over `static` since that causes closure compler to freak.
     // NOTE: super important that stringRepr is a perfect grid with every row being
@@ -48,13 +48,14 @@ function withTowerPattern(stringRepr, Cls) {
     Cls.sourcePattern = {
         outerColor,
         allForms,
-        makeElement: isDiscovered => towerGridToElement(asGrid, outerColor, isDiscovered),
+        makeElement: (isDiscovered, forceComponentLevel) => towerGridToElement(asGrid, outerColor, isDiscovered, forceComponentLevel),
         asGrid,
+        hueOrder,
     };
     return Cls;
 }
 
-function towerGridToElement(towerGrid, outerColor, isDiscovered = true) {
+function towerGridToElement(towerGrid, outerColor, isDiscovered = true, forceComponentLevel = 0) {
     // towerGrid: Grid2d<[towerType, level] | null>
     // If not discovered, renders as `?`s
     return makeSpriteCanvas(ctx => {
@@ -62,7 +63,7 @@ function towerGridToElement(towerGrid, outerColor, isDiscovered = true) {
             if(tower) {
                 getTowerSprites(
                     pos,
-                    isDiscovered ? tower : [4, 1],
+                    isDiscovered ? [tower[0], forceComponentLevel || tower[1]] : [4, 1],
                     isDiscovered ? outerColor : [150, 150, 150, 255],
                     pos => grid2dAt(towerGrid, pos)?.[0] > 0,
                 ).forEach(
@@ -238,7 +239,7 @@ const orderedTowerTypes = [
     //     // TODO
     // }),
 
-    Meteor = withTowerPattern(' g |rrr| b ', class extends Tower{
+    Meteor = withTowerPattern(' g |rrr| b ', 2, class extends Tower{
         displayName = 'Meteor';
         damage = 3 * this.level;
         fireDamagePerSec = this.level / 3;
@@ -265,21 +266,28 @@ const orderedTowerTypes = [
         }
     }),
 
-    Heavy = withTowerPattern(' b |grg', class extends Tower{
+    // Heavy = withTowerPattern('rrr| b ', class extends Tower{
+    //     displayName = 'Heavy';
+    //     chargeTime = 1;
+    //     damage = ~~(1.5 * this.level);
+    //     range = 1 + this.level / 3;
+    // }),
+
+    Heavy = withTowerPattern(' b |grg', 5, class extends Tower{
         displayName = 'Heavy';
         chargeTime = 1;
         damage = ~~(1.5 * this.level);
         range = 1 + this.level / 3;
     }),
 
-    Sniper = withTowerPattern('gb|bb', class extends Tower{
+    Sniper = withTowerPattern('gb|bb', 10, class extends Tower{
         displayName = 'Sniper';
         chargeTime = 5;
         /** @type {number} */ range = 2 + this.level;
         damage = 6 * this.level;
     }),
 
-    Slow = withTowerPattern('bb|bb', class extends Tower{
+    Slow = withTowerPattern('bb|bb', 12, class extends Tower{
         displayName = 'Slow';
         damage = 0;
         slowAmount = 3 / this.level;
@@ -294,7 +302,7 @@ const orderedTowerTypes = [
         }
     }),
 
-    Allegro = withTowerPattern('gg | gb', class extends Tower{
+    Allegro = withTowerPattern('gg | gb', 7, class extends Tower{
         displayName = 'Allegro';
         // high speed bolt tower
         range = 3.5;
@@ -303,7 +311,7 @@ const orderedTowerTypes = [
         // damage = 2 + (this.level >> 2);
     }),
 
-    AntiArmor = withTowerPattern('rg|bb', class extends Tower{
+    AntiArmor = withTowerPattern('rg|bb', 13, class extends Tower{
         displayName = 'Anti-Armor';
         range = 3 + this.level / 4;
         chargeTime = 6 / this.level;
@@ -322,7 +330,7 @@ const orderedTowerTypes = [
         }
     }),
 
-    Fire = withTowerPattern('rgr', class extends Tower{
+    Fire = withTowerPattern('rgr', 3, class extends Tower{
         displayName = 'Fire';
         damage = -1;  // so we don't show at all
         fireDamagePerSec = this.level / 3;
@@ -345,7 +353,7 @@ const orderedTowerTypes = [
         }
     }),
 
-    Beam = withTowerPattern('grb', class extends Tower{
+    Beam = withTowerPattern('grb', 14, class extends Tower{
         displayName = 'Beam';
         range = 0;
         chargeTime = 1.5;
@@ -387,7 +395,7 @@ const orderedTowerTypes = [
         }
     }),
 
-    Poison = withTowerPattern('gg|b ', class extends Tower{
+    Poison = withTowerPattern('gg|b ', 8, class extends Tower{
         displayName = 'Poison';
         range = 3;
         chargeTime = 2;
@@ -406,7 +414,7 @@ const orderedTowerTypes = [
         }
     }),
 
-    Ring = withTowerPattern('rb|r ', class extends Tower{
+    Ring = withTowerPattern('rb|r ', 0, class extends Tower{
         displayName = 'Ring';
         range = 5;
         minRange = 3;
@@ -433,7 +441,7 @@ const orderedTowerTypes = [
         }
     }),
 
-    ManaLeech = withTowerPattern('gb', class extends Tower{
+    ManaLeech = withTowerPattern('gb', 9, class extends Tower{
         displayName = 'Mana Leech';
         range = 2 + this.level / 4;
         chargeTime = 1.5;
@@ -451,9 +459,9 @@ const orderedTowerTypes = [
         }
     }),
 
-    Charge = withTowerPattern('rb', class extends Tower{
+    Charge = withTowerPattern('rb', 15, class extends Tower{
         displayName = 'Charge';
-        range = 2;
+        range = 1.8 + 0.1 * this.level;
         chargeTime = 4;
         damage = 2 * this.level;
         /** @type {number} */
@@ -497,7 +505,7 @@ const orderedTowerTypes = [
         }
     }),
 
-    Lightning = withTowerPattern('gr', class extends Tower{
+    Lightning = withTowerPattern('gr', 4, class extends Tower{
         displayName = 'Lightning';
         chain = this.level - 1;
         extraDescription = [this.chain, 'chain'];
@@ -523,7 +531,7 @@ const orderedTowerTypes = [
         }
     }),
 
-    Red = withTowerPattern('r', class extends Tower{
+    Red = withTowerPattern('r', 1, class extends Tower{
         displayName = 'Red';
         extraDescription = 'AoE';
         // hits all enemies in range on each shot
@@ -541,7 +549,7 @@ const orderedTowerTypes = [
         isDiscovered() { return true; }
     }),
 
-    Green = withTowerPattern('g', class extends Tower{
+    Green = withTowerPattern('g', 6, class extends Tower{
         displayName = 'Green';
         // simple bolt tower
         range = 2.75 + this.level / 4;
@@ -550,7 +558,7 @@ const orderedTowerTypes = [
         isDiscovered() { return true; }
     }),
 
-    Blue = withTowerPattern('b', class extends Tower{
+    Blue = withTowerPattern('b', 11, class extends Tower{
         displayName = 'Blue';
         // Doesn't attack, just blocks
         chargeTime = 0;
