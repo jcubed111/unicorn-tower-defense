@@ -123,7 +123,7 @@ class Terrain{
 
         orderedTowerTypes.forEach(CandidateTower =>
             // We can pick any Grid2d[this.size] here, but this.rawTowers was used above
-            mapGrid2d(this.rawTowers, (_, pos) =>
+            forEachGrid2d(this.rawTowers, (_, pos) =>
                 CandidateTower.sourcePattern.allForms.forEach(sourcePatternForm => {
                     // Do the whole test/gen op as one map
                     let fits = true;

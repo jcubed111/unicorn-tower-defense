@@ -13,6 +13,7 @@ function waitForWaveIndex(index) {
 
 
 function solveLevel(level, solution) {
+    console.time('solveLevel');
     const remainingSolution = [...solution];
 
     let done = false;
@@ -31,15 +32,15 @@ function solveLevel(level, solution) {
                 break;
             }
         }
-        GameState.terrain.step(1/60);
+        GameState.terrain.step(1/30);
     }
+
+    console.timeEnd('solveLevel');
 
     return [
         GameState.terrain.health,
         GameState.terrain.mana,
     ];
-
-    return div('', `Level ${level} solved. ${GameState.terrain.health}/15 hp remaining.`);
 }
 
 
