@@ -1,8 +1,11 @@
 
 const setCloudTransition = async show => {
-    if(GameState.cloudBlocker.classList.contains('C--cloudBlockerHide') != show) return;
+    // Not needed; we always call safely.
+    // if(GameState.cloudBlocker.classList.contains('C--cloudBlockerHide') != show) return;
     if(!show) ParticleSystem.clear();
-    GameState.cloudBlocker.classList.toggle('C--cloudBlockerHide', !show);
+    GameState.cloudBlocker.className = show
+        ? `C--fullscreen`
+        : 'C--fullscreen C--cloudBlockerHide';
     await time(500);
 };
 
