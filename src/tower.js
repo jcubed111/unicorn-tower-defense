@@ -299,8 +299,8 @@ const orderedTowerTypes = [
         // high speed bolt tower
         range = 3.5;
         chargeTime = 2 / this.level;
-        // damage = 2;
-        damage = 2 + (this.level >> 2);
+        damage = 3;
+        // damage = 2 + (this.level >> 2);
     }),
 
     AntiArmor = withTowerPattern('rg|bb', class extends Tower{
@@ -348,7 +348,7 @@ const orderedTowerTypes = [
     Beam = withTowerPattern('grb', class extends Tower{
         displayName = 'Beam';
         range = 0;
-        chargeTime = 2;
+        chargeTime = 1.5;
         damage = this.level * 2;
         chargeRateModifier = 1 + this.level * 0.05;
         extraDescription = `Beam`;
@@ -436,9 +436,9 @@ const orderedTowerTypes = [
     ManaLeech = withTowerPattern('gb', class extends Tower{
         displayName = 'Mana Leech';
         range = 2 + this.level / 4;
-        chargeTime = 2;
+        chargeTime = 1.5;
         damage = 2 * this.level;
-        manaLeech = this.level - 1;
+        manaLeech = this.level;
 
         extraDescription = [`+${this.manaLeech} ᚯ`, `/ hit`];
 

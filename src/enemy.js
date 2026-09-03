@@ -31,6 +31,8 @@ class Enemy{
     maxHp = 0;  // set by setWaves in Terrain
     hp = 0;  // set by setWaves in Terrain
 
+    baseSpriteColor = WHITE;
+
     constructor(level, pos) {
         this.level = level;
         this.armor = level >> 2;
@@ -79,7 +81,9 @@ class Enemy{
     }
 
     getSprites() {
-        const s = sprites[16 + ((GameState.terrain.terrainTotalTime * 3 * this.speed) & 3)];
+        const s = sprites[
+            16 + ((GameState.terrain.terrainTotalTime * 3 * this.speed) & 3)
+        ].withColor(this.baseSpriteColor);
         return [
             ...(this.slowEffects.length ? [sprites[20].withColor([59, 124, 255, 255])] : []),
             this.poisonEffects.length ? s.withColor([150, 255, 150, 255]) : s,
@@ -144,6 +148,9 @@ class Enemy{
         if(Math.abs(facingError) > Math.PI) this.facing += Math.PI * 2 * Math.sign(facingError);
         // moveAmount is speed * dt, so we stil lscale correctly with time step
         this.facing += (Math.atan2(dx, -dy) - this.facing) * (1 - 2 ** (-5 * moveAmount));
+
+        // return augmented dt
+        return dt * speed;
     }
 
     getTarget(square) {
@@ -162,9 +169,7 @@ class Rhinoicorn extends Enemy{
     hpToNumRatio = 1.5;
     // manaOnKillMult = 1.5;
     // TODO: better rhino sprites?
-    getSprites() {
-        return super.getSprites().map(s => s.withColor([160, 160, 160, 255]));
-    }
+    baseSpriteColor = [160, 160, 160, 255];
 }
 
 class SwarmEnemy extends Enemy{
@@ -238,10 +243,7 @@ class Rooicorn extends Enemy{
     armor = this.level >> 2;
     speed = 1.5;
     extraDescription = 'Explodes into 8 Minicorns on death';
-
-    getSprites() {
-        return super.getSprites().map(s => s.withScale(1.15).withColor([180, 120, 90, 255]));
-    }
+    baseSpriteColor = [180, 120, 90, 255];
 
     onDeath() {
         range(8).forEach(i => {
@@ -259,9 +261,7 @@ class BossEnemy extends Enemy{
     hpToNumRatio = 1000;
     armor = this.level >> 1;
     manaOnKillMult = 2;
-    getSprites() {
-        return super.getSprites().map(s => s.withColor([50, 40, 40, 255]));
-    }
+    baseSpriteColor = [50, 40, 40, 255];
 }
 
 class Rainbowicorn extends Enemy{
@@ -270,22 +270,15 @@ class Rainbowicorn extends Enemy{
 
     getSprites() {
         // Cycle through the rainbow colors
-        return super.getSprites().map(s => s.withColor(lerpArr(WHITE, [
-                [180, 54, 46, 255],
-                [203, 134, 13, 255],
-                [195, 176, 12, 255],
-                [6, 176, 78, 255],
-                [70, 68, 206, 255],
-                [172, 71, 191, 255],
-        ][(~~GameState.terrain.terrainTotalTime) % 6], 0.5)));
-            // Writing out the lerp uses (marginally) fewer bytes
-            // than the precomputed versions:
-            // [236, 204, 202, 255],
-            // [242, 224, 194, 255],
-            // [240, 235, 194, 255],
-            // [192, 235, 210, 255],
-            // [208, 208, 242, 255],
-            // [234, 209, 239, 255],
+        this.baseSpriteColor = [
+            [236, 204, 202, 255],
+            [242, 224, 194, 255],
+            [240, 235, 194, 255],
+            [192, 235, 210, 255],
+            [208, 208, 242, 255],
+            [234, 209, 239, 255],
+        ][(~~GameState.terrain.terrainTotalTime) % 6];
+        return super.getSprites();
     }
 
     getTarget(square) {
@@ -351,5 +344,89 @@ class Narwhalicorn extends Enemy{
             GameState.terrain.enemies.delete(this);
         }
         return addVec(this.path.shift() ?? square, [0.5, 0.5]);
+    }
+}
+
+class Kingicorn extends Enemy{
+    displayName = 'Kingicorn';
+    banishDamage = 5;
+    hpToNumRatio = 1000;
+    armor = 40;
+
+    getSprites() {
+        return [...super.getSprites(), sprites[43]];
+    }
+
+    onDeath() {
+        const k2 = new Kingicorn2(
+            this.level,
+            addVec(this.respawnLocation, [-0.5, -0.5]),
+        );
+        k2.hp = k2.maxHp = this.maxHp * 2;
+        k2.respawnLocation = this.respawnLocation;
+        GameState.terrain.enemies.add(k2);
+
+        AudioSystem.playRespawn();
+        ParticleSystem.spawnParticlePixelLine(
+            this.pos,
+            this.respawnLocation,
+            pos => new EnergyFadeParticle(pos, WHITE),
+        );
+    }
+}
+
+class Kingicorn2 extends Enemy{
+    displayName = 'Kingicorn II';
+    banishDamage = 5;
+    armor = 0;
+    speed = 4;
+    baseSpriteColor = [150, 150, 150, 255];
+
+    getSprites() {
+        return [...super.getSprites(), sprites[43]];
+    }
+
+    onDeath() {
+        const k2 = new Kingicorn3(
+            this.level,
+            addVec(this.respawnLocation, [-0.5, -0.5]),
+        );
+        k2.hp = k2.maxHp = this.maxHp * 2;
+        k2.respawnLocation = this.respawnLocation;
+        GameState.terrain.enemies.add(k2);
+
+        AudioSystem.playRespawn();
+        ParticleSystem.spawnParticlePixelLine(
+            this.pos,
+            this.respawnLocation,
+            pos => new EnergyFadeParticle(pos, WHITE),
+        );
+    }
+}
+
+class Kingicorn3 extends Enemy{
+    displayName = 'Kingicorn III';
+    banishDamage = 5;
+    armor = 0;
+    baseSpriteColor = [50, 50, 50, 255];
+
+    _spawnClock = 0;
+
+    getSprites() {
+        return [...super.getSprites(), sprites[43]];
+    }
+
+    step(dt) {
+        const augmentedDt = super.step(dt);
+        this._spawnClock += augmentedDt;
+        while(this._spawnClock > 3) {
+            this._spawnClock -= 3;
+
+            const e = new SwarmEnemy(this.level, this.getSquare());
+            e.hp = e.maxHp = (this.maxHp >> 5) || 1;
+            e.speed = 3;
+            e.respawnLocation = this.respawnLocation;
+            GameState.terrain.enemies.add(e);
+        }
     }
 }

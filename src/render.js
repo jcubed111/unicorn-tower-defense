@@ -102,6 +102,7 @@ function render(dt) {
     // `terrain` is aliased because de-aliasing it too came out 3 bytes worse
     // again; the two interact, so re-measure before changing either.
     const terrain = GameState.terrain;
+    const originalDt = dt;
     dt *= terrain.timeRate || 0.1;  // For rendering, never make time completely stop
 
     // size of a visual pixel in canvas pixels
@@ -191,7 +192,7 @@ function render(dt) {
     GameState.terrain.renderSpecialEffects(dt, ctx);
 
     // Draw particles
-    ParticleSystem.render(dt, ctx);
+    ParticleSystem.render(dt, ctx, originalDt);
 
     // Draw hovered tower info
     if(GameState.hoveringElOverride) {

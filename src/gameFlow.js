@@ -104,8 +104,8 @@ const runBattle = async (n, wasRestarted) => {
     if(DEBUG) {
         console.debug(
             `{ level: ${n}, solution: [\n`
-            + window.debugTowerBuildLog.map(l => `    ${l},\n`).join('')
-            + '] },'
+            + window.debugTowerBuildLog.map(l => `        ${l},\n`).join('')
+            + '    ] },'
         );
     }
 

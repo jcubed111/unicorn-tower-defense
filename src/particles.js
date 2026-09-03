@@ -126,8 +126,8 @@ const ParticleSystem = new class{
         this.particles.add(p);
     }
 
-    render(dt, ctx) {
-        if(dt > GameState.terrain.timeRate / 25 && this.particles.size > 200) {
+    render(dt, ctx, originalDt) {
+        if(originalDt > 1 / 25 && this.particles.size > 200) {
             const toRemove = this.particles.size / 10;
             console.log("Slow frame, removing particles. Was: ", this.particles.size);
             // Note that iterating a set is in insertion order, so this removes
