@@ -2,7 +2,7 @@
 class Terrain{
     size = 16;
     isGround = grid2d(this.size, 0);
-    goalLocation = [0, 0];
+    // goalLocation = [0, 0];  // always set by the constructor
     // raw towers stores primary color + level for each square.
     rawTowers = grid2d(this.size, [0, 0]); // [x][y] -> Tuple<0 | 1 (r) | 2 (g) | 3 (b), level: number = 0>
     mana = STARTING_MANA;
@@ -21,13 +21,18 @@ class Terrain{
     actionQueue = new Set;  // Set<[delayTime, cb]>
     manaPassiveClock = 0;
 
-    upcomingWaves = [];  // Array<[timeTillStart, startWaveFn]>
-    totalWaves = 0;
+    // Both always set by _setWaves, which every subclass inherits.
+    // upcomingWaves = [];  // Array<[timeTillStart, startWaveFn]>
+    // totalWaves = 0;
+
 
     screenShake = 0;  // px; decays over time in render
     timeRate = 1;
 
-    defaultHoverInfoContent;  // Element, thing to put in hover box when nothing is hovered
+
+    // Element, thing to put in hover box when nothing is hovered.
+    // Always set by _setWaves -> makeWaveListHoverInfo.
+    // defaultHoverInfoContent;
 
     // Holds special terrain info
     tileHoverEls = grid2d(this.size, null);  // Grid2d<Element | null>

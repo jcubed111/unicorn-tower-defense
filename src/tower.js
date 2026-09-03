@@ -80,7 +80,7 @@ class Tower{
     range = 4;
     charge = 0;
     damage = 2;
-    extraDescription;
+    // extraDescription;  // undefined unless a subclass sets it
     /** @type {number} */ level;
 
     size = 0;

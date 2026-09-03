@@ -1,20 +1,29 @@
 // The entire css is ~6%
-
-%flexCenterAll{
-    align-items: center;
-    justify-content: center;
-}
-%flexRow {
-    @extend %flexCenterAll;
-    display: flex;
-}
-%flexCol {
-    display: flex;
-    flex-direction: column;
-}
+//
+// Shared declarations are hoisted into placeholders so each is emitted exactly
+// once. Making long class lists compresses better than repeating declarations.
+%display-flex { display: flex; }
+%flex-direction-column { flex-direction: column; }
+%align-items-center { align-items: center; }
+%justify-content-center { justify-content: center; }
+%justify-content-space-between { justify-content: space-between; }
+%position-absolute { position: absolute; }
+%position-relative { position: relative; }
+%text-align-center { text-align: center; }
+%white-space-pre-wrap { white-space: pre-wrap; }
+%color-white { color: #fff; }
+%color-mana { color: #94d6ff; }
+%background-0004 { background: #0004; }
+%top-3rem { top: 3rem; }
+%gap-1rem { gap: 1rem; }
+%gap-2rem { gap: 2rem; }
+%padding-3rem { padding: 3rem; }
 
 body{
-    @extend %flexRow;
+    @extend %display-flex;
+    @extend %align-items-center;
+    @extend %justify-content-center;
+    @extend %white-space-pre-wrap;
     font-size: 3.75rem;
     margin: 0;
     background: #000;
@@ -23,13 +32,12 @@ body{
     // font-family: 'Iowan Old Style', 'Palatino Linotype', P052, serif;
     height: 100vh;
     image-rendering: pixelated;
-    white-space: pre-wrap;
     color: #eee;
 }
 
 
 .C--mainWrapper{
-    position: relative;
+    @extend %position-relative;
     background: #273757;
 }
 canvas{
@@ -40,12 +48,14 @@ h1{
     margin: -29rem 0 40rem;
 }
 
-.C--buttonLike {
+// Listed explicitly rather than @extend-ed onto the canvas, so the canvas
+// selector doesn't also get glued onto the div./.C--onBlack rules below.
+.C--buttonLike, .C--runeButtonWrapper canvas {
     cursor: pointer;
     border: 0.5rem solid #202020;
 
     &:hover{
-        background: #0004;
+        @extend %background-0004;
         // url set via js as border-image-source in this animation
         border-image: 5 / 5rem / 0 round;
         animation: B 1s steps(1) infinite;
@@ -54,7 +64,7 @@ h1{
     div.C--buttonLike{
         padding: 3rem 4rem;
         background: #0002;
-        &:empty{ display: none; }
+        &:empty{ @extend %display-none; }
     }
     .C--buttonLike.C--onBlack{
         font-size: 4.5rem;
@@ -69,12 +79,14 @@ h1{
 }
 .C--fullscreen{
     // shared by cloudBlocker and mainMenu and waveInfoToast
-    position: absolute;
+    @extend %position-absolute;
+    @extend %display-flex;
+    @extend %flex-direction-column;
+    @extend %align-items-center;
+    @extend %justify-content-center;
     inset: 0;
     transition: --s 0.5s linear;
     --s:1;
-    @extend %flexCol;
-    @extend %flexCenterAll;
 }
     .C--cloudBlockerHide{ // cloud blocker
         pointer-events: none;
@@ -82,7 +94,7 @@ h1{
     }
 
     .C--eventTextScroll{
-        pointer-events: initial;
+        pointer-events: auto;
         width: 84rem;
         font-size: 6rem;
         transition: height 0.8s ease-in-out, opacity 0.3s;
@@ -91,27 +103,24 @@ h1{
         overflow: hidden;
     }
         .C--innerEventTextScroll{
+            @extend %white-space-pre-wrap;
+            @extend %text-align-center;
             padding: 10rem;
-            white-space: pre-wrap;
             text-wrap: balance;
             color: #ddd;
-            text-align: center;
             line-height: 1.5;
             backdrop-filter: blur(2px);
         }
-            b{
-                color: #fff;
-            }
+            b{ @extend %color-white; }
 
 .C--waveInfoToast{
+    @extend %gap-2rem;
+    @extend %padding-3rem;
     border: 1rem solid;
     background: linear-gradient(90deg,#1110,#1116,#1116,#1110);
     inset: 12rem 75rem auto 15rem;
     pointer-events: none;
     border-image: linear-gradient(90deg,#1110,#111e,#111e,#1110) 1;
-    gap: 2rem;
-    padding: 3rem;
-    opacity: 1;
     transition: top 0.4s ease-in-out, opacity 0.4s;
 }
     .C--waveInfoToastOut{
@@ -123,46 +132,47 @@ h1{
     }
 
 .C--topLeft{
-    @extend %flexCol;
-    position: absolute;
-    top: 3rem;
+    @extend %position-absolute;
+    @extend %display-flex;
+    @extend %flex-direction-column;
+    @extend %top-3rem;
+    @extend %gap-2rem;
     left: 3rem;
-    gap: 2rem;
 }
 
 .C--sidebar{
-    @extend %flexCol;
-    position: absolute;
+    @extend %position-absolute;
+    @extend %display-flex;
+    @extend %flex-direction-column;
     inset: 0 0 0 auto;
     width: 60rem;
 }
     .C--sidebarHide{
-        display: none;
-        &~.C--topLeft{ display: none; }
+        &, &~.C--topLeft{ @extend %display-none; }
     }
     .C--sidebarLevelSelect{
         .C--statBar, .C--runeBook, .C--spellArea, &~.C--topLeft{
-            display: none;
+            @extend %display-none;
         }
     }
 
     .C--statBar{
-        @extend %flexRow;
-        align-items: center;
+        @extend %display-flex;
+        @extend %align-items-center;
         justify-content: flex-end;
         font-size: 5rem;
         margin: 2rem 2rem 1rem 0;
     }
         .C--manaColor{
-            color: #94d6ff;
+            @extend %color-mana;
         }
         .C--armorColor{
             color: #d67cf7;
         }
         .C--heartNumber{
+            @extend %text-align-center;
+            @extend %color-white;
             width: 10rem;
-            text-align: center;
-            color: #fff;
             margin: 0 4.5rem 0 3.5rem;
         }
 
@@ -171,13 +181,13 @@ h1{
     }
 
     .C--hoverInfoArea{
+        @extend %position-relative;
+        @extend %padding-3rem;
         min-height: 40rem;
-        padding: 3rem;
-        position: relative;
     }
         .C--floatRight{
-            position: absolute;
-            top: 3rem;
+            @extend %position-absolute;
+            @extend %top-3rem;
             right: 3rem;
         }
         .C--infoTitle{
@@ -197,44 +207,48 @@ h1{
         }
 
     .C--runeBook{
-        @extend %flexCol;
-        flex: 1 1 0;
+        @extend %display-flex;
+        @extend %flex-direction-column;
+        flex: 1;
         overflow: auto;
         padding: 1rem 3rem;
         margin: 0 1rem 1rem 0;
     }
         .C--runeListing{
-            @extend %flexRow;
-            justify-content: space-between;
+            @extend %display-flex;
+            @extend %align-items-center;
+            @extend %justify-content-space-between;
             padding: 1.5rem 0;
         }
 
     .C--spellArea{
+        @extend %display-flex;
+        @extend %flex-direction-column;
+        @extend %gap-1rem;
         padding: 2rem 3rem 3rem;
-        @extend %flexCol;
-        gap: 1rem;
     }
 
         .C--runeButtonRow{
-            @extend %flexRow;
-            justify-content: space-between;
-            color: #94d6ff;
+            @extend %display-flex;
+            @extend %align-items-center;
+            @extend %justify-content-space-between;
+            @extend %color-mana;
         }
 
         .C--runeButtonWrapper{
-            @extend %flexCol;
-            text-align: center;
-            gap: 1rem;
+            @extend %display-flex;
+            @extend %flex-direction-column;
+            @extend %text-align-center;
+            @extend %gap-1rem;
 
             canvas{
                 width: 12rem!important;
-                @extend .C--buttonLike;
             }
         }
 
             .C--runeButtonActive canvas{
+                @extend %background-0004;
                 border: 0.5rem solid #94d6ff!important;
-                background: #0004;
             }
 
             .C--runeButtonTooExpensive {
@@ -259,3 +273,6 @@ h1{
         grid-area: 1 / 1;
     }
 }
+
+// Emitted last so it beats the %display-flex group above at equal specificity.
+%display-none { display: none; }

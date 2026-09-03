@@ -5,8 +5,8 @@ const decayEffects = (effects, dt) =>
 class Enemy{
     displayName = 'Unicorn';
     speed = 2;  // squares/sec
+    // extraDescription;  // undefined unless a subclass sets it
     // armor = this.level >> 2;  // set in constructor
-    extraDescription;
     banishDamage = 1;  // is doubled each banish
     manaOnKillMult = 1;  // is set to 0 if banished
     landBased = true;

@@ -16,7 +16,7 @@ class Particle{
     lifespan = 2;
 
     grad = [];
-    _globalColorCacheKey;  // needs to be set in child
+    // _globalColorCacheKey;  // needs to be set in child
 
     colorFn(agePct, ageSec) {
         return lerpGrad(this.grad, agePct);
