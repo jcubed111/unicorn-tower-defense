@@ -3,19 +3,9 @@ TODO:
 - add more movement to intro screen? Unicorns running around?
 - subtract fire acc from hp bar display?
 - should enemies have a slight shade variation per enemy?
-- Add more narwal-i-corns
-    - one pre-boss one
-- add wave effects to ocean
 - make discovered tower notification flashier
 - meteor tower circle should show up on water too
 
-
-- Level ideas:
-    - wide open path
-    - all-ish swarm
-    - all-ish armor
-    - Pegacorn focus
-    - fixed unicorn path (rainbow bridge?) - almost have this
 
 - spells
     - would help with spending mana in final wave
