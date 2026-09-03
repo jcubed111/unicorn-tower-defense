@@ -92,31 +92,6 @@ const levelData = [
             );
             await showEventText()(
                 wrapEventImage(sprites[18].withRot(2)),
-                // // This is +0.5% over just reusing an existing sprite
-                // makeSpriteCanvas(ctx => {
-                //     renderSprite(ctx, [0, 0], sprites[15]);
-                //     renderSprite(ctx, [1, 0], sprites[15]);
-                //     renderSprite(ctx, [2, 0], sprites[3]);
-                //     renderSprite(ctx, [2, 0], sprites[18].withRot(2));
-                //     renderSprite(ctx, [3, 0], sprites[3]);
-
-                //     renderSprite(ctx, [0, 1], sprites[15]);
-                //     renderSprite(ctx, [1, 1], sprites[3]);
-                //     renderSprite(ctx, [2, 1], sprites[2]);
-                //     renderSprite(ctx, [3, 1], sprites[7]);
-
-                //     renderSprite(ctx, [0, 2], sprites[15]);
-                //     renderSprite(ctx, [1, 2], sprites[3]);
-                //     renderSprite(ctx, [1, 2], sprites[30]);
-                //     renderSprite(ctx, [1, 2], sprites[27]);
-                //     renderSprite(ctx, [2, 2], sprites[3]);
-                //     renderSprite(ctx, [3, 2], sprites[15]);
-
-                //     renderSprite(ctx, [0, 3], sprites[15]);
-                //     renderSprite(ctx, [1, 3], sprites[7]);
-                //     renderSprite(ctx, [2, 3], sprites[7]);
-                //     renderSprite(ctx, [3, 3], sprites[15]);
-                // }, 4, 4),
                 `Defeat the attacking unicorns and escape with your\n`,
                 styled('b', '', `RIGHTEOUSLY STOLEN BOOTY`),
             );
@@ -132,12 +107,10 @@ const levelData = [
     ],
     // Level 2
     [
-        async () => {
-            await showEventText()(
-                wrapEventImage(Lightning.sourcePattern.makeElement()),
-                `Multiple runes can be combined to make stronger towers.\n\nTry making a lightning tower from a red and green rune.`,
-            );
-        },
+        () => showEventText()(
+            wrapEventImage(Lightning.sourcePattern.makeElement()),
+            `Multiple runes can be combined to make stronger towers.\n\nTry making a lightning tower from a red and green rune.`,
+        ),
         [3, 13],
         [
             SwarmEnemy,
@@ -150,19 +123,17 @@ const levelData = [
     ],
     // Level 3
     [
-        async () => {
-            await showEventText()(
-                wrapEventImage(towerGridToElement(
-                    [
-                        [ null,   null, [2, 2] ],
-                        [ [2, 1], null, null   ],
-                        [ null,   null, [2, 3] ],
-                    ],
-                    normalizedTowerRgb(0, 1, 0),
-                )),
-                `Inscribe a rune atop one of the same color to make a stronger version`,
-            );
-        },
+        () => showEventText()(
+            wrapEventImage(towerGridToElement(
+                [
+                    [ null,   null, [2, 2] ],
+                    [ [2, 1], null, null   ],
+                    [ null,   null, [2, 3] ],
+                ],
+                normalizedTowerRgb(0, 1, 0),
+            )),
+            `Inscribe a rune atop one of the same color to make a stronger version`,
+        ),
         [8, 8],
         [
             Enemy,
