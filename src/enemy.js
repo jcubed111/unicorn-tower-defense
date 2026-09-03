@@ -171,7 +171,7 @@ class SwarmEnemy extends Enemy{
     displayName = 'Minicorn';
     hpToNumRatio = 0.2;
     delayPerMonster = 0.5;
-    armor = 0;
+    armor = this.level >> 3;
     getSprites() {
         return super.getSprites().map(s => s.withScale(0.7));
     }
@@ -205,12 +205,13 @@ class Pegacorn extends Enemy{
     getTarget(square) {
         const [sx, sy] = square;
         const [gx, gy] = GameState.terrain.goalLocation;
+
         return addVec(square, randChoice(
             [
                 gx > sx && sy >= 0 && [1.5, 0.5],
                 gx < sx && sy >= 0 && [-0.5, 0.5],
                 gy < sy && [0.5, -0.5],
-                // this one is doubled so it's more likely ot move down
+                // this one is doubled so it's more likely to move down
                 // otherwise they tend to line up north of the wizard
                 gy > sy && [0.5, 1.5],
                 gy > sy && [0.5, 1.5],

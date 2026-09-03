@@ -299,6 +299,7 @@ const orderedTowerTypes = [
         // high speed bolt tower
         range = 3.5;
         chargeTime = 2 / this.level;
+        // damage = 2;
         damage = 2 + (this.level >> 2);
     }),
 

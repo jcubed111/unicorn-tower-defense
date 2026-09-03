@@ -493,7 +493,7 @@ const levelData = [
     // Level: 17
     [
         runOrbPonder(Meteor),
-        [0, 15],
+        [1, 15],
         [
             Enemy,
             SwarmEnemy,

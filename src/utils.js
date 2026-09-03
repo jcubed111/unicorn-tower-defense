@@ -1,3 +1,8 @@
+// Closure is passed --define=DEBUG=false so any if(DEBUG) blocks get
+// stripped from the minified build
+/** @define {boolean} */
+const DEBUG = true;
+
 // const plainElement = (tagName, ...children) => {
 //     return styled(tagName, '', {}, ...children);
 // }
