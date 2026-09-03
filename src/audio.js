@@ -87,16 +87,15 @@ const AudioSystem = new class {
             shape = 'sine',
         ] = instrument;
 
-        const osc = new OscillatorNode(this.ctx, {
-            frequency: 440 * 2 ** ((midiNumber - 69) / 12),
-            type: shape,
-        });
+        const osc = this.ctx.createOscillator();
+        osc.frequency.value = 440 * 2 ** ((midiNumber - 69) / 12);
+        osc.type = shape;
         const gain = this.ctx.createGain();
 
         osc.connect(gain).connect(isBg ? this.bgMusicGain : this.sfxGain);
 
-        gain.gain.setValueAtTime(0, atTime);
-        gain.gain.linearRampToValueAtTime(volume, atTime + attack);
+        gain.gain.value = 0;
+        gain.gain.setTargetAtTime(volume, atTime, attack / 4);
         gain.gain.setTargetAtTime(sustain * volume, atTime + attack, decay / 4);
         gain.gain.setTargetAtTime(0, atTime + noteLength, release / 4);
 

@@ -178,9 +178,9 @@ class Terrain{
     }
 
     eventToPos(e) {  // -> [x, y]
-        const { x, y, height } = e.target.getBoundingClientRect();
-        // this.size == the height, not the width.
-        return scaleVec([e.clientX - x, e.clientY - y], this.size / height);
+        // WARNING: uses .offsetX/Y, so assumes the event target is the canvas. If
+        // the event target is something else, this breaks.
+        return scaleVec([e.offsetX, e.offsetY], this.size / e.target.offsetHeight);
     }
 
     extraTowerValidation(pos, towerType) {

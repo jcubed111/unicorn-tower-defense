@@ -21,16 +21,25 @@ class Sprite{
     constructor(data2d, scale=1) {
         this.data2d = data2d;
         this.scale = scale;
-        this.asImage = makeSpriteCanvas(
-            ctx => ctx.putImageData(
-                // flat(2) gives us a flat run of r,g,b,a,r,g,b,a,...
-                new ImageData(new Uint8ClampedArray(data2d.flat(2)), tileSize),
-                0,
-                0,
-            ),
-        );
-        // as indexed drops transparent pixels
+        // as indexed drops transparent pixels. Entries are [y, x, color].
         this.asIndexed = grid2dToIndexed(data2d).filter(([, , c]) => c[3] > 0);
+
+        // This uses more space since `putImageData`, `ImageData`, and `Uint8ClampedArray`
+        // are all unique strings.
+        // this.asImage = makeSpriteCanvas(
+        //     ctx => ctx.putImageData(
+        //         // flat(2) gives us a flat run of r,g,b,a,r,g,b,a,...
+        //         new ImageData(new Uint8ClampedArray(data2d.flat(2)), tileSize),
+        //         0,
+        //         0,
+        //     ),
+        // );
+        this.asImage = makeSpriteCanvas(ctx =>
+            this.asIndexed.forEach(([y, x, c]) => {
+                ctx.fillStyle = colorAsString(c);
+                ctx.fillRect(x, y, 1, 1);
+            })
+        );
     }
 
     _withColorCache = {};
