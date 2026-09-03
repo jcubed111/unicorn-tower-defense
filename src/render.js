@@ -55,7 +55,6 @@ function renderTerrainBase(ctx, dt, terrain) {
                 ParticleSystem.sparkleSpriteAt(sprite, pos, dt / 100);
             }
         }else{
-            const waveHitNum = x % 4 + y * 3 % 7 + (x + y) % 5;
             const isWaveNow = (performance.now() >> 10) % WAVE_DENSITY_INV == grid2dAt(waveHitInt, pos);
             if(isWaveNow) {
                 renderSprite(ctx, pos, sprites[15]);
