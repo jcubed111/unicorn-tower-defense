@@ -255,14 +255,15 @@ function render(dt) {
     GameState.runeButtons.forEach((el, i) => {
         const cost = GameState.terrain.towerDrawCosts[i + 1];
         const canAfford = cost <= GameState.terrain.mana;
-        el.classList.toggle('C--runeButtonActive', i + 1 == GameState.drawType);
-        el.classList.toggle('C--runeButtonTooExpensive', !canAfford);
+        el.classList.toggle('C--runeSelected', i + 1 == GameState.drawType);
+        el.classList.toggle('C--runeTooExpensive', !canAfford);
         el.children[0].innerText = cost + ' ᚯ';
         const displayEl = sprites[i * 4 + 4].withColor(
             canAfford
                 ? normalizedTowerRgb(i == 0, i == 1, i == 2)
                 : [127, 127, 127, 255],
         ).asImage;
+        displayEl.style.width = '12rem';
         // Chrome needs this line to function; its `replaceChildren` isn't stable
         if(el.children[1].children[0] != displayEl) {
             el.children[1].replaceChildren(displayEl);

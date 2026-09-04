@@ -64,7 +64,7 @@ const initHtml = () => {
             div(),  // cost
             withHoverInfo(
                 wrapEl(
-                    div(),  // tower canvas wrapper
+                    div('C--button'),  // tower canvas wrapper
                     el => el.addEventListener('click', _ => GameState.drawType = i + 1)
                 ),
                 new T(T.sourcePattern.asGrid).asHoverEl(),
@@ -79,13 +79,12 @@ const initHtml = () => {
                 div('C--statBar',
                     div('C--manaColor', GameState.manaDisplay = styled('span'), " ᚯ"),
                     div('C--heartNumber', GameState.heartDisplay = styled('span', '', 10)),
-                    wrapEl(sprites[39].asImage, e => {
-                        e.className = 'C--buttonLike';
-                        e.style.width = '10rem';
-                        e.addEventListener('click', e => {
+                    wrapEl(
+                        div('C--button', wrapEl(sprites[39].asImage, c => c.style.width = '10rem')),
+                        e => e.addEventListener('click', _ => {
                             if(confirm('Give up?')) GameState.terrain.lose();
-                        });
-                    }),
+                        }),
+                    ),
                 ),
 
                 runeBorderDiv([32, 32, 32, 255])('C--spellArea',
@@ -125,7 +124,7 @@ const initHtml = () => {
             ),
             GameState.waveInfoToast = div('C--waveInfoToast C--fullscreen C--waveInfoToastOut'),
             div('C--topLeft', // NOTE: the css depends on this being after sidebar
-                GameState.startNextWaveButton = div('C--buttonLike'),
+                GameState.startNextWaveButton = div('C--button C--buttonPadded'),
                 GameState.topLeftDisplay = div(),  // Wave status text
             ),
             GameState.mainMenu = div('C--fullscreen',

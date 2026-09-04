@@ -44,8 +44,8 @@ const showEventText = (
 
 const showLevelEndMenu = (levelNum, isSuccess, isPerfect) => {
     // return bool whether to restart
-    const retryButton = div('C--buttonLike C--onBlack', 'Retry');
-    const continueButton = div('C--buttonLike C--onBlack', isSuccess ? 'Continue' : 'Levels');
+    const retryButton = div('C--button C--buttonPadded C--levelEndMenuButton', 'Retry');
+    const continueButton = div('C--button C--buttonPadded C--levelEndMenuButton', isSuccess ? 'Continue' : 'Levels');
 
     const img =
         isPerfect

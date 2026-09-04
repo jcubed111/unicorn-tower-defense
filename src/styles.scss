@@ -13,7 +13,6 @@
 %white-space-pre-wrap { white-space: pre-wrap; }
 %color-white { color: #fff; }
 %color-mana { color: #94d6ff; }
-%background-0004 { background: #0004; }
 %top-3rem { top: 3rem; }
 %gap-1rem { gap: 1rem; }
 %gap-2rem { gap: 2rem; }
@@ -49,27 +48,50 @@ h1{
 }
 
 // Listed explicitly rather than @extend-ed onto the canvas, so the canvas
-// selector doesn't also get glued onto the div./.C--onBlack rules below.
-.C--buttonLike, .C--runeButtonWrapper canvas {
+// selector doesn't also get glued onto the div./.C--levelEndMenuButton rules below.
+// Every button is `div('C--button', ...)`. The base carries the border, the
+// background and the hover treatment; modifiers add what varies.
+.C--button{
     cursor: pointer;
     border: 0.5rem solid #202020;
+    background: #0002;
 
     &:hover{
-        @extend %background-0004;
         // url set via js as border-image-source in this animation
         border-image: 5 / 5rem / 0 round;
         animation: B 1s steps(1) infinite;
     }
 }
-    div.C--buttonLike{
+    // for buttons whose content is text; the div>canvas ones size to the canvas
+    .C--buttonPadded{
         padding: 3rem 4rem;
-        background: #0002;
         &:empty{ @extend %display-none; }
     }
-    .C--buttonLike.C--onBlack{
+    .C--levelEndMenuButton{
         font-size: 4.5rem;
         border-color: #000;
         margin: 4rem 5rem 0;
+    }
+
+    // Rune buttons
+    .C--runeButtonWrapper{
+        @extend %display-flex;
+        @extend %flex-direction-column;
+        @extend %text-align-center;
+        @extend %gap-1rem;
+    }
+
+    .C--runeTooExpensive {
+        color: #888;
+    }
+
+    .C--runeSelected .C--button{
+        border-color: #94d6ff;
+        animation: none;
+        background: #0004;
+    }
+    .C--runeSelected.C--runeTooExpensive .C--button{
+        border-color: #888;
     }
 
 @property --t {
@@ -250,29 +272,6 @@ h1{
             @extend %color-mana;
         }
 
-        .C--runeButtonWrapper{
-            @extend %display-flex;
-            @extend %flex-direction-column;
-            @extend %text-align-center;
-            @extend %gap-1rem;
-
-            canvas{
-                width: 12rem!important;
-            }
-        }
-
-            .C--runeButtonActive canvas{
-                @extend %background-0004;
-                border: 0.5rem solid #94d6ff!important;
-            }
-
-            .C--runeButtonTooExpensive {
-                color: #888;
-            }
-
-            .C--runeButtonTooExpensive.C--runeButtonActive canvas{
-                border: 0.5rem solid #888!important;
-            }
 
     .C--audioCheckLabel{
         padding: 0 0 1rem 7.3rem;
