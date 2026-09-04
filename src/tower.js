@@ -48,13 +48,14 @@ function withTowerPattern(stringRepr, Cls) {
     Cls.sourcePattern = {
         outerColor,
         allForms,
-        makeElement: (isDiscovered, forceComponentLevel) => towerGridToElement(asGrid, outerColor, isDiscovered, forceComponentLevel),
+        // makeElement: (isDiscovered, forceComponentLevel, cellSizeRem) => towerGridToElement(asGrid, outerColor, isDiscovered, forceComponentLevel, cellSizeRem),
+        makeElement: (...args) => towerGridToElement(asGrid, outerColor, ...args),
         asGrid,
     };
     return Cls;
 }
 
-function towerGridToElement(towerGrid, outerColor, isDiscovered = true, forceComponentLevel = 0) {
+function towerGridToElement(towerGrid, outerColor, isDiscovered = true, forceComponentLevel = 0, cellSizeRem = 7.5) {
     // towerGrid: Grid2d<[towerType, level] | null>
     // If not discovered, renders as `?`s
     return makeSpriteCanvas(ctx => {
@@ -70,7 +71,7 @@ function towerGridToElement(towerGrid, outerColor, isDiscovered = true, forceCom
                 );
             }
         });
-    }, towerGrid.length, towerGrid[0].length);
+    }, towerGrid.length, towerGrid[0].length, towerGrid.length * cellSizeRem);
 }
 
 class Tower{
@@ -162,8 +163,11 @@ class Tower{
             GameState.rerenderRunebook();
             GameState.toastWaveInfo(
                 'New Tower Discovered!',
-                this.displayName,
-                this.constructor.sourcePattern.makeElement(),
+                wrapEl(
+                    div('', this.displayName),
+                    el => el.style.color = colorAsString(this.getColor()),
+                ),
+                this.constructor.sourcePattern.makeElement(1, 1, 12),
             );
         }
     }

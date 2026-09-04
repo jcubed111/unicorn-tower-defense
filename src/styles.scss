@@ -153,19 +153,14 @@ h1{
 .C--waveInfoToast{
     @extend %gap-2rem;
     @extend %padding-3rem;
-    border: 1rem solid;
-    background: linear-gradient(90deg,#1110,#1116,#1116,#1110);
-    inset: 12rem 75rem auto 15rem;
+    inset: 2rem 130rem auto 70rem;
     pointer-events: none;
-    border-image: linear-gradient(90deg,#1110,#111e,#111e,#1110) 1;
     transition: top 0.4s ease-in-out, opacity 0.4s;
+    font-size: 4.5rem;
 }
     .C--waveInfoToastOut{
-        top: 0;
+        top: -10rem;
         opacity: 0;
-    }
-    .C--larger{
-        font-size: 110%;
     }
 
 .C--topLeft{

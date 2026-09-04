@@ -18,12 +18,12 @@ const scrollDiv = (...divArgs) => {
 
 const runeBorderBackImageCache = {};
 const runeBorderDiv = (color, bgAlpha=102) => (...divArgs) => {
-    runeBorderBackImageCache[colorAsString(color)]
+    runeBorderBackImageCache[color]
         ??= sprites[26].withColor(color).asImage.toDataURL();
     const el = div(...divArgs);
     el.style.borderStyle = `solid`;
     el.style.borderWidth = `4rem`;
-    el.style.borderImage = `url(${runeBorderBackImageCache[colorAsString(color)]}) 6 / 6rem / 0 round`;
+    el.style.borderImage = `url(${runeBorderBackImageCache[color]}) 6 / 6rem / 0 round`;
     el.style.background = `${colorAsString(withAlpha(color, bgAlpha))} padding-box`;
     return el;
 };
@@ -122,7 +122,7 @@ const initHtml = () => {
                     ),
                 ),
             ),
-            GameState.waveInfoToast = div('C--waveInfoToast C--fullscreen C--waveInfoToastOut'),
+            GameState.waveInfoToast = runeBorderDiv([32, 32, 32, 255], 150)('C--waveInfoToast C--fullscreen C--waveInfoToastOut'),
             div('C--topLeft', // NOTE: the css depends on this being after sidebar
                 GameState.startNextWaveButton = div('C--button C--buttonPadded'),
                 GameState.topLeftDisplay = div(),  // Wave status text
