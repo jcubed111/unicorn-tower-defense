@@ -1,13 +1,15 @@
 TODO:
-- final victory screen
 - wave start sound effect
-- add more movement to intro screen? Unicorns running around?
-- subtract fire acc from hp bar display?
-- should enemies have a slight shade variation per enemy?
 - make discovered tower notification flashier
 - meteor tower circle should show up on water too
 - make wave start notification bigger
 - run notification when boss respawns to next phase
+- should enemies have a slight shade variation per enemy?
+
+## Feature Ideas
+
+- subtract fire acc from hp bar display?
+- add more movement to intro screen? Unicorns running around?
 
 - spells
     - would help with spending mana in final wave
@@ -36,7 +38,7 @@ TODO:
 NOTE: swapping scroll back for rune back would save 0.8%
 
 
-## Feature Ideas
+# Not now
 
 - allow enemies to move diagonal?
     - problem: this will cut down on the spread effect we get currently; enemies will always greedily use a diag if available.
@@ -45,10 +47,6 @@ NOTE: swapping scroll back for rune back would save 0.8%
 
 - make mana gain delay till particle arrival?
 
-
-- use audio tree for playing sounds
-- find a classical piece to "play" on piano. Each note is [time, freqIndex, vol, hold, INSTRUMENT] Where instrument defines the note quality, optional reverb, optional distortion
-- chop bg music into bits so we can dynamically queue up next based on mood of game.
 
 # scaling notes
 
