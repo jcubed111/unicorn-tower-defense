@@ -374,13 +374,17 @@ class Kingicorn extends Enemy{
             this.respawnLocation,
             pos => new EnergyFadeParticle(pos, WHITE),
         );
+        GameState.toastWaveInfo(
+            div('C--secondary', 'Phase II'),
+            k2.displayName,
+        );
     }
 }
 
 class Kingicorn2 extends Enemy{
-    displayName = 'Kingicorn II';
+    displayName = 'Kingicorn - Dash Form';
     speed = 4;
-    armor = 0;
+    armor = 20;
     banishDamage = 5;
     baseSpriteColor = [150, 150, 150, 255];
 
@@ -403,12 +407,16 @@ class Kingicorn2 extends Enemy{
             this.respawnLocation,
             pos => new EnergyFadeParticle(pos, WHITE),
         );
+        GameState.toastWaveInfo(
+            div('C--secondary', 'Phase III'),
+            k2.displayName,
+        );
     }
 }
 
 class Kingicorn3 extends Enemy{
-    displayName = 'Kingicorn III';
-    armor = 0;
+    displayName = 'Kingicorn - Swarm Form';
+    armor = 20;
     banishDamage = 5;
     baseSpriteColor = [50, 50, 50, 255];
 

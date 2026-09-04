@@ -500,7 +500,13 @@ const levelData = [
     ],
     // Level: 18
     [
-        ,
+        () => showEventText()(
+            wrapEventImage(spriteListToEl([
+                sprites[18].withRot(2),
+                sprites[43].withRot(2),
+            ])),
+            `This is it!\n\nDefeat the Kingicorn and escape with the Golden Horn!`,
+        ),
         [7, 15],
         [
             Megacorn,
@@ -550,7 +556,7 @@ const levelData = [
                         ),
                     ),
             ),
-            `The Golden Horn is finally yours!`,
+            `With the unicorns defeated, the Golden Horn is finally yours!`,
         ),
     ],
 ];

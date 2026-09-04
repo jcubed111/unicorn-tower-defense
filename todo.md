@@ -1,10 +1,6 @@
 TODO:
 - wave start sound effect
-- make discovered tower notification flashier
-- make wave start notification bigger
-- run notification when boss respawns to next phase
 - should enemies have a slight shade variation per enemy?
-- pre-last level story event
 
 ## Feature Ideas
 
