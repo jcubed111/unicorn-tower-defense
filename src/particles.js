@@ -14,13 +14,8 @@ const globalColorCache = {};
 class Particle{
     age = 0;
     lifespan = 2;
-
     grad = [];
-    // _globalColorCacheKey;  // needs to be set in child
 
-    colorFn(agePct, ageSec) {
-        return lerpGrad(this.grad, agePct);
-    }
     posFn() {
         const dist = this.age - 0.25 * Math.log(1 + 3.6 * this.age);
         return addVecWithBScaled(this.pos, this.asymptoticDriftVel, dist);
@@ -35,9 +30,8 @@ class Particle{
     }
 
     render(ctx) {
-        console.assert(this._globalColorCacheKey, 'Need _globalColorCacheKey in particle');
-        const _colorCache = globalColorCache[this._globalColorCacheKey] ??= range(256).map(
-            i => colorAsString(this.colorFn(i / 255, i / 255 * this.lifespan))
+        const _colorCache = globalColorCache[this.grad] ??= range(256).map(
+            i => colorAsString(lerpGrad(this.grad, i / 255))
         );
         ctx.fillStyle = _colorCache[~~(this.age / this.lifespan * 256)];
         ctx.fillRect(...this.posFn(), 1, 1);
@@ -48,10 +42,10 @@ class Particle{
 class ManaGainParticle extends Particle{
     /** @type {number} */
     lifespan = randFloat(1, 1.3);
+    grad = [WHITE, [119, 204, 255, 255]];
+
     /** @type {!Array<number>} */
     ctrlB = randVec(randFloat(30, 75));
-
-    _globalColorCacheKey = 1;
 
     // A quadratic bezier from the spawn point to the mana pool, with `ctrlB` as
     // the middle control point stored relative to the spawn point.
@@ -69,10 +63,6 @@ class ManaGainParticle extends Particle{
             2 * t * (1 - t),
         );
     }
-
-    colorFn(agePct, ageSec) {
-        return (ageSec % 1) < 0.3 ? WHITE : [119, 204, 255, 255];
-    }
 }
 
 class EnergyFadeParticle extends Particle{
@@ -84,7 +74,6 @@ class EnergyFadeParticle extends Particle{
             withAlpha(baseColor, 0),
         ];
         this.lifespan = lifespan;
-        this._globalColorCacheKey = 2 + colorAsString(baseColor);
     }
 }
 
@@ -103,7 +92,6 @@ class FireParticle extends Particle{
         [255, 211, 101, 255], [255, 102, 0, 255], [185, 34, 0, 255],
         [75, 75, 75, 255], [49, 49, 49, 255], [5, 5, 5, 0]
     ];
-    _globalColorCacheKey = 3;
 }
 
 class ExplodeFadeParticle extends Particle{
@@ -111,7 +99,6 @@ class ExplodeFadeParticle extends Particle{
         super(pos);
         this.grad = [color, withAlpha(color, 0)];
         this.vel = randVec(speed);
-        this._globalColorCacheKey = 4 + colorAsString(color);
     }
 
     posFn() {
