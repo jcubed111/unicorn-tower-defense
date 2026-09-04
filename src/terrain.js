@@ -156,7 +156,11 @@ class Terrain{
                         return;
                     }
 
-                    const key = JSON.stringify(towerCells);
+                    // Array.toString flattens nested arrays with commas, which
+                    // is as discriminating a cache key here as JSON was (every
+                    // cell is null or a fixed [type, level, [x, y]]), and it
+                    // takes JSON/stringify to zero occurrences.
+                    const key = '' + towerCells;
                     const tower = this.computedTowerCache[key] ??= new CandidateTower(
                         towerCells,
                         // Keep charge when upgrading to a higher level of the same tower.

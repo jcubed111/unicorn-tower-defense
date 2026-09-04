@@ -26,10 +26,12 @@ function renderRectIndicator(
 ) {
     ctx.lineWidth = lineWidth;
     ctx.strokeStyle = lineColor;
-    ctx.strokeRect(
+    ctx.beginPath();
+    ctx.rect(
         ...scaleVec(addVecWithBScaled(pos, radii, -1), 15),
         ...scaleVec(radii, 30),
     );
+    ctx.stroke();
 }
 
 const WAVE_DENSITY_INV = 50;
@@ -113,7 +115,8 @@ function render(dt) {
     );
 
     // Set rem to 1/2 tile size
-    document.documentElement.style.fontSize =
+    // document.all[0] is <html>; documentElement is 15 chars and used nowhere else
+    document.all[0].style.fontSize =
         (GameState.pxCssSize = pxSize / window.devicePixelRatio) + 'px';
     GameState.mainCanvas.width = 1.25 * (
         GameState.mainCanvas.height = pxSize * tileSize * terrain.size
@@ -232,11 +235,9 @@ function render(dt) {
             const [towerType, towerLevel] = grid2dAt(terrain.rawTowers, pos);
             const spriteOffsetForLevel = towerType == GameState.drawType ? towerLevel : 0;
             if(spriteOffsetForLevel <= 2) {
-                const spriteIndex = [
-                    4, 8, 12,  // runes
-                    0, 0, 0,  // spells
-                    23,  // level select
-                ][GameState.drawType - 1] + spriteOffsetForLevel;
+                // runes 1-3 are sprites 4/8/12; 7 (level select) is 23
+                const spriteIndex = (GameState.drawType == 7 ? 23 : GameState.drawType * 4)
+                    + spriteOffsetForLevel;
                 renderSprite(
                     ctx,
                     pos,

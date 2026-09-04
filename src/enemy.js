@@ -144,10 +144,12 @@ class Enemy{
         }
 
         // update facing direction
-        const facingError = Math.atan2(dx, -dy) - this.facing;
+        const heading = Math.atan2(dx, -dy);
+        const facingError = heading - this.facing;
         if(Math.abs(facingError) > Math.PI) this.facing += Math.PI * 2 * Math.sign(facingError);
+        // re-read this.facing: the wrap above may have just moved it.
         // moveAmount is speed * dt, so we stil lscale correctly with time step
-        this.facing += (Math.atan2(dx, -dy) - this.facing) * (1 - 2 ** (-5 * moveAmount));
+        this.facing += (heading - this.facing) * (1 - 2 ** (-5 * moveAmount));
 
         // return augmented dt
         return dt * speed;

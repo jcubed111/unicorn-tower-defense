@@ -20,15 +20,17 @@ const AudioSystem = new class {
 
     constructor() {
         this.sfxGain.connect(this.ctx.destination);
-        this.sfxGain.gain.value = getLocalStorageItem('S') ?? 1;
+        this.sfxGain.gain.value = +(getLocalStorageItem('S') ?? 1);
         this.bgMusicGain.connect(this.ctx.destination);
-        this.bgMusicGain.gain.value = getLocalStorageItem('M') ?? 1;
+        this.bgMusicGain.gain.value = +(getLocalStorageItem('M') ?? 1);
     }
 
     setSourceOnOff(isBg, isOn) {
         (isBg ? this.bgMusicGain : this.sfxGain).gain
             .setTargetAtTime(isOn, this.ctx.currentTime, 0.01);
-        setLocalStorageItem('SM'[isBg], isOn);
+        // +isOn, not isOn: without JSON these are stored raw, and a boolean
+        // would come back as "true", which the +() on read turns into NaN.
+        setLocalStorageItem('SM'[isBg], +isOn);
     }
 
     playTowerBolt(dNote) {

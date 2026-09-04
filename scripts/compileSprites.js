@@ -55,22 +55,28 @@ const isEmpty = pixels => pixels.every(p => !p[3]);
 // the ones after them keep their index
 while(spritePixels.length && isEmpty(spritePixels.at(-1))) spritePixels.pop();
 
-const sprites = spritePixels.map(
-    pixels => isEmpty(pixels) ? "" : pixels.map(charFor).join(""),
-);
+// One flat string rather than an array of per-sprite strings. Every entry in an
+// array literal costs a quote-quote-comma at a fixed 225-char period, which is
+// far outside Roadroller's context window, so each one is a full-price
+// surprise. Fixed-width chunks also keep the indices without blanking, so the
+// isEmpty() blank-out is no longer needed.
+const spriteData = spritePixels.map(pixels => pixels.map(charFor).join("")).join("");
 
 if(colors.length > 92) {
     // 35 + 92 == 127, which is DEL, and it only gets worse from there
     throw new Error(`${colors.length} colors is too many to encode as chars`);
 }
 
+// Hex-pack the palette: 4 bytes per colour in one string, unpacked at load.
+// Much cheaper than the decimal tuples it replaces (320 chars vs 860 here), and
+// `chunked` is already in utils.
+const paletteHex = colors.map(c => c.map(v => v.toString(16).padStart(2, "0")).join("")).join("");
+
 const out = `// This file is auto generated: DO NOT MODIFY
 
-const spriteColors = [\n${colors.map(c => `    [${c}]`).join(",\n")}\n];
+const spriteColors = chunked(4, '${paletteHex}'.match(/../g).map(h => parseInt(h, 16)));
 
-const sprites = [
-${sprites.map(s => `    ${JSON.stringify(s)},`).join("\n")}
-].map(s => s && new Sprite(chunked(${spriteSize}, s.split('').map(c => spriteColors[c.charCodeAt(0) - 35]))))
+const sprites = chunked(${spriteSize * spriteSize}, ${JSON.stringify(spriteData)}).map(s => new Sprite(chunked(${spriteSize}, s.split('').map(c => spriteColors[c.charCodeAt(0) - 35]))))
 `;
 
 fs.writeFileSync(outFile, out);

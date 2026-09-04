@@ -28,10 +28,10 @@ const levelDeps = [
 
 const getLevelIsUnlockedMap = () => {
     const passedLevels = getLevelSet('p');
-    return levelDeps.map(deps => !deps || deps.some(d => passedLevels.has(d)));
+    return levelDeps.map(deps => deps.some(d => passedLevels.has(d)));
 };
 // 'p' = levels passed, 'q' = levels perfected. Level 0 is always in both.
-const getLevelSet = key => new Set(getLocalStorageItem(key) ?? [0]);
+const getLevelSet = key => new Set((getLocalStorageItem(key) ?? '0').split(',').map(v => +v));
 const setLevelPassed = (n, isPerfect) => {
     setLocalStorageItem('p', [...getLevelSet('p'), n]);
     if(isPerfect) setLocalStorageItem('q', [...getLevelSet('q'), n]);
@@ -534,16 +534,18 @@ const levelData = [
         () => showEventText()(
             div('C--orbPonderWrapper',
                 wrapEl(sprites[42].asImage, el => el.style.width = '40rem'),
-                ...orderedTowerTypes
+                // Indices into orderedTowerTypes in hue order, so the ring reads
+                // as a rainbow. Kept here as one permutation rather than a
+                // hueOrder on all 16 patterns -- same order, far fewer bytes.
+                ...[9, 13, 0, 6, 12, 1, 14, 4, 8, 10, 2, 15, 3, 5, 7, 11]
+                    .map(j => orderedTowerTypes[j])
                     .filter(T => new T([]).isDiscovered())
-                    .sort((a, b) => a.sourcePattern.hueOrder - b.sourcePattern.hueOrder)
                     .map((T, i, arr) =>
                         wrapEl(
                             T.sourcePattern.makeElement(1, 3),
                             el => {
                                 el.className = 'C--orbit';
-                                el.style.cssText = `--a:${i / arr.length * 360}deg`;
-                                el.style.width = `${0.5 * el.width}rem`;
+                                el.style.animationDelay = `${-6 * i / arr.length}s`;
                             },
                         ),
                     ),

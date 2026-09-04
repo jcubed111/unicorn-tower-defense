@@ -1,10 +1,10 @@
 
 // Some css that needs to be compiled from the js image sources
 const [a, b] = getButtonBorderBackForColor(HALF_WHITE);
-document.write(`<style>@keyframes B{0%{border-image-source:url(${a})}50%{border-image-source:url(${b})}}</style>`);
-// In the dist build `[CSS]` gets replaced with the raw styles.
-// In dev this line is a noop.
-document.write('<style>[CSS]</style>');
+// One write, one <style>: the keyframes that need JS-built data URLs, then
+// `[CSS]`, which combine.py swaps for the whole stylesheet in the dist build
+// and which is inert leftover text in dev.
+document.write(`<style>@keyframes B{0%{border-image-source:url(${a})}50%{border-image-source:url(${b})}}[CSS]</style>`);
 
 
 let lastRender = performance.now();

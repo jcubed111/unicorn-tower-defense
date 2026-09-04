@@ -7,7 +7,9 @@ const makeSpriteCanvas = (ctxCb, w = 1, h = 1, cssWidthRem = w * 7.5) => {
     canvas.height = h * tileSize;
     canvas.style.width = cssWidthRem + 'rem';
     const ctx = canvas.getContext('2d');
-    ctx.imageSmoothingEnabled = false;
+    // No imageSmoothingEnabled here: this canvas is painted with fillRect and
+    // blitted at 1:1, neither of which smooths. renderSprite still sets it on
+    // whatever ctx it draws into, which is where scaling actually happens.
     ctxCb(ctx);
     return canvas;
 }

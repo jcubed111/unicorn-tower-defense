@@ -40,8 +40,11 @@ const STARTING_WAVE_DELAY = 30;
 const WAVE_DELAY = 20;
 
 const LS_PREFIX = 'com.jstimac.26.';
-const getLocalStorageItem = key => JSON.parse(window.localStorage[LS_PREFIX + key] ?? 'null');
-const setLocalStorageItem = (key, value) => window.localStorage[LS_PREFIX + key] = JSON.stringify(value);
+// No JSON: localStorage stringifies on write anyway (an array lands as
+// "1,2,3"), and every read is either a flag tested for truthiness or a list
+// parsed by getLevelSet. Drops JSON/parse/stringify entirely.
+const getLocalStorageItem = key => window.localStorage[LS_PREFIX + key];
+const setLocalStorageItem = (key, value) => window.localStorage[LS_PREFIX + key] = value;
 
 const withHoverInfo = (el, hoverInfoEl) => {
     el.addEventListener('mouseover', () => GameState.hoveringElOverride = hoverInfoEl);

@@ -34,7 +34,7 @@ PACK_RUNS := 16
 
 # how many itertions to zip for. Less is faster; seems to max out after 10k
 # ZIP_ITERS := 10000
-ZIP_ITERS := 100
+ZIP_ITERS := 1000
 
 
 .PHONY: all report clean

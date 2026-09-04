@@ -7,5 +7,7 @@ js = open('build/main-packed.js').read().rstrip('\n')
 sys.stdout.write(
     html
         .replace('[CSS]', '')
-        .replace('[JS]', '<script>' + js + '</script>')
+        # No closing </script>: it is the last thing in the file, and the HTML
+        # parser closes an open script element at EOF. Worth 9 bytes.
+        .replace('[JS]', '<script>' + js)
 )

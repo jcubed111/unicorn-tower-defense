@@ -77,12 +77,12 @@ h1{
     inherits: false;
     initial-value: 0deg;
 }
-@keyframes o { to { --t: 360deg; } }
+@keyframes o { to { --t: 1turn; } }
 .C--orbit{
-    position: relative;
-    --a: 0deg;  // starting angle
-    left: calc(30rem * cos(var(--a) + var(--t)));
-    top:  calc(30rem * sin(var(--a) + var(--t)));
+    // One `translate` instead of position+top+left: shorter, and it composites
+    // instead of relighting layout every frame. The starting angle is a negative
+    // animation-delay set in JS, which seeks into the timeline.
+    translate: calc(30rem * cos(var(--t))) calc(30rem * sin(var(--t)));
     animation: o 6s linear infinite;
 }
 
