@@ -9,6 +9,7 @@ const PING =  [0.007, 0.06, 0.42, 0.05];
 
 const ERROR = [.01, .01, 1, .1, 'sawtooth'];
 const ENEMY_DEATH = [.002, .07, .05, .3];
+const TOWER_PLACEMENT = [.005, .17, .1, .1];
 
 
 const AudioSystem = new class {
@@ -31,6 +32,16 @@ const AudioSystem = new class {
         // +isOn, not isOn: without JSON these are stored raw, and a boolean
         // would come back as "true", which the +() on read turns into NaN.
         setLocalStorageItem('SM'[isBg], +isOn);
+    }
+
+    playTowerPlacement() {
+        this.scheduleNote(
+            this.ctx.currentTime,
+            randFloat(38, 40),
+            0.2,
+            TOWER_PLACEMENT,
+            0.5,
+        );
     }
 
     playTowerBolt(dNote) {

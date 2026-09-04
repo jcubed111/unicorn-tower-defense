@@ -220,6 +220,7 @@ class Terrain{
         if(DEBUG) {
             window.debugTowerBuildLog.push(`buildTowerAt(${towerType}, [${x}, ${y}])`);
         }
+        AudioSystem.playTowerPlacement();
         return true;
     }
 
