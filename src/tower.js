@@ -154,7 +154,7 @@ class Tower{
     }
 
     isDiscovered() {
-        return getLocalStorageItem(this.displayName);
+        return !!getLocalStorageItem(this.displayName);
     }
     setDiscovered() {
         if(!this.isDiscovered()) {

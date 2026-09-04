@@ -43,7 +43,7 @@ GameState.rerenderRunebook = () => {
             const isDiscovered = new T([]).isDiscovered();
             return withHoverInfo(
                 div('C--runeListing ' + (!isDiscovered && 'C--secondary'),
-                    div(/*'C--towerName',*/ '', isDiscovered ? new T([]).displayName : '???'),
+                    div('', isDiscovered ? new T([]).displayName : '???'),
                     T.sourcePattern.makeElement(isDiscovered),
                 ),
                 isDiscovered
