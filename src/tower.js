@@ -257,7 +257,7 @@ const orderedTowerTypes = [
             const fireDuration = 5;
             const fireSplash = 2.5;
 
-            ParticleSystem.spawnFireCircleAt(target.pos, fireSplash, 1);
+            ParticleSystem.spawnFireCircleAt(target.pos, fireSplash, 1, 1);
             this.getTargetsInRange(target.pos, fireSplash).forEach(t => {
                 t.fireEffects.push([
                     this.fireDamagePerSec,

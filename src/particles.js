@@ -187,12 +187,15 @@ const ParticleSystem = new class{
         });
     }
 
-    spawnFireCircleAt(center, radius, density) {
+    spawnFireCircleAt(center, radius, density, spawnOnWater) {
         range(probRound(density * radius * 15 * 6)).forEach(_ => {
             const pos = addVec(center, randVec(radius));
-            return grid2dAt(GameState.terrain.isGround, pos)
+            if(
+                (spawnOnWater || grid2dAt(GameState.terrain.isGround, pos))
                 && !grid2dAt(GameState.terrain.computedTowersByLocation, pos)
-                && this.addParticle(new FireParticle(scaleVec(pos, 15).map(v => ~~v)));
+            ) {
+                this.addParticle(new FireParticle(scaleVec(pos, 15).map(v => ~~v)));
+            }
         });
     }
 }
