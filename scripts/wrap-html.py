@@ -7,7 +7,8 @@ js = open('build/main-packed.js').read().rstrip('\n')
 sys.stdout.write(
     html
         .replace('[CSS]', '')
-        # No closing </script>: it is the last thing in the file, and the HTML
-        # parser closes an open script element at EOF. Worth 9 bytes.
-        .replace('[JS]', '<script>' + js)
+        # The closing </script> is REQUIRED. Dropping it saves 9 bytes and
+        # silently breaks the page: Chrome discards the pending script at EOF
+        # and runs nothing, with no console error. Verified by A/B test.
+        .replace('[JS]', '<script>' + js + '</script>')
 )

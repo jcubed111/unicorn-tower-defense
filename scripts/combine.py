@@ -59,4 +59,10 @@ if '[CSS]' not in js:
     print("ERROR: no [CSS] placeholder in the JS to inject the stylesheet into", file=sys.stderr)
     sys.exit(1)
 
-sys.stdout.write(replace_classes(js.replace('[CSS]', css.replace('"', '\\"'))))
+# Wrapped in an IIFE so the payload declares nothing at its top level.
+# Roadroller's -D decoder ends in a *direct* eval(), so a top-level `var c` in
+# here would bind into the decoder's own scope, where `c` is one of its
+# decompression counters -- which silently made GameState.hoveringTower a
+# number. Inside the IIFE there are no top-level bindings at all, so there is
+# nothing left to collide.
+sys.stdout.write('(()=>{' + replace_classes(js.replace('[CSS]', css.replace('"', '\\"'))) + '})()')
