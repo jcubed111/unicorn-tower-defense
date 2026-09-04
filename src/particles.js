@@ -1,7 +1,7 @@
 const MANA_POOL_POS = [16, 0];
 const HEART_POS = [18, 0]
 // Where mana gain particles land, in sprite pixels
-const MANA_POOL_PARTICLE_TARGET = addVecWithBScaled([7, 7], MANA_POOL_POS, 15);
+const MANA_POOL_PARTICLE_TARGET = [247, 7];  // addVecWithBScaled([7, 7], MANA_POOL_POS, 15)
 
 
 // Record<key, color[]>

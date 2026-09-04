@@ -176,9 +176,9 @@ class Rhinoicorn extends Enemy{
 
 class SwarmEnemy extends Enemy{
     displayName = 'Minicorn';
+    armor = this.level >> 3;
     hpToNumRatio = 0.2;
     delayPerMonster = 0.5;
-    armor = this.level >> 3;
     getSprites() {
         return super.getSprites().map(s => s.withScale(0.7));
     }
@@ -187,9 +187,9 @@ class SwarmEnemy extends Enemy{
 class RunnerEnemy extends Enemy{
     displayName = 'Dashicorn';
     speed = 4;
+    armor = 0;
     hpToNumRatio = 0.5;
     delayPerMonster = 0.25;
-    armor = 0;
 }
 
 class Pegacorn extends Enemy{
@@ -229,9 +229,9 @@ class Pegacorn extends Enemy{
 
 class Megacorn extends Enemy{
     displayName = 'Megacorn';
+    armor = this.level;
     hpToNumRatio = 15;
     delayPerMonster = 1.0;
-    armor = this.level;
     getSprites() {
         return super.getSprites().map(s => s.withScale(1.4));
     }
@@ -239,13 +239,13 @@ class Megacorn extends Enemy{
 
 class Rooicorn extends Enemy{
     displayName = 'Rooicorn';
+    speed = 1.5;
+    armor = this.level >> 2;
     hpToNumRatio = 15;
     totalHpModifier = 0.4;
     delayPerMonster = 2.0;
-    armor = this.level >> 2;
-    speed = 1.5;
-    extraDescription = 'Explodes into 8 Minicorns on death';
     baseSpriteColor = [180, 120, 90, 255];
+    extraDescription = 'Explodes into 8 Minicorns on death';
 
     onDeath() {
         range(8).forEach(i => {
@@ -259,10 +259,10 @@ class Rooicorn extends Enemy{
 
 class BossEnemy extends Enemy{
     displayName = 'Shadowcorn';
-    banishDamage = 5;
-    hpToNumRatio = 1000;
     armor = this.level >> 1;
+    hpToNumRatio = 1000;
     manaOnKillMult = 2;
+    banishDamage = 5;
     baseSpriteColor = [50, 40, 40, 255];
 }
 
@@ -322,8 +322,8 @@ class Narwhalicorn extends Enemy{
     displayName = 'Narwhalicorn';
     speed = 1.0;
     armor = 0;
-    landBased = false;
     manaOnKillMult = 3;
+    landBased = false;
 
     constructor(level, path) {
         super(level, path[0]);
@@ -351,9 +351,9 @@ class Narwhalicorn extends Enemy{
 
 class Kingicorn extends Enemy{
     displayName = 'Kingicorn';
-    banishDamage = 5;
-    hpToNumRatio = 1000;
     armor = 40;
+    hpToNumRatio = 1000;
+    banishDamage = 5;
 
     getSprites() {
         return [...super.getSprites(), sprites[43]];
@@ -379,9 +379,9 @@ class Kingicorn extends Enemy{
 
 class Kingicorn2 extends Enemy{
     displayName = 'Kingicorn II';
-    banishDamage = 5;
-    armor = 0;
     speed = 4;
+    armor = 0;
+    banishDamage = 5;
     baseSpriteColor = [150, 150, 150, 255];
 
     getSprites() {
@@ -408,8 +408,8 @@ class Kingicorn2 extends Enemy{
 
 class Kingicorn3 extends Enemy{
     displayName = 'Kingicorn III';
-    banishDamage = 5;
     armor = 0;
+    banishDamage = 5;
     baseSpriteColor = [50, 50, 50, 255];
 
     _spawnClock = 0;

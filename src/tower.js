@@ -191,10 +191,12 @@ class Tower{
         );
     }
 
-    hit(targetsInRange) {
+    // `origin` is passed straight to boltAt, whose own default fills in
+    // this.center, so subclasses that only vary the bolt origin can reuse this.
+    hit(targetsInRange, origin) {
         const target = randChoice(targetsInRange);
         target.takeDamage(this.damage);
-        this.boltAt(target);
+        this.boltAt(target, origin);
         return target;
     }
 
@@ -240,10 +242,10 @@ const orderedTowerTypes = [
 
     Meteor = withTowerPattern(' g |rrr| b ', class extends Tower{
         displayName = 'Meteor';
+        range = 3 + this.level / 2;
+        chargeTime = 5;
         damage = 3 * this.level;
         fireDamagePerSec = this.level / 3;
-        chargeTime = 5;
-        range = 3 + this.level / 2;
         extraDescription = [
             this.fireDamagePerSec.toFixed(2), `fire / sec`,
             5, 'fire duration',
@@ -274,24 +276,24 @@ const orderedTowerTypes = [
 
     Heavy = withTowerPattern(' b |grg', class extends Tower{
         displayName = 'Heavy';
+        range = 1 + this.level / 3;
         chargeTime = 1;
         damage = ~~(1.5 * this.level);
-        range = 1 + this.level / 3;
     }),
 
     Sniper = withTowerPattern('gb|bb', class extends Tower{
         displayName = 'Sniper';
-        chargeTime = 5;
         /** @type {number} */ range = 2 + this.level;
+        chargeTime = 5;
         damage = 6 * this.level;
     }),
 
     Slow = withTowerPattern('bb|bb', class extends Tower{
         displayName = 'Slow';
+        range = 1 + this.level / 2;
+        chargeTime = 0.25;
         damage = 0;
         slowAmount = 3 / this.level;
-        chargeTime = 0.25;
-        range = 1 + this.level / 2;
         extraDescription = [`${~~(100 - this.slowAmount * 100)}%`, 'slowing'];
 
         hit(targetsInRange) {
@@ -331,10 +333,10 @@ const orderedTowerTypes = [
 
     Fire = withTowerPattern('rgr', class extends Tower{
         displayName = 'Fire';
+        range = 2 + this.level / 6;
+        chargeTime = 0.25;
         damage = -1;  // so we don't show at all
         fireDamagePerSec = this.level / 3;
-        chargeTime = 0.25;
-        range = 2 + this.level / 6;
         extraDescription = [this.fireDamagePerSec.toFixed(2), `fire / sec`];
 
         hit(targetsInRange) {
@@ -416,10 +418,10 @@ const orderedTowerTypes = [
     Ring = withTowerPattern('rb|r ', class extends Tower{
         displayName = 'Ring';
         range = 5;
-        minRange = 3;
         chargeTime = 5;
         /** @type {number} */
         damage = 1 + this.level;
+        minRange = 3;
         extraDescription = [this.minRange, 'minimum range', 'AoE'];
 
         getTargetsInRange() {
@@ -450,9 +452,7 @@ const orderedTowerTypes = [
         extraDescription = [`+${this.manaLeech} ᚯ`, `/ hit`];
 
         hit(targetsInRange) {
-            const target = randChoice(targetsInRange);
-            target.takeDamage(this.damage);
-            this.boltAt(target);
+            const target = super.hit(targetsInRange);
             ParticleSystem.explodeManaAt(target.pos, this.manaLeech);
             GameState.terrain.mana += this.manaLeech;
         }
@@ -474,10 +474,7 @@ const orderedTowerTypes = [
                 const possibleTargets = this.getTargetsInRange();
                 const i = ~~(this.charge / this.chargeTime) - 1;
                 if(possibleTargets.length) {
-                    const target = randChoice(possibleTargets);
-                    target.takeDamage(this.damage);
-                    this.boltAt(target, this.getChargeOrbLocation(i));
-
+                    this.hit(possibleTargets, this.getChargeOrbLocation(i));
                     this.charge -= this.chargeTime;
                 }else{
                     break;
@@ -506,16 +503,14 @@ const orderedTowerTypes = [
 
     Lightning = withTowerPattern('gr', class extends Tower{
         displayName = 'Lightning';
-        chain = this.level - 1;
-        extraDescription = [this.chain, 'chain'];
         range = 2.5;
         chargeTime = this.level / 2;
         damage = this.level;
+        chain = this.level - 1;
+        extraDescription = [this.chain, 'chain'];
 
-        hit(targetsInRange, i = 0, origin = this.center) {
-            const target = randChoice(targetsInRange);
-            target.takeDamage(this.damage);
-            this.boltAt(target, origin);
+        hit(targetsInRange, i = 0, origin) {
+            const target = super.hit(targetsInRange, origin);
             if(i < this.chain) {
                 const chainTargets = this.getTargetsInRange(target.pos)
                     .filter(t => t != target);
@@ -532,12 +527,12 @@ const orderedTowerTypes = [
 
     Red = withTowerPattern('r', class extends Tower{
         displayName = 'Red';
-        extraDescription = 'AoE';
         // hits all enemies in range on each shot
         range = 3;
         chargeTime = 5 - this.level;
         /** @type {number} */
         damage = 1 + this.level;
+        extraDescription = 'AoE';
 
         hit(targetsInRange) {
             targetsInRange.forEach(target => {
@@ -559,9 +554,9 @@ const orderedTowerTypes = [
 
     Blue = withTowerPattern('b', class extends Tower{
         displayName = 'Blue';
+        range = 0;
         // Doesn't attack, just blocks
         chargeTime = 0;
-        range = 0;
         damage = 0;
         extraDescription = 'Cannot attack';
         isDiscovered() { return true; }
