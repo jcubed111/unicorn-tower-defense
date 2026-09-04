@@ -127,9 +127,9 @@ const levelData = [
         () => showEventText()(
             wrapEventImage(towerGridToElement(
                 [
-                    [ null,   null, [2, 2] ],
-                    [ [2, 1], null, null   ],
-                    [ null,   null, [2, 3] ],
+                    [       ,   , [2, 2] ],
+                    [ [2, 1],   ,        ],
+                    [       ,   , [2, 3] ],
                 ],
                 normalizedTowerRgb(0, 1, 0),
             )),

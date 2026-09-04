@@ -217,9 +217,9 @@ h1{
             gap: 0 1ch;
             grid-template-columns: auto 1fr;
         }
-        .C--infoGridThree{
-            grid-template-columns: auto auto 1fr;
-        }
+        // .C--infoGridThree{
+        //     grid-template-columns: auto auto 1fr;
+        // }
 
     .C--runeBook{
         @extend %display-flex;

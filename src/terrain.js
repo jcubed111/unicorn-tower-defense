@@ -352,13 +352,14 @@ class Terrain{
                 startingWaveIndex < solvedWaves.length
                 ? div('',
                     div('C--infoTitle', 'Upcoming Waves'),
-                    div('C--infoGrid C--infoGridThree',
+                    // div('C--infoGrid C--infoGridThree',
+                    div('C--infoGrid',
                         ...solvedWaves
                             .slice(startingWaveIndex, startingWaveIndex + num)
                             .map(([waveIndex, sampleEnemy, numTotal, hp, WaveCls]) => {
                                 return [
-                                    div('C--secondary', waveIndex + 1, '.'),
-                                    div('', sampleEnemy.displayName),
+                                    // div('C--secondary', waveIndex + 1, '.'),
+                                    div('', '- ', sampleEnemy.displayName),
                                     div('', '× ', numTotal),
                                     // div('C--secondary', hp, 'hp'),
                                 ];
