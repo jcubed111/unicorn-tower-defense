@@ -1,6 +1,5 @@
 TODO:
 - wave start sound effect
-- tower placement sound effect
 - should enemies have a slight shade variation per enemy?
 
 ## Feature Ideas

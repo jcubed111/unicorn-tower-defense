@@ -51,8 +51,8 @@ const showLevelEndMenu = (levelNum, isSuccess, isPerfect) => {
         isPerfect
             ? makeSpriteCanvas(ctx => {
                 renderSprite(ctx, [0, 0], sprites[21]);
-                renderSprite(ctx, [0, 0.5], sprites[31]);
-            }, 1, 1.5)
+                renderSprite(ctx, [0, 8/15], sprites[31]);
+            }, 1, 23/15)
             : sprites[isSuccess ? 31 : 27];
 
     return showEventText(
