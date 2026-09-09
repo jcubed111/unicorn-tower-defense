@@ -82,7 +82,12 @@ build/main-max.js: $(JS_FILES)
 
 build/main-min.js: build/main-max.js
 	@echo $@ "<-" $^
-	@npx google-closure-compiler --js=build/main-max.js --js_output_file=build/main-min-1.js --compilation_level=ADVANCED_OPTIMIZATIONS --define=DEBUG=false
+# --assume_function_wrapper: combine.py wraps the payload in `(()=>{...})()`, so
+# Closure may treat top-level declarations as function-scoped and rename/remove
+# them far more aggressively. Only valid because of that wrapper.
+# Run twice: the second pass folds what the first exposed. Together -30 bytes.
+	@npx google-closure-compiler --js=build/main-max.js --js_output_file=build/main-min-0.js --compilation_level=ADVANCED_OPTIMIZATIONS --define=DEBUG=false --assume_function_wrapper
+	@npx google-closure-compiler --js=build/main-min-0.js --js_output_file=build/main-min-1.js --compilation_level=ADVANCED_OPTIMIZATIONS --assume_function_wrapper
 	@npx uglifyjs build/main-min-1.js -c drop_console=true,unsafe=true,passes=3 -m --mangle-props --toplevel > build/main-min-2.js
 	@cat build/main-min-2.js | sed 's/window[.]//g' > $@
 
