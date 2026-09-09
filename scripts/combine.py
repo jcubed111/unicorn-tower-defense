@@ -65,4 +65,8 @@ if '[CSS]' not in js:
 # decompression counters -- which silently made GameState.hoveringTower a
 # number. Inside the IIFE there are no top-level bindings at all, so there is
 # nothing left to collide.
-sys.stdout.write('(()=>{' + replace_classes(js.replace('[CSS]', css.replace('"', '\\"'))) + '})()')
+# The stylesheet lands inside a template literal in main.js, so a double quote
+# is already literal there -- escaping it just ships backslashes. Asserted
+# rather than assumed, since a backtick or ${ would need real escaping.
+assert '`' not in css and '${' not in css, 'stylesheet needs template-literal escaping'
+sys.stdout.write('(()=>{' + replace_classes(js.replace('[CSS]', css)) + '})()')

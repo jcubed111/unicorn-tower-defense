@@ -1,6 +1,7 @@
 TODO:
 - wave start sound effect
 - should enemies have a slight shade variation per enemy?
+- should the intro text get reshown on restart? Maybe it should. Helps new players remember what to do.
 
 ## Feature Ideas
 
