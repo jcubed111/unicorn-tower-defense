@@ -308,7 +308,19 @@ const levelData = [
     ],
     // Level 12: no red
     [
-        runOrbPonder(Sniper),
+        async () => {
+            await runOrbPonder(Sniper);
+            await showEventText()(
+                wrapEventImage(spriteListToEl([
+                    sprites[3],
+                    sprites[26].withColor([0, 0, 0, 255]),
+                    sprites[6].withColor([255, 0, 0, 255]),
+                ])),
+                `A `,
+                styled('b', '', `WARD`),
+                ` prevents the placement of a certain color rune.`,
+            );
+        },
         [4, 15],
         [
             Enemy,
