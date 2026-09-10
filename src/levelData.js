@@ -1,8 +1,4 @@
-const makeLevelSelectTerrain = cb => new LevelSelectTerrain(
-    '...7.3.3./.3.3.3./.././//////.....00......./....04.1.1.125........0/.3.6..00......................00..2/.3/;3.62...7.3./.6........00........../03.;.....22........4./.3.3./.3.;.../03.3./03.62......./.3.3./.3.3.30/.3.30/../',
-    '....................p...q...r........................m...........................o...................l.............n.......h...........i..........................k..j...e..f.................................g...a..b...c..d...................................',
-    cb,
-);
+const makeLevelSelectTerrain = cb => new LevelSelectTerrain(cb, ...levelData[1]);
 
 const levelDeps = [
     /* 0 : */ [],
@@ -37,7 +33,7 @@ const setLevelPassed = (n, isPerfect) => {
     if(isPerfect) setLocalStorageItem('q', [...getLevelSet('q'), n]);
 };
 
-const getTerrainForLevel = (n, resolveCb) => new Terrain(resolveCb, ...levelData[n]);
+const getTerrainForLevel = (n, resolveCb) => new Terrain(resolveCb, ...levelData[n + 1]);
 
 const runOrbPonder = TowerType => () => {
     if(new TowerType([]).isDiscovered()) return;
@@ -73,9 +69,39 @@ const runOrbPonder = TowerType => () => {
 //   4 narwhalData   collapsed as [path, ...waveIndices]
 //   5 extraSetup(terrain)
 //   6 postLevelStoryContent()  // only on success, after clicking continue
-// The slot order is space-optimized, sorry future me :(
+//   7 levelIndexString          // LevelSelectTerrain only
+// The slot order is space-optimized, sorry future me :( -- slot 0 first because
+// most levels have story and few have anything in 4-7.
+//
+// Index 0 is the home screen and index 1 the level select map, so level N lives
+// at levelData[N + 1]. Every terrain is built the same way, `new <Cls>(onEndCb,
+// ...levelData[i])`; slot 0 is the one Terrain itself ignores.
 const levelData = [
-    [],
+    // Home screen
+    [
+        ,
+        [21, 21],
+        [],
+        '.....................................7.3.6...///.........//.....7;3/;///////////./...//........./////////////////.//./..........////////////////////////./....../////////...../././/////////..../////................././......./',
+        ,
+        t => {
+            t.placeTower = _ => true;
+            t.enemies.add(
+                new Narwhalicorn(1, [[2, 0], [18, 1], [13, 6], [16, 17]]),
+            );
+        },
+    ],
+    // The level select screen
+    [
+        ,
+        [21, 21],
+        [],
+        '...7.3.3./.3.3.3./.././//////.....00......./....04.1.1.125........0/.3.6..00......................00..2/.3/;3.62...7.3./.6........00........../03.;.....22........4./.3.3./.3.;.../03.3./03.62......./.3.3./.3.3.30/.3.30/../',
+        ,
+        ,
+        ,
+        '....................p...q...r........................m...........................o...................l.............n.......h...........i..........................k..j...e..f.................................g...a..b...c..d...................................',
+    ],
     // Level 1
     [
         async () => {
@@ -309,7 +335,7 @@ const levelData = [
     // Level 12: no red
     [
         async () => {
-            await runOrbPonder(Sniper);
+            await runOrbPonder(Sniper)();
             await showEventText()(
                 wrapEventImage(spriteListToEl([
                     sprites[3],

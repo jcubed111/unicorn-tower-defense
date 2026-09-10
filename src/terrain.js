@@ -442,45 +442,24 @@ class Terrain{
     }
 }
 
-
-class MockTerrain extends Terrain{
-    constructor(terrainString, onEndCb = _ => 0) {
-        super(onEndCb, 0, [-1, -1], [], terrainString);
-    }
-    // override the methods we don't want to use
-    renderSpecialEffects() {}
-    recomputeDerivedValues() {}
-    step(dt) {
-        // Only do the enemy step, so we can see narwhals move
-        this.enemies.forEach(e => {
-            e.step(dt);
-        });
-    }
-    placeTower() { return true; }
-}
-
-
-class LevelSelectTerrain extends MockTerrain{
+class LevelSelectTerrain extends Terrain{
     levelIndices = grid2d(this.size, 0);
     levelIsUnlocked = getLevelIsUnlockedMap();
     passedLevelSet = getLevelSet('p');
     perfectedLevelSet = getLevelSet('q');
 
-    constructor(
-        terrainString,
-        levelIndexString,
-        onEndCb,
-    ) {
-        super(terrainString, onEndCb);
-        levelIndexString.split('').forEach((c, i) => {
+    constructor(onEndCb, ...levelTuple) {
+        super(onEndCb, ...levelTuple);
+        // slot 7, the one slot only this subclass reads
+        (levelTuple[7] ?? '').split('').forEach((c, i) => {
             const x = i % this.size;
             const y = ~~(i / this.size);
             const level = c == '.' ? 0 : c.charCodeAt(0) - 96;
             this.levelIndices[x][y] = level;
-            if(level && this.levelIsUnlocked[level] && levelData[level]) {
+            if(level && this.levelIsUnlocked[level]) {
                 this.tileHoverEls[x][y] = div('',
                     div('C--infoTitle', `Level ${level}`),
-                    div('', `${levelData[level]?.[2]?.length} Waves`),
+                    div('', `${levelData[level + 1]?.[2]?.length} Waves`),
                     makeSpriteCanvas(ctx => {
                         renderTerrainBase(ctx, 0,
                             getTerrainForLevel(level, _ => 0),
@@ -493,6 +472,8 @@ class LevelSelectTerrain extends MockTerrain{
         });
         this.defaultHoverInfoContent = div('', 'Select a level')
     }
+
+    recomputeDerivedValues() {}
 
     renderSpecialEffects(dt, ctx) {
         ctx.font = '8px sans-serif';
@@ -513,6 +494,13 @@ class LevelSelectTerrain extends MockTerrain{
             }else{
                 renderSprite(ctx, pos, sprites[32].withColor([10, 56, 10, 255]));
             }
+        });
+    }
+
+    step(dt) {
+        // Only do the enemy step, so we can see narwhals move
+        this.enemies.forEach(e => {
+            e.step(dt);
         });
     }
 

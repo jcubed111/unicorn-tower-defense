@@ -41,12 +41,7 @@ window.onload = () => {
     });
 
     // Unicorn head island terrain
-    GameState.terrain = new MockTerrain(
-        '.....................................7.3.6...///.........//.....7;3/;///////////./...//........./////////////////.//./..........////////////////////////./....../////////...../././/////////..../////................././......./',
-    );
-    GameState.terrain.enemies.add(
-        new Narwhalicorn(1, [[2, 0], [18, 1], [13, 6], [16, 17]]),
-    );
+    GameState.terrain = new LevelSelectTerrain(_ => 0, ...levelData[0]);
 
     animLoop();
     runGame();
