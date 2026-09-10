@@ -10,7 +10,6 @@
 %position-absolute { position: absolute; }
 %position-relative { position: relative; }
 %text-align-center { text-align: center; }
-%white-space-pre-wrap { white-space: pre-wrap; }
 %color-white { color: #fff; }
 %color-mana { color: #94d6ff; }
 %gap-1rem { gap: 1rem; }
@@ -21,7 +20,7 @@ body{
     @extend %display-flex;
     @extend %align-items-center;
     @extend %justify-content-center;
-    @extend %white-space-pre-wrap;
+    white-space: pre-wrap;
     // `font` shorthand: it also resets font-style/variant/weight/stretch and
     // line-height, but body sets none of those and every initial value is the
     // same `normal` the UA sheet already gives us.
@@ -41,7 +40,7 @@ body{
     background: #273757;
 }
 canvas{
-    display: block;
+    @extend %display-flex;
 }
 h1{
     font-size: 14rem;
@@ -141,7 +140,6 @@ h1{
         overflow: hidden;
     }
         .C--innerEventTextScroll{
-            @extend %white-space-pre-wrap;
             @extend %text-align-center;
             padding: 10rem;
             text-wrap: balance;
