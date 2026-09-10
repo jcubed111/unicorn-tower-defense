@@ -311,7 +311,7 @@ const orderedTowerTypes = [
         displayName = 'Allegro';
         // high speed bolt tower
         range = 3.5;
-        chargeTime = 2 / this.level;
+        chargeTime = 1.8 / this.level;
         damage = 3;
         // damage = 2 + (this.level >> 2);
     }),
