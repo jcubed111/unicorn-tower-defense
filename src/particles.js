@@ -30,10 +30,15 @@ class Particle{
     }
 
     render(ctx) {
-        const _colorCache = globalColorCache[this.grad] ??= range(256).map(
-            i => colorAsString(lerpGrad(this.grad, i / 255))
+        // if(DEBUG) {
+        //     if(!globalColorCache[this.grad]) {
+        //         console.log(`Making new particle color cache for ${this.grad}`, this)
+        //     }
+        // }
+        const _colorCache = globalColorCache[this.grad] ??= range(64).map(
+            i => colorAsString(lerpGrad(this.grad, i / 63))
         );
-        ctx.fillStyle = _colorCache[~~(this.age / this.lifespan * 256)];
+        ctx.fillStyle = _colorCache[~~(this.age / this.lifespan * 64)];
         ctx.fillRect(...this.posFn(), 1, 1);
     }
 }
@@ -65,10 +70,12 @@ class ManaGainParticle extends Particle{
     }
 }
 
+const _EnergyFadeParticleGradCache = {};
 class EnergyFadeParticle extends Particle{
     constructor(pos, baseColor, lifespan = 2) {
         super(pos);
-        this.grad = [
+        baseColor = baseColor.map(clampColorComponent);
+        this.grad = _EnergyFadeParticleGradCache[baseColor] ??= [
             lerpArr(WHITE, baseColor, 0.5),
             baseColor,
             withAlpha(baseColor, 0),

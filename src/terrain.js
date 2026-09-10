@@ -426,7 +426,10 @@ class Terrain{
 
         // Draw mana pool
         const rate = this.mana / (this.mana + 200);
-        const c = ~~(255 * this.mana / (this.mana + 50));
+        // The `& ~7` drops the lowest order bits, effectively rounding down to the nearest 8.
+        // this prevents generating (and caching) 255 different sprites, instead
+        // caching only around 32
+        const c = (255 * this.mana / (this.mana + 50)) & ~7;
         renderSprite(ctx, MANA_POOL_POS, sprites[25].withColor([c, c, c, 255]));
         ParticleSystem.sparkleSpriteAt(
             sprites[25],
