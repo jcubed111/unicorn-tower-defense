@@ -448,10 +448,9 @@ class LevelSelectTerrain extends Terrain{
     passedLevelSet = getLevelSet('p');
     perfectedLevelSet = getLevelSet('q');
 
-    constructor(onEndCb, ...levelTuple) {
-        super(onEndCb, ...levelTuple);
-        // slot 7, the one slot only this subclass reads
-        (levelTuple[7] ?? '').split('').forEach((c, i) => {
+    constructor(levelIndexString, ...rest) {
+        super(...rest);
+        levelIndexString.split('').forEach((c, i) => {
             const x = i % this.size;
             const y = ~~(i / this.size);
             const level = c == '.' ? 0 : c.charCodeAt(0) - 96;
@@ -459,7 +458,7 @@ class LevelSelectTerrain extends Terrain{
             if(level && this.levelIsUnlocked[level]) {
                 this.tileHoverEls[x][y] = div('',
                     div('C--infoTitle', `Level ${level}`),
-                    div('', `${levelData[level + 1]?.[2]?.length} Waves`),
+                    div('', `${levelData[level]?.[2]?.length} Waves`),
                     makeSpriteCanvas(ctx => {
                         renderTerrainBase(ctx, 0,
                             getTerrainForLevel(level, _ => 0),
