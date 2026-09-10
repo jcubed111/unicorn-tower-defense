@@ -8,11 +8,11 @@ JS_FILES := \
 	src/audio.js \
 	src/particles.js \
 	src/sprite.js \
-	dev/sprites.js \
 	src/enemy.js \
 	src/tower.js \
 	src/terrain.js \
 	src/render.js \
+	dev/sprites.js \
 	src/htmlRender.js \
 	src/levelData.js \
 	src/gameFlow.js \
