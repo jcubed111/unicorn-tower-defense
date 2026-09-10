@@ -128,7 +128,7 @@ const initHtml = () => {
                 GameState.topLeftDisplay = div(),  // Wave status text
             ),
             GameState.mainMenu = div('C--fullscreen',
-                styled('h1', '', "Unicorn Tower Defense"),
+                styled('h1', '', "Rune Mage Tower Defense"),
                 "Click to Begin",
             ),
             GameState.cloudBlocker = div('C--fullscreen C--cloudBlockerHide'),

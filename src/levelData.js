@@ -96,7 +96,7 @@ const levelData = [
             await showEventText()(
                 wrapEventImage(sprites[31]),
                 `An `,
-                styled('b', '', `EVIL WIZARD`),
+                styled('b', '', `EVIL RUNE MAGE`),
                 ` has descended upon the Unicorn Archipelago!\n\n(That's you)`,
             );
             await showEventText()(
