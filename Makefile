@@ -39,7 +39,7 @@ ZIP_ITERS := 1000
 
 .PHONY: all report clean
 
-all: test/everythingButMain.js $(IMAGES_DEV) dev/index.html to-be-titled.zip report
+all: test/everythingButMain.js $(IMAGES_DEV) dev/index.html rune-mage-tower-defense.zip report
 
 clean:
 	rm -rf dev/*
@@ -147,19 +147,19 @@ dist/index.html: build/index.html build/main-packed.js scripts/wrap-html.py
 	@echo $@ "<-" $^
 	@python3 scripts/wrap-html.py > $@
 
-to-be-titled.zip: dist/index.html $(IMAGES_DIST)
+rune-mage-tower-defense.zip: dist/index.html $(IMAGES_DIST)
 	@echo $@ "<-" $^
 	@rm -f $@ dist/$@
 	@cd dist && 7z a -tzip -bd -bso0 -bsp0 -mx9 $@ $(^:dist/%=%)
 	@mv dist/$@ $@
 	@npx advzip --recompress --shrink-insane -q -i$(ZIP_ITERS) $@
 	@rm -rf test_extract
-	@unzip to-be-titled.zip -d test_extract > /dev/null
+	@unzip rune-mage-tower-defense.zip -d test_extract > /dev/null
 
-report: to-be-titled.zip
+report: rune-mage-tower-defense.zip
 	@echo '------------------------------------';
 	@echo;
-	@FILE_SIZE=$$(stat -c%s to-be-titled.zip 2>/dev/null || stat -f%z to-be-titled.zip); \
+	@FILE_SIZE=$$(stat -c%s rune-mage-tower-defense.zip 2>/dev/null || stat -f%z rune-mage-tower-defense.zip); \
 		PERCENT=$$(awk -v f="$$FILE_SIZE" -v t="13312" 'BEGIN { printf "%.3f", (f/t)*100 }'); \
 		if (( $$(echo "$$PERCENT > 100" | bc -l) )); then \
 			MESSAGE=$$(echo "🛑 TOO LARGE 🛑"); \
