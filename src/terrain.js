@@ -352,17 +352,17 @@ class Terrain{
             this.defaultHoverInfoContent =
                 startingWaveIndex < solvedWaves.length
                 ? div('',
-                    div('C--infoTitle', 'Upcoming Waves'),
+                    div('font-size:4rem;padding:1rem 0', 'Upcoming Waves'),
                     // div('C--infoGrid C--infoGridThree',
-                    div('C--infoGrid',
+                    div('display:grid;gap:0 1ch;grid:auto-flow/auto 1fr',
                         ...solvedWaves
                             .slice(startingWaveIndex, startingWaveIndex + num)
                             .map(([waveIndex, sampleEnemy, numTotal, hp, WaveCls]) => {
                                 return [
-                                    // div('C--secondary', waveIndex + 1, '.'),
+                                    // div('opacity:.6', waveIndex + 1, '.'),
                                     div('', '- ', sampleEnemy.displayName),
                                     div('', '× ', numTotal),
-                                    // div('C--secondary', hp, 'hp'),
+                                    // div('opacity:.6', hp, 'hp'),
                                 ];
                             }),
                     )
@@ -384,7 +384,7 @@ class Terrain{
                     }
                     GameState.toastWaveInfo(
                         `Wave ${waveIndex + 1}`,
-                        div('C--secondary', `${sampleEnemy.displayName} × ${numTotal}`),
+                        div('opacity:.6', `${sampleEnemy.displayName} × ${numTotal}`),
                     );
                     makeWaveListHoverInfo(waveIndex + 1);
                     range(numTotal).forEach(i => {
@@ -457,7 +457,7 @@ class LevelSelectTerrain extends Terrain{
             this.levelIndices[x][y] = level;
             if(level && this.levelIsUnlocked[level]) {
                 this.tileHoverEls[x][y] = div('',
-                    div('C--infoTitle', `Level ${level}`),
+                    div('font-size:4rem;padding:1rem 0', `Level ${level}`),
                     div('', `${levelData[level]?.[2]?.length} Waves`),
                     makeSpriteCanvas(ctx => {
                         renderTerrainBase(ctx, 0,

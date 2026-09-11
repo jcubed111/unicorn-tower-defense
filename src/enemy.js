@@ -47,30 +47,30 @@ class Enemy{
     asHoverEl() {
         // can't cache since it changes with hp
         return div('',
-            div('C--floatRight',
+            div('position:absolute;inset:3rem 3rem auto auto',
                 spriteListToEl(this.getSprites()),
             ),
-            div('C--infoTitle', `${this.displayName}`),
-            div('C--secondary', `Wave ${this.level + 1}`),
-            div('C--infoGrid',
+            div('font-size:4rem;padding:1rem 0', `${this.displayName}`),
+            div('opacity:.6', `Wave ${this.level + 1}`),
+            div('display:grid;gap:0 1ch;grid:auto-flow/auto 1fr',
                 `${this.hp} / ${this.maxHp}`,
-                styled('span', 'C--secondary', 'hp'),
+                styled('span', 'opacity:.6', 'hp'),
 
                 this.speed,
-                styled('span', 'C--secondary', 'speed'),
+                styled('span', 'opacity:.6', 'speed'),
 
                 this.armor > 0 && [
-                    styled('span', 'C--armorColor', this.armor),
-                    styled('span', 'C--secondary', 'armor'),
+                    styled('span', 'color:#d67cf7', this.armor),
+                    styled('span', 'opacity:.6', 'armor'),
                 ],
 
                 this.manaOnKillMult
-                    ? styled('span', 'C--manaColor', ~~(this.maxHp * this.manaOnKillMult) + ' ᚯ')
+                    ? styled('span', 'color:#94d6ff', ~~(this.maxHp * this.manaOnKillMult) + ' ᚯ')
                     : styled('span', '', '0 ᚯ'),
-                styled('span', 'C--secondary', 'reward'),
+                styled('span', 'opacity:.6', 'reward'),
 
                 styled('span', '', this.banishDamage + ' ♥'),
-                styled('span', 'C--secondary', 'banish cost'),
+                styled('span', 'opacity:.6', 'banish cost'),
             ),
             div('', this.extraDescription),
         );
@@ -375,7 +375,7 @@ class Kingicorn extends Enemy{
             pos => new EnergyFadeParticle(pos, WHITE),
         );
         GameState.toastWaveInfo(
-            div('C--secondary', 'Phase II'),
+            div('opacity:.6', 'Phase II'),
             k2.displayName,
         );
     }
@@ -408,7 +408,7 @@ class Kingicorn2 extends Enemy{
             pos => new EnergyFadeParticle(pos, WHITE),
         );
         GameState.toastWaveInfo(
-            div('C--secondary', 'Phase III'),
+            div('opacity:.6', 'Phase III'),
             k2.displayName,
         );
     }

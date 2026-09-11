@@ -107,24 +107,24 @@ class Tower{
     asHoverEl() {
         const color = colorAsString(this.getColor());
         return this._asHoverElResult ??= div('',
-            div('C--floatRight', towerGridToElement(
+            div('position:absolute;inset:3rem 3rem auto auto', towerGridToElement(
                 this.componentTowers,
                 this.getColor(),
             )),
-            div('C--infoTitle', `${this.displayName}`),
-            div('C--secondary', `Level ${this.level}`),
-            div('C--infoGrid',
+            div('font-size:4rem;padding:1rem 0', `${this.displayName}`),
+            div('opacity:.6', `Level ${this.level}`),
+            div('display:grid;gap:0 1ch;grid:auto-flow/auto 1fr',
                 this.damage > -1 && [
                     `${this.damage}`,
-                    styled('span', 'C--secondary', 'damage'),
+                    styled('span', 'opacity:.6', 'damage'),
                 ],
                 this.range > 0 && [
                     this.range.toFixed(2),
-                    styled('span', 'C--secondary', 'range'),
+                    styled('span', 'opacity:.6', 'range'),
                 ],
                 this.chargeTime > 0 && [
                     (1 / this.chargeTime).toFixed(2),
-                    styled('span', 'C--secondary', 'hits / sec'),
+                    styled('span', 'opacity:.6', 'hits / sec'),
                 ],
                 this.extraDescription?.pop &&  // using .pop as proxy for "isArray"
                     this.extraDescription.map(content =>

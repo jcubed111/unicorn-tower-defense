@@ -38,19 +38,19 @@ const getButtonBorderBackForColor = c => buttonBorderBackImageCache[colorAsStrin
 
 GameState.rerenderRunebook = () => {
     GameState.runebook.replaceChildren(
-        div('C--sidebarTitle', "ᚱuneᛒooᛕ"),
+        div('font-size:7rem', "ᚱuneᛒooᛕ"),
         ...orderedTowerTypes.map(T => {
             const isDiscovered = new T([]).isDiscovered();
             return withHoverInfo(
-                div('C--runeListing ' + (!isDiscovered && 'C--secondary'),
+                div('display:flex;align-items:center;justify-content:space-between;padding:1.5rem 0;' + (isDiscovered ? '' : 'opacity:.6'),
                     div('', isDiscovered ? new T([]).displayName : '???'),
                     T.sourcePattern.makeElement(isDiscovered),
                 ),
                 isDiscovered
                     ? new T(T.sourcePattern.asGrid).asHoverEl()
                     : div('',
-                        div('C--infoTitle', '???'),
-                        div('C--secondary', 'Build this pattern to reveal its details'),
+                        div('font-size:4rem;padding:1rem 0', '???'),
+                        div('opacity:.6', 'Build this pattern to reveal its details'),
                     ),
             );
         }).reverse(),
@@ -73,12 +73,12 @@ const initHtml = () => {
     });
 
     document.body.append(
-        div('C--mainWrapper',
+        div('position:relative;background:#273757',
             GameState.mainCanvas = styled('canvas'),
             GameState.sidebarEl = div('C--sidebar C--sidebarHide',
                 div('C--statBar',
-                    div('C--manaColor', GameState.manaDisplay = styled('span'), " ᚯ"),
-                    div('C--heartNumber', GameState.heartDisplay = styled('span', '', 10)),
+                    div('color:#94d6ff', GameState.manaDisplay = styled('span'), " ᚯ"),
+                    div('text-align:center;color:#fff;width:10rem;margin:0 4.5rem 0 3.5rem', GameState.heartDisplay = styled('span', '', 10)),
                     wrapEl(
                         div('C--button', wrapEl(sprites[39].asImage, c => c.style.width = '10rem')),
                         e => e.addEventListener('click', _ => {
@@ -89,18 +89,18 @@ const initHtml = () => {
 
                 runeBorderDiv([32, 32, 32, 255])('C--spellArea',
                     div('', "Inscribe Rune"),
-                    div('C--runeButtonRow', ...GameState.runeButtons),
+                    div('display:flex;align-items:center;justify-content:space-between;color:#94d6ff', ...GameState.runeButtons),
                 ),
 
                 runeBorderDiv([32, 32, 32, 255])('',
-                    GameState.hoverInfoEl = div('C--hoverInfoArea'),
+                    GameState.hoverInfoEl = div('position:relative;padding:3rem;min-height:40rem'),
                 ),
 
                 GameState.runebook = scrollDiv('C--runeBook'),
 
                 div('',
-                    styled('label', 'C--audioCheckLabel'),
-                    styled('label', 'C--audioCheckLabel',
+                    styled('label', 'padding:0 0 1rem 7.3rem;display:inline-block'),
+                    styled('label', 'padding:0 0 1rem 7.3rem;display:inline-block',
                         wrapEl(styled('input'), el => {
                             el.type = 'checkbox';
                             el.checked = AudioSystem.bgMusicGain.gain.value;
@@ -110,7 +110,7 @@ const initHtml = () => {
                         }),
                         'Music',
                     ),
-                    styled('label', 'C--audioCheckLabel',
+                    styled('label', 'padding:0 0 1rem 7.3rem;display:inline-block',
                         wrapEl(styled('input'), el => {
                             el.type = 'checkbox';
                             el.checked = AudioSystem.sfxGain.gain.value;

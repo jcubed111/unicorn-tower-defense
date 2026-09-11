@@ -21,12 +21,12 @@ const showEventText = (
     promiseCb = res => window.addEventListener('click', res, {once: true}),
     container = GameState.cloudBlocker,
 ) => async (sprite, ...text) => {
-    const inner = div('C--innerEventTextScroll',
+    const inner = div('text-align:center;padding:10rem;text-wrap:balance;color:#ddd;line-height:1.5;backdrop-filter:blur(2px)',
         sprite,
         div('', ' '),
         ...text,
     );
-    const d = divFn('C--eventTextScroll', inner);
+    const d = divFn('pointer-events:auto;width:84rem;font-size:6rem;transition:height .8s ease-in-out,opacity .3s;height:0;opacity:0;overflow:hidden', inner);
     container.replaceChildren(d);
     await time(100);
     d.style.height = inner.offsetHeight + 'px';

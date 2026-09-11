@@ -22,7 +22,7 @@ const div = (className = '', ...children) => {
 
 const styled = (tagName = "div", className = "",/* style = {},*/ ...children) => {
     const el = document.createElement(tagName);
-    el.className = className;
+    el.className = el.style.cssText = className;
 
     /*// This loop works for `-` properties
     for(const k in style) {

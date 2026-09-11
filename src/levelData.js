@@ -360,7 +360,7 @@ const levelData = [
                     sprites[6].withColor([255, 0, 0, 255]),
                 ],
                 div('',
-                    div('C--infoTitle', 'Red Ward'),
+                    div('font-size:4rem;padding:1rem 0', 'Red Ward'),
                     'Prevents the placement of red runes on this map',
                 ),
             );
@@ -396,7 +396,7 @@ const levelData = [
                     sprites[10].withColor([112, 99, 255, 255]),
                 ],
                 div('',
-                    div('C--infoTitle', 'Blue Ward'),
+                    div('font-size:4rem;padding:1rem 0', 'Blue Ward'),
                     'Prevents the placement of blue runes on this map',
                 ),
             );
@@ -432,7 +432,7 @@ const levelData = [
                     sprites[10].withColor([0, 204, 0, 255]),
                 ],
                 div('',
-                    div('C--infoTitle', 'Green Ward'),
+                    div('font-size:4rem;padding:1rem 0', 'Green Ward'),
                     'Prevents the placement of green runes on this map',
                 ),
             );
