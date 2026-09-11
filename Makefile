@@ -8,11 +8,11 @@ JS_FILES := \
 	src/audio.js \
 	src/particles.js \
 	src/sprite.js \
-	dev/sprites.js \
 	src/enemy.js \
 	src/tower.js \
 	src/terrain.js \
 	src/render.js \
+	dev/sprites.js \
 	src/htmlRender.js \
 	src/levelData.js \
 	src/gameFlow.js \
@@ -39,7 +39,7 @@ ZIP_ITERS := 1000
 
 .PHONY: all report clean
 
-all: test/everythingButMain.js $(IMAGES_DEV) dev/index.html to-be-titled.zip report
+all: test/everythingButMain.js $(IMAGES_DEV) dev/index.html rune-mage-tower-defense.zip report
 
 clean:
 	rm -rf dev/*
@@ -82,7 +82,12 @@ build/main-max.js: $(JS_FILES)
 
 build/main-min.js: build/main-max.js
 	@echo $@ "<-" $^
-	@npx google-closure-compiler --js=build/main-max.js --js_output_file=build/main-min-1.js --compilation_level=ADVANCED_OPTIMIZATIONS --define=DEBUG=false
+# --assume_function_wrapper: combine.py wraps the payload in `(()=>{...})()`, so
+# Closure may treat top-level declarations as function-scoped and rename/remove
+# them far more aggressively. Only valid because of that wrapper.
+# Run twice: the second pass folds what the first exposed. Together -30 bytes.
+	@npx google-closure-compiler --js=build/main-max.js --js_output_file=build/main-min-0.js --compilation_level=ADVANCED_OPTIMIZATIONS --define=DEBUG=false --assume_function_wrapper
+	@npx google-closure-compiler --js=build/main-min-0.js --js_output_file=build/main-min-1.js --compilation_level=ADVANCED_OPTIMIZATIONS --assume_function_wrapper
 	@npx uglifyjs build/main-min-1.js -c drop_console=true,unsafe=true,passes=3 -m --mangle-props --toplevel > build/main-min-2.js
 	@cat build/main-min-2.js | sed 's/window[.]//g' > $@
 
@@ -142,19 +147,19 @@ dist/index.html: build/index.html build/main-packed.js scripts/wrap-html.py
 	@echo $@ "<-" $^
 	@python3 scripts/wrap-html.py > $@
 
-to-be-titled.zip: dist/index.html $(IMAGES_DIST)
+rune-mage-tower-defense.zip: dist/index.html $(IMAGES_DIST)
 	@echo $@ "<-" $^
 	@rm -f $@ dist/$@
 	@cd dist && 7z a -tzip -bd -bso0 -bsp0 -mx9 $@ $(^:dist/%=%)
 	@mv dist/$@ $@
 	@npx advzip --recompress --shrink-insane -q -i$(ZIP_ITERS) $@
 	@rm -rf test_extract
-	@unzip to-be-titled.zip -d test_extract > /dev/null
+	@unzip rune-mage-tower-defense.zip -d test_extract > /dev/null
 
-report: to-be-titled.zip
+report: rune-mage-tower-defense.zip
 	@echo '------------------------------------';
 	@echo;
-	@FILE_SIZE=$$(stat -c%s to-be-titled.zip 2>/dev/null || stat -f%z to-be-titled.zip); \
+	@FILE_SIZE=$$(stat -c%s rune-mage-tower-defense.zip 2>/dev/null || stat -f%z rune-mage-tower-defense.zip); \
 		PERCENT=$$(awk -v f="$$FILE_SIZE" -v t="13312" 'BEGIN { printf "%.3f", (f/t)*100 }'); \
 		if (( $$(echo "$$PERCENT > 100" | bc -l) )); then \
 			MESSAGE=$$(echo "🛑 TOO LARGE 🛑"); \

@@ -21,6 +21,9 @@ const spriteListToEl = sprites => makeSpriteCanvas(
 
 class Sprite{
     constructor(data2d, scale=1) {
+        // if(DEBUG) {
+        //     console.log(`new Sprite`, this);
+        // }
         this.data2d = data2d;
         this.scale = scale;
         // as indexed drops transparent pixels. Entries are [y, x, color].
@@ -60,8 +63,9 @@ class Sprite{
         );
     }
 
+    _withScaleCache = {};
     withScale(n) {
-        return new Sprite(this.data2d, n);
+        return this._withScaleCache[n] ??= new Sprite(this.data2d, n);
     }
 }
 

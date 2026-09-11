@@ -311,7 +311,7 @@ const orderedTowerTypes = [
         displayName = 'Allegro';
         // high speed bolt tower
         range = 3.5;
-        chargeTime = 2 / this.level;
+        chargeTime = 1.8 / this.level;
         damage = 3;
         // damage = 2 + (this.level >> 2);
     }),
@@ -476,13 +476,14 @@ const orderedTowerTypes = [
             this.charge = Math.min(this.charge + dt, this.chargeTime * this.maxCharge);
             while(this.charge >= this.chargeTime) {
                 const possibleTargets = this.getTargetsInRange();
-                const i = ~~(this.charge / this.chargeTime) - 1;
-                if(possibleTargets.length) {
-                    this.hit(possibleTargets, this.getChargeOrbLocation(i));
-                    this.charge -= this.chargeTime;
-                }else{
-                    break;
-                }
+                // early return rather than `break`: this was the only break in
+                // the whole payload, so the construct disappears entirely
+                if(!possibleTargets.length) return;
+                this.hit(
+                    possibleTargets,
+                    this.getChargeOrbLocation(~~(this.charge / this.chargeTime) - 1),
+                );
+                this.charge -= this.chargeTime;
             }
         }
 

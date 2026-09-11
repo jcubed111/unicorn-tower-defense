@@ -1,0 +1,131 @@
+Level 18; hp =  13.9; mana =  3115.4; 100% pass;  44% perfect;   0% error
+Towers (grouped by index):
+    - Meteor(15)
+    - Sniper(12)
+    - Sniper(12)
+    - Sniper(12)
+    - Sniper(12)
+    - Slow(12)
+    - Anti-Armor(12)
+    - Fire(5)
+    - Mana Leech(2)
+    - Mana Leech(2)
+    - Charge(6)
+    - Charge(6)
+Level 17; hp =   4.4; mana =    83.6;  68% pass;   0% perfect;   0% error
+Towers (grouped by index):
+    - Meteor(15) / Meteor(6)
+    - Heavy(12) / Heavy(9)
+    - Green(2) / Green(3) / Heavy(12)
+    - Blue(1) / Green(3) / Slow(10) / Slow(12) / Slow(7) / Slow(8) / Slow(9)
+    - Blue(1) / Green(3)
+    - Blue(1) / Green(2) / Green(3)
+    - Blue(1) / Green(3)
+    - Green(3)
+    - Green(3)
+    - Green(3)
+    - Blue(1)
+    - Blue(1)
+Level 16; hp =  10.0; mana =  1868.2; 100% pass;   0% perfect;   0% error
+Towers (grouped by index):
+    - Meteor(15)
+    - Heavy(12)
+    - Heavy(12)
+    - Slow(12)
+Level 15; hp =   9.1; mana =   841.1; 100% pass;   0% perfect;   0% error
+Towers (grouped by index):
+    - Meteor(15)
+    - Heavy(12)
+    - Sniper(12)
+    - Sniper(8) / Sniper(9)
+Level 14; hp =  13.7; mana =   786.1; 100% pass;  18% perfect;   0% error
+Towers (grouped by index):
+    - Slow(12)
+    - Ring(9)
+    - Charge(6)
+Level 13; hp =  14.8; mana =   427.7; 100% pass;  92% perfect;   0% error
+Towers (grouped by index):
+    - Fire(9)
+    - Lightning(6)
+    - Lightning(6)
+    - Green(1)
+    - Green(1)
+    - Green(1)
+    - Green(1)
+    - Green(1)
+Level 12; hp =  14.9; mana =    62.2; 100% pass;  92% perfect;   0% error
+Towers (grouped by index):
+    - Slow(6)
+    - Poison(6)
+    - Poison(7)
+    - Poison(5)
+    - Poison(7)
+    - Green(3)
+Level 11; hp =  13.4; mana =   595.4; 100% pass;  22% perfect;   0% error
+Towers (grouped by index):
+    - Poison(3)
+    - Poison(5)
+    - Poison(6)
+    - Poison(3)
+    - Poison(3)
+    - Charge(6)
+Level 10; hp =  14.8; mana =   347.7; 100% pass;  84% perfect;   0% error
+Towers (grouped by index):
+    - Slow(12)
+    - Allegro(4)
+    - Fire(9)
+    - Charge(2)
+    - Green(2)
+    - Blue(1)
+ Level 9; hp =  15.0; mana =   466.0; 100% pass; 100% perfect;   0% error
+Towers (grouped by index):
+    - Heavy(7)
+    - Anti-Armor(12)
+    - Mana Leech(4)
+    - Charge(6)
+ Level 8; hp =  12.6; mana =    56.6;  88% pass;  76% perfect;   0% error
+Towers (grouped by index):
+    - Heavy(12) / Heavy(6) / Heavy(7)
+    - Sniper(10) / Sniper(4)
+    - Charge(2) / Charge(3) / Red(1)
+    - Blue(1) / Red(1)
+ Level 7; hp =  -1.0; mana =    52.3;   0% pass;   0% perfect;   0% error; complex
+Towers (grouped by index):
+    - Poison(8)
+    - Poison(7)
+    - Blue(1)
+    - Blue(1)
+    - Blue(1)
+    - Blue(1)
+    - Blue(1)
+ Level 6; hp =  14.5; mana =   391.5; 100% pass;  72% perfect;   0% error
+Towers (grouped by index):
+    - Allegro(8)
+    - Anti-Armor(8)
+    - Charge(5)
+ Level 5; hp =  14.5; mana =    91.4; 100% pass;  66% perfect;   0% error
+Towers (grouped by index):
+    - Heavy(8)
+    - Sniper(6)
+    - Green(3)
+ Level 4; hp =  14.6; mana =   139.3; 100% pass;  72% perfect;   0% error
+Towers (grouped by index):
+    - Charge(4)
+    - Lightning(4)
+    - Lightning(4)
+ Level 3; hp =  15.0; mana =    89.9; 100% pass; 100% perfect;   0% error
+Towers (grouped by index):
+    - Mana Leech(6)
+    - Charge(6)
+    - Red(1)
+    - Green(1)
+    - Blue(1)
+ Level 2; hp =  15.0; mana =   168.4; 100% pass;  96% perfect;   0% error
+Towers (grouped by index):
+    - Lightning(4)
+    - Green(1)
+ Level 1; hp =  15.0; mana =   192.0; 100% pass; 100% perfect;   0% error
+Towers (grouped by index):
+    - Red(1)
+    - Green(1)
+    - Green(1)

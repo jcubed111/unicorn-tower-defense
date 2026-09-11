@@ -272,14 +272,14 @@ class Rainbowicorn extends Enemy{
 
     getSprites() {
         // Cycle through the rainbow colors
-        this.baseSpriteColor = [
-            [236, 204, 202, 255],
-            [242, 224, 194, 255],
-            [240, 235, 194, 255],
-            [192, 235, 210, 255],
-            [208, 208, 242, 255],
-            [234, 209, 239, 255],
-        ][(~~GameState.terrain.terrainTotalTime) % 6];
+        this.baseSpriteColor = lerpArr(WHITE, [
+            [180,  54,  46, 255],
+            [203, 134,  13, 255],
+            [195, 176,  12, 255],
+            [  6, 176,  78, 255],
+            [ 70,  68, 206, 255],
+            [172,  71, 191, 255],
+        ][(~~GameState.terrain.terrainTotalTime) % 6], 0.65);
         return super.getSprites();
     }
 

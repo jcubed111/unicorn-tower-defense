@@ -1,7 +1,7 @@
 const makeLevelSelectTerrain = cb => new LevelSelectTerrain(
-    '...7.3.3./.3.3.3./.././//////.....00......./....04.1.1.125........0/.3.6..00......................00..2/.3/;3.62...7.3./.6........00........../03.;.....22........4./.3.3./.3.;.../03.3./03.62......./.3.3./.3.3.30/.3.30/../',
     '...........s........p...q...r........................m...........................o...................l.............n.......h...........i..........................k..j...e..f.................................g...a..b...c..d...................................',
     cb,
+    ...levelData[0],
 );
 
 const levelDeps = [
@@ -74,9 +74,23 @@ const runOrbPonder = TowerType => () => {
 //   4 narwhalData   collapsed as [path, ...waveIndices]
 //   5 extraSetup(terrain)
 //   6 postLevelStoryContent()  // only on success, after clicking continue
-// The slot order is space-optimized, sorry future me :(
+// The slot order is space-optimized, sorry future me :( -- slot 0 first because
+// most levels have story and few have anything in 4-6.
+//
+// Level N lives at levelData[N]. Index 0 is the level select map -- there is no
+// level 0 -- and the home screen sits on the end at levelData.at(-1), so neither
+// screen shifts the level indices. Keep it last if you add a level. Every
+// terrain is built as `new Terrain(onEndCb, ...levelData[i])`; slot 0 is the
+// one Terrain itself ignores. LevelSelectTerrain takes its level index string
+// ahead of that, since it's the only caller that has one.
 const levelData = [
-    [],
+    // The level select screen
+    [
+        ,
+        [21, 21],
+        [],
+        '...7.3.3./.3.3.3./.././//////.....00......./....04.1.1.125........0/.3.6..00......................00..2/.3/;3.62...7.3./.6........00........../03.;.....22........4./.3.3./.3.;.../03.3./03.62......./.3.3./.3.3.30/.3.30/../',
+    ],
     // Level 1
     [
         async () => {
@@ -309,7 +323,19 @@ const levelData = [
     ],
     // Level 12: no red
     [
-        runOrbPonder(Sniper),
+        async () => {
+            await runOrbPonder(Sniper)();
+            await showEventText()(
+                wrapEventImage(spriteListToEl([
+                    sprites[3],
+                    sprites[26].withColor([0, 0, 0, 255]),
+                    sprites[6].withColor([255, 0, 0, 255]),
+                ])),
+                `A `,
+                styled('b', '', `WARD`),
+                ` prevents the placement of a certain color rune.`,
+            );
+        },
         [4, 15],
         [
             Enemy,
@@ -591,5 +617,19 @@ const levelData = [
             [[7, -1], [10,2], [11, 10], [11, 16]],
             ...range(11).map(n => 9 * n + 4),
         ],
+    ],
+    // Home screen
+    [
+        ,
+        [21, 21],
+        [],
+        '.....................................7.3.6...///.........//.....7;3/;///////////./...//........./////////////////.//./..........////////////////////////./....../////////...../././/////////..../////................././......./',
+        ,
+        t => {
+            t.placeTower = _ => true;
+            t.enemies.add(
+                new Narwhalicorn(1, [[2, 0], [18, 1], [13, 6], [16, 17]]),
+            );
+        },
     ],
 ];
