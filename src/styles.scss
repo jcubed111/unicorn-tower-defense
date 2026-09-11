@@ -1,30 +1,23 @@
 // The entire css is ~6%
-//
-// Shared declarations are hoisted into placeholders so each is emitted exactly
-// once. Making long class lists compresses better than repeating declarations.
-%display-flex { display: flex; }
-%flex-direction-column { flex-direction: column; }
-%align-items-center { align-items: center; }
-%justify-content-center { justify-content: center; }
-%justify-content-space-between { justify-content: space-between; }
-%position-absolute { position: absolute; }
-%position-relative { position: relative; }
-%text-align-center { text-align: center; }
-%color-white { color: #fff; }
-%color-mana { color: #94d6ff; }
-%gap-1rem { gap: 1rem; }
-%gap-2rem { gap: 2rem; }
-%padding-3rem { padding: 3rem; }
+
+%flexCenterAll{
+    align-items: center;
+    justify-content: center;
+}
+%flexRow {
+    @extend %flexCenterAll;
+    display: flex;
+}
+%flexCol {
+    display: flex;
+    flex-direction: column;
+}
 
 body{
-    @extend %display-flex;
-    @extend %align-items-center;
-    @extend %justify-content-center;
+    @extend %flexRow;
     white-space: pre-wrap;
-    // `font` shorthand: it also resets font-style/variant/weight/stretch and
-    // line-height, but body sets none of those and every initial value is the
-    // same `normal` the UA sheet already gives us.
-    font: 3.75rem Optima, Candara, 'Noto Sans';
+    font-size: 3.75rem;
+    font-family: Optima, Candara, 'Noto Sans';
     margin: 0;
     background: #000;
     // font-family: Avenir, Montserrat, 'URW Gothic', sans-serif;
@@ -36,19 +29,17 @@ body{
 
 
 .C--mainWrapper{
-    @extend %position-relative;
+    position: relative;
     background: #273757;
 }
 canvas{
-    @extend %display-flex;
+    display: block;
 }
 h1{
     font-size: 14rem;
     margin: -29rem 0 40rem;
 }
 
-// Listed explicitly rather than @extend-ed onto the canvas, so the canvas
-// selector doesn't also get glued onto the div./.C--levelEndMenuButton rules below.
 // Every button is `div('C--button', ...)`. The base carries the border, the
 // background and the hover treatment; modifiers add what varies.
 .C--button{
@@ -65,7 +56,7 @@ h1{
     // for buttons whose content is text; the div>canvas ones size to the canvas
     .C--buttonPadded{
         padding: 3rem 4rem;
-        &:empty{ @extend %display-none; }
+        &:empty{ display: none; }
     }
     .C--levelEndMenuButton{
         font-size: 4.5rem;
@@ -75,10 +66,9 @@ h1{
 
     // Rune buttons
     .C--runeButtonWrapper{
-        @extend %display-flex;
-        @extend %flex-direction-column;
-        @extend %text-align-center;
-        @extend %gap-1rem;
+        @extend %flexCol;
+        text-align: center;
+        gap: 1rem;
     }
 
     .C--runeTooExpensive {
@@ -101,8 +91,8 @@ h1{
 }
 @keyframes o { to { --t: 1turn; } }
 .C--orbit{
-    // One `translate` instead of position+top+left: shorter, and it composites
-    // instead of relighting layout every frame. The starting angle is a negative
+    // `translate` rather than position+top+left so the orbit composites
+    // instead of relaying out every frame. The starting angle is a negative
     // animation-delay set in JS, which seeks into the timeline.
     translate: calc(30rem * cos(var(--t))) calc(30rem * sin(var(--t)));
     animation: o 6s linear infinite;
@@ -116,18 +106,16 @@ h1{
 
 .C--fullscreen{
     // shared by cloudBlocker and mainMenu and waveInfoToast
-    @extend %position-absolute;
-    @extend %display-flex;
-    @extend %flex-direction-column;
-    @extend %align-items-center;
-    @extend %justify-content-center;
+    position: absolute;
     inset: 0;
     transition: --s 0.5s linear;
-    --s:1;
+    --s: 1;
+    @extend %flexCol;
+    @extend %flexCenterAll;
 }
     .C--cloudBlockerHide{ // cloud blocker
         pointer-events: none;
-        --s:0;
+        --s: 0;
     }
 
     .C--eventTextScroll{
@@ -140,18 +128,20 @@ h1{
         overflow: hidden;
     }
         .C--innerEventTextScroll{
-            @extend %text-align-center;
             padding: 10rem;
+            text-align: center;
             text-wrap: balance;
             color: #ddd;
             line-height: 1.5;
             backdrop-filter: blur(2px);
         }
-            b{ @extend %color-white; }
+            b{
+                color: #fff;
+            }
 
 .C--waveInfoToast{
-    @extend %gap-2rem;
-    @extend %padding-3rem;
+    gap: 2rem;
+    padding: 3rem;
     inset: 2rem 130rem auto 70rem;
     pointer-events: none;
     transition: top 0.4s ease-in-out, opacity 0.4s;
@@ -163,49 +153,45 @@ h1{
     }
 
 .C--topLeft{
-    @extend %position-absolute;
-    @extend %display-flex;
-    @extend %flex-direction-column;
-    @extend %gap-2rem;
-    // inset rather than top+left: `auto` is the initial value for the other two
-    // sides, so the computed result is identical. Retires the shared top
-    // placeholder and the `left`/`right` properties entirely.
-    inset: 3rem auto auto 3rem;
+    @extend %flexCol;
+    position: absolute;
+    top: 3rem;
+    left: 3rem;
+    gap: 2rem;
 }
 
 .C--sidebar{
-    @extend %position-absolute;
-    @extend %display-flex;
-    @extend %flex-direction-column;
+    @extend %flexCol;
+    position: absolute;
     inset: 0 0 0 auto;
     width: 60rem;
 }
     .C--sidebarHide{
-        &, &~.C--topLeft{ @extend %display-none; }
+        display: none;
+        &~.C--topLeft{ display: none; }
     }
     .C--sidebarLevelSelect{
         .C--statBar, .C--runeBook, .C--spellArea, &~.C--topLeft{
-            @extend %display-none;
+            display: none;
         }
     }
 
     .C--statBar{
-        @extend %display-flex;
-        @extend %align-items-center;
+        @extend %flexRow;
         justify-content: flex-end;
         font-size: 5rem;
         margin: 2rem 2rem 1rem 0;
     }
         .C--manaColor{
-            @extend %color-mana;
+            color: #94d6ff;
         }
         .C--armorColor{
             color: #d67cf7;
         }
         .C--heartNumber{
-            @extend %text-align-center;
-            @extend %color-white;
             width: 10rem;
+            text-align: center;
+            color: #fff;
             margin: 0 4.5rem 0 3.5rem;
         }
 
@@ -214,13 +200,14 @@ h1{
     }
 
     .C--hoverInfoArea{
-        @extend %position-relative;
-        @extend %padding-3rem;
         min-height: 40rem;
+        padding: 3rem;
+        position: relative;
     }
         .C--floatRight{
-            @extend %position-absolute;
-            inset: 3rem 3rem auto auto;
+            position: absolute;
+            top: 3rem;
+            right: 3rem;
         }
         .C--infoTitle{
             font-size: 4rem;
@@ -232,39 +219,35 @@ h1{
         .C--infoGrid{
             display: grid;
             gap: 0 1ch;
-            grid: auto-flow / auto 1fr;
+            grid-template-columns: auto 1fr;
         }
         // .C--infoGridThree{
         //     grid-template-columns: auto auto 1fr;
         // }
 
     .C--runeBook{
-        @extend %display-flex;
-        @extend %flex-direction-column;
+        @extend %flexCol;
         flex: 1;
         overflow: auto;
         padding: 1rem 3rem;
         margin: 0 1rem 1rem 0;
     }
         .C--runeListing{
-            @extend %display-flex;
-            @extend %align-items-center;
-            @extend %justify-content-space-between;
+            @extend %flexRow;
+            justify-content: space-between;
             padding: 1.5rem 0;
         }
 
     .C--spellArea{
-        @extend %display-flex;
-        @extend %flex-direction-column;
-        @extend %gap-1rem;
+        @extend %flexCol;
+        gap: 1rem;
         padding: 2rem 3rem 3rem;
     }
 
         .C--runeButtonRow{
-            @extend %display-flex;
-            @extend %align-items-center;
-            @extend %justify-content-space-between;
-            @extend %color-mana;
+            @extend %flexRow;
+            justify-content: space-between;
+            color: #94d6ff;
         }
 
 
@@ -282,6 +265,3 @@ h1{
         grid-area: 1 / 1;
     }
 }
-
-// Emitted last so it beats the %display-flex group above at equal specificity.
-%display-none { display: none; }

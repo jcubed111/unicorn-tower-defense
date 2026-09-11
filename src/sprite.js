@@ -7,9 +7,7 @@ const makeSpriteCanvas = (ctxCb, w = 1, h = 1, cssWidthRem = w * 7.5) => {
     canvas.height = h * tileSize;
     canvas.style.width = cssWidthRem + 'rem';
     const ctx = canvas.getContext('2d');
-    // No imageSmoothingEnabled here: this canvas is painted with fillRect and
-    // blitted at 1:1, neither of which smooths. renderSprite still sets it on
-    // whatever ctx it draws into, which is where scaling actually happens.
+    ctx.imageSmoothingEnabled = false;
     ctxCb(ctx);
     return canvas;
 }
@@ -28,22 +26,13 @@ class Sprite{
         this.scale = scale;
         // as indexed drops transparent pixels. Entries are [y, x, color].
         this.asIndexed = grid2dToIndexed(data2d).filter(([, , c]) => c[3] > 0);
-
-        // This uses more space since `putImageData`, `ImageData`, and `Uint8ClampedArray`
-        // are all unique strings.
-        // this.asImage = makeSpriteCanvas(
-        //     ctx => ctx.putImageData(
-        //         // flat(2) gives us a flat run of r,g,b,a,r,g,b,a,...
-        //         new ImageData(new Uint8ClampedArray(data2d.flat(2)), tileSize),
-        //         0,
-        //         0,
-        //     ),
-        // );
-        this.asImage = makeSpriteCanvas(ctx =>
-            this.asIndexed.forEach(([y, x, c]) => {
-                ctx.fillStyle = colorAsString(c);
-                ctx.fillRect(x, y, 1, 1);
-            })
+        this.asImage = makeSpriteCanvas(
+            ctx => ctx.putImageData(
+                // flat(2) gives us a flat run of r,g,b,a,r,g,b,a,...
+                new ImageData(new Uint8ClampedArray(data2d.flat(2)), tileSize),
+                0,
+                0,
+            ),
         );
     }
 

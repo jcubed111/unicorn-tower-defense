@@ -1,7 +1,7 @@
 const MANA_POOL_POS = [16, 0];
 const HEART_POS = [18, 0]
 // Where mana gain particles land, in sprite pixels
-const MANA_POOL_PARTICLE_TARGET = [247, 7];  // addVecWithBScaled([7, 7], MANA_POOL_POS, 15)
+const MANA_POOL_PARTICLE_TARGET = addVecWithBScaled([7, 7], MANA_POOL_POS, 15);
 
 
 // Record<key, color[]>
@@ -126,14 +126,18 @@ const ParticleSystem = new class{
             console.log("Slow frame, removing particles. Was: ", this.particles.size);
             // Note that iterating a set is in insertion order, so this removes
             // the 100 oldest particles.
-            [...this.particles].slice(0, toRemove).forEach(p => this.particles.delete(p));
+            let i = 0;
+            for(const p of this.particles) {
+                this.particles.delete(p);
+                if(++i > toRemove) break;
+            }
         }
 
-        this.particles.forEach(p => {
+        for(const p of this.particles) {
             p.render(ctx);
             p.age += dt;
             if(p.age > p.lifespan) this.particles.delete(p);
-        });
+        }
     }
 
     clear() {
@@ -144,12 +148,13 @@ const ParticleSystem = new class{
         const a = scaleVec(aPos, 15).map(Math.floor);
         const b = scaleVec(bPos, 15).map(Math.floor);
         const num = Math.max(...addVecWithBScaled(b, a, -1).map(Math.abs));
-        range(num + 1).forEach(i =>
-            Math.random() < density
-                && this.addParticle(makeParticleCb(
+        range(num + 1).forEach(i => {
+            if(Math.random() < density) {
+                this.addParticle(makeParticleCb(
                     lerpArr(a, b, i / num).map(Math.round),
-                ))
-        );
+                ));
+            }
+        });
     }
 
     sparkleRect(pos, size, density, color) {

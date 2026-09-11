@@ -5,7 +5,7 @@ const decayEffects = (effects, dt) =>
 class Enemy{
     displayName = 'Unicorn';
     speed = 2;  // squares/sec
-    // extraDescription;  // undefined unless a subclass sets it
+    extraDescription;
     // armor = this.level >> 2;  // set in constructor
     banishDamage = 1;  // is doubled each banish
     manaOnKillMult = 1;  // is set to 0 if banished
@@ -248,12 +248,12 @@ class Rooicorn extends Enemy{
     extraDescription = 'Explodes into 8 Minicorns on death';
 
     onDeath() {
-        range(8).forEach(i => {
+        for(const i of range(8)) {
             const e = new SwarmEnemy(this.level, this.getSquare());
             e.hp = e.maxHp = (this.maxHp >> 3) || 1;
             e.respawnLocation = this.respawnLocation;
             GameState.terrain.enemies.add(e);
-        });
+        }
     }
 }
 
@@ -295,7 +295,7 @@ class Rainbowicorn extends Enemy{
                 && grid2dAt(GameState.terrain.isGround, landPos) == 1
                 && grid2dAt(GameState.terrain.descentMap, landPos) < w - 1
                 && gapPos;  // return the gap pos
-        }).filter(f => f)[0];
+        }).find(f => f);
 
         if(bridgePos) {
             const [bx, by] = bridgePos;

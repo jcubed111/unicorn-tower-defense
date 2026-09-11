@@ -405,18 +405,10 @@ function tileChar(shape) {
     : String.fromCharCode(BLUE_OUTSIDE_BASE + (corner + 2) % 4);
 }
 
-// Where a row-major cell index lands in the ascii.
-//
-// The ascii is not written row by row. It goes two rows at a time, column by
-// column within the pair -- r0c0, r1c0, r0c1, r1c1, ... -- so that a cell and
-// the one below it are one character apart instead of sixteen. The game's
-// compressor (Roadroller) models each byte from roughly the previous nine, so
-// row-major puts the tile below a cell out of its reach entirely; the pair
-// interleave brings it inside. Worth ~26 bytes zipped.
-//
-// src/terrain.js reads this same order back -- keep the two in step.
+// Where a row-major cell index lands in the ascii. The ascii is written row by
+// row, so this is the identity -- src/terrain.js reads back the same order.
 function asciiPos(index) {
-  return ((index >> 5) << 5) + ((index & 15) << 1) + ((index >> 4) & 1);
+  return index;
 }
 
 // Written as one unbroken line so it can be pasted straight into source;

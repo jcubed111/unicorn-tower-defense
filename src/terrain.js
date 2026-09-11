@@ -2,7 +2,7 @@
 class Terrain{
     size = 16;
     isGround = grid2d(this.size, 0);
-    // goalLocation = [0, 0];  // always set by the constructor
+    goalLocation = [0, 0];
     // raw towers stores primary color + level for each square.
     rawTowers = grid2d(this.size, [0, 0]); // [x][y] -> Tuple<0 | 1 (r) | 2 (g) | 3 (b), level: number = 0>
     mana = STARTING_MANA;
@@ -21,18 +21,13 @@ class Terrain{
     actionQueue = new Set;  // Set<[delayTime, cb]>
     manaPassiveClock = 0;
 
-    // Both always set by _setWaves, which every subclass inherits.
-    // upcomingWaves = [];  // Array<[timeTillStart, startWaveFn]>
-    // totalWaves = 0;
-
+    upcomingWaves = [];  // Array<[timeTillStart, startWaveFn]>
+    totalWaves = 0;
 
     screenShake = 0;  // px; decays over time in render
     timeRate = 1;
 
-
-    // Element, thing to put in hover box when nothing is hovered.
-    // Always set by _setWaves -> makeWaveListHoverInfo.
-    // defaultHoverInfoContent;
+    defaultHoverInfoContent;  // Element, thing to put in hover box when nothing is hovered
 
     // Holds special terrain info
     tileHoverEls = grid2d(this.size, null);  // Grid2d<Element | null>
@@ -44,14 +39,12 @@ class Terrain{
         preLevelStoryContent,  // slot 0, not used here
         goalLocation,
         waves,
-        // Terrain strings are written two rows at a time, column by column within
-        // the pair: r0c0, r1c0, r0c1, r1c1.
         terrainString,
         // narwhalData is stored collapsed as [path, ...waveIndices]
         narwhalData,
         extraSetup,
     ) {
-        terrainString.split('').forEach((c, i) => this.isGround[i >> 1 & 15][(i & 1) + (i >> 5) * 2] = c.charCodeAt(0) - 46);
+        terrainString.split('').forEach((c, i) => this.isGround[i % this.size][~~(i / this.size)] = c.charCodeAt(0) - 46);
         this.onEndCb = onEndCb;
         this.invalidPlacementLocations = [
             this.goalLocation = goalLocation
@@ -70,8 +63,8 @@ class Terrain{
         this.invalidPlacementLocations.push([x, y]);
     }
 
+    // -> true if the map is left with no valid path for the enemies
     recomputeDerivedValues() {
-        // Returns `1` if INVALID
         /* Monster descent map */
         const DESCENT_MAX = 1e8;
         const DESCENT_WALL = 1e4;
@@ -92,20 +85,18 @@ class Terrain{
             this.descentMap[x][y] = val;
             next.push(...CARDINAL_DIRS.map(dir => [addVec(pos, dir), val + 1]));
         }
-        if(
-            // fail if any spawn point is blocked
-            this.spawnLocations.some(([x]) => this.descentMap[x][0] >= DESCENT_WALL)
-            // fail if any enemy is inside (or behind) a wall
-            // We don't need to check enemies above y=0, since we already ensure
-            // that every spawn point is unblocked
-            || [...this.enemies].some(
-                e => e.landBased && grid2dAt(this.descentMap, e.getSquare()) >= DESCENT_WALL
-            )
-        ) {
-            return 1;
-        }
+        const isSpawnBlocked = this.spawnLocations.some(
+            ([x]) => this.descentMap[x][0] >= DESCENT_WALL
+        );
+        // We don't need to check enemies above y=0, since we already ensure
+        // that every spawn point is unblocked
+        const isAnyEnemyWalledIn = [...this.enemies].some(
+            e => e.landBased && grid2dAt(this.descentMap, e.getSquare()) >= DESCENT_WALL
+        );
+        if(isSpawnBlocked || isAnyEnemyWalledIn) return true;
+
         // reset target if enemy is walking into a wall
-        this.enemies.forEach(e => {
+        for(const e of this.enemies) {
             if(
                 e.landBased
                 && e.targetLocation
@@ -113,7 +104,7 @@ class Terrain{
             ) {
                 e.targetLocation = null;
             }
-        });
+        }
 
         /* joined towers */
         const unjoinedTowerColors = mapGrid2d(this.rawTowers, t => t[0]);
@@ -128,8 +119,7 @@ class Terrain{
                     // Do the whole test/gen op as one map
                     let fits = true;
                     let prevTower;  // outside closure so we can use it for charge retention
-                    // one entry per cell used, so a tower's entry count is its cell count
-                    const usedPrevTowerCells = [];
+                    const usedPrevTowerCounts = new Map();  // Map<Tower, usedCells: number>
                     // towerCells: Grid2d<[type, level, pos]>
                     // typed as such so it fits nicely into `towerGridToElement`
                     const towerCells = mapGrid2d(sourcePatternForm, (maybeNeededTower, d) => {
@@ -141,7 +131,12 @@ class Terrain{
                         }
                         // count how many cells of each previous tower we used
                         prevTower = grid2dAt(prevComputedTowersByLocation, cellPos);
-                        if(prevTower) usedPrevTowerCells.push(prevTower);
+                        if(prevTower) {
+                            usedPrevTowerCounts.set(
+                                prevTower,
+                                (usedPrevTowerCounts.get(prevTower) ?? 0) + 1,
+                            );
+                        }
                         return [
                             ...grid2dAt(this.rawTowers, cellPos),
                             cellPos,
@@ -150,16 +145,13 @@ class Terrain{
                     if(!fits) return;
                     // We don't allow breaking towers during re-joining, so a new tower is
                     // only valid if it uses every piece of each of the previous towers.
-                    if(usedPrevTowerCells.some(
-                        t => usedPrevTowerCells.filter(u => u == t).length != t.size
-                    )) {
+                    if([...usedPrevTowerCounts].some(([tower, count]) => count != tower.size)) {
                         return;
                     }
 
                     // Array.toString flattens nested arrays with commas, which
                     // is as discriminating a cache key here as JSON was (every
-                    // cell is null or a fixed [type, level, [x, y]]), and it
-                    // takes JSON/stringify to zero occurrences.
+                    // cell is null or a fixed [type, level, [x, y]]).
                     const key = '' + towerCells;
                     const tower = this.computedTowerCache[key] ??= new CandidateTower(
                         towerCells,
@@ -182,9 +174,9 @@ class Terrain{
     }
 
     eventToPos(e) {  // -> [x, y]
-        // WARNING: uses .offsetX/Y, so assumes the event target is the canvas. If
-        // the event target is something else, this breaks.
-        return scaleVec([e.offsetX, e.offsetY], this.size / e.target.offsetHeight);
+        const { x, y, height } = e.target.getBoundingClientRect();
+        // this.size == the height, not the width.
+        return scaleVec([e.clientX - x, e.clientY - y], this.size / height);
     }
 
     extraTowerValidation(pos, towerType) {
@@ -238,28 +230,28 @@ class Terrain{
         }
 
         this.terrainTotalTime += dt;
-        this.actionQueue.forEach(val => {
+        for(const val of this.actionQueue) {
             const [at, cb] = val;
             if(at <= this.terrainTotalTime) {
                 this.actionQueue.delete(val);
                 cb();
             }
-        });
+        }
 
         this.manaPassiveClock += dt * MANA_PASSIVE_RATE;
         this.mana += ~~this.manaPassiveClock;
         ParticleSystem.explodeManaAt([1.25, 0.5], ~~this.manaPassiveClock);
         this.manaPassiveClock %= 1;
 
-        this.enemies.forEach(e => {
+        for(const e of this.enemies) {
             e.step(dt);
-        });
+        }
 
-        this.computedTowersArr.forEach(t => {
+        for(const t of this.computedTowersArr) {
             t.step(dt);
-        });
+        }
 
-        this.enemies.forEach(e => {
+        for(const e of this.enemies) {
             const [sx, sy] = e.getSquare();
             const [tx, ty] = this.goalLocation;
             if(e.hp <= 0) {
@@ -298,7 +290,7 @@ class Terrain{
                     this.lose();
                 }
             }
-        });
+        }
     }
 
     lose() {
@@ -379,7 +371,7 @@ class Terrain{
                     if(DEBUG) {
                         window.debugTowerBuildLog.push(`waitForWaveIndex(${waveIndex})`);
                     }
-                    if(narwhalData?.indexOf(waveIndex) > 0) {
+                    if(narwhalData?.includes(waveIndex)) {
                         this.enemies.add(new Narwhalicorn(waveIndex, narwhalData[0]));
                     }
                     GameState.toastWaveInfo(
@@ -498,9 +490,9 @@ class LevelSelectTerrain extends Terrain{
 
     step(dt) {
         // Only do the enemy step, so we can see narwhals move
-        this.enemies.forEach(e => {
+        for(const e of this.enemies) {
             e.step(dt);
-        });
+        }
     }
 
     placeTower(pos) {

@@ -29,8 +29,8 @@ const AudioSystem = new class {
     setSourceOnOff(isBg, isOn) {
         (isBg ? this.bgMusicGain : this.sfxGain).gain
             .setTargetAtTime(isOn, this.ctx.currentTime, 0.01);
-        // +isOn, not isOn: without JSON these are stored raw, and a boolean
-        // would come back as "true", which the +() on read turns into NaN.
+        // +isOn, not isOn: these are stored raw, and a boolean would come back
+        // as "true", which the +() on read turns into NaN.
         setLocalStorageItem('SM'[isBg], +isOn);
     }
 
@@ -100,15 +100,16 @@ const AudioSystem = new class {
             shape = 'sine',
         ] = instrument;
 
-        const osc = this.ctx.createOscillator();
-        osc.frequency.value = 440 * 2 ** ((midiNumber - 69) / 12);
-        osc.type = shape;
+        const osc = new OscillatorNode(this.ctx, {
+            frequency: 440 * 2 ** ((midiNumber - 69) / 12),
+            type: shape,
+        });
         const gain = this.ctx.createGain();
 
         osc.connect(gain).connect(isBg ? this.bgMusicGain : this.sfxGain);
 
-        gain.gain.value = 0;
-        gain.gain.setTargetAtTime(volume, atTime, attack / 4);
+        gain.gain.setValueAtTime(0, atTime);
+        gain.gain.linearRampToValueAtTime(volume, atTime + attack);
         gain.gain.setTargetAtTime(sustain * volume, atTime + attack, decay / 4);
         gain.gain.setTargetAtTime(0, atTime + noteLength, release / 4);
 
@@ -192,7 +193,7 @@ const AudioSystem = new class {
         const beatLength = 30 / tempo;
         const t0 = this.ctx.currentTime;
         let beat = 0;
-        notes.forEach(([midi, duration]) => {
+        for(const [midi, duration] of notes) {
             this.scheduleNote(
                 t0 + beat * beatLength,
                 50 + midi,
@@ -202,7 +203,7 @@ const AudioSystem = new class {
                 1,  // send to background output
             );
             beat += duration;
-        });
+        }
         await time(beat * beatLength * 1e3);
     }
 };

@@ -142,10 +142,8 @@ const initHtml = () => {
         // // shorter, but looks less natural. Might need a sin? But then not as short.
         // // Saves 0.35%.
         // range(24).map(i => [30 + 60 * (i % 5), 240 - i * 12])
-        // i / 34 == i / a.length / 2 for the 17 pairs above, which also drops the
-        // `a` parameter. calc() needs whitespace around + and - but not around *.
-        .map(([px, py], i) =>
-            `radial-gradient(circle calc(18rem*log(30*(var(--s) - ${i / 34}) + 1)) at ${px}rem ${py}rem, #${(i & 2) ? 'b3b3b3' : 'aaa'} 100%, #0000 100%)`
+        .map(([px, py], i, a) =>
+            `radial-gradient(circle calc(18rem * log(30 * (var(--s) - ${i / a.length / 2}) + 1)) at ${px}rem ${py}rem, #${(i & 2) ? 'b3b3b3' : 'aaa'} 100%, #0000 100%)`
         )
         .join(',');
 

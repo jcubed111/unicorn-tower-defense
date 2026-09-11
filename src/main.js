@@ -4,6 +4,12 @@ const [a, b] = getButtonBorderBackForColor(HALF_WHITE);
 // One write, one <style>: the keyframes that need JS-built data URLs, then
 // `[CSS]`, which combine.py swaps for the whole stylesheet in the dist build
 // and which is inert leftover text in dev.
+//
+// The two MUST stay in this one template literal. Given its own
+// `document.write`, the `[CSS]` string has no substitutions left in it, so the
+// minifier rewrites it as a double-quoted string -- and the stylesheet contains
+// `"Noto Sans"`, which then ends that string early and breaks the whole
+// payload. The `${}`s here keep this one a template literal through minifying.
 document.write(`<style>@keyframes B{0%{border-image-source:url(${a})}50%{border-image-source:url(${b})}}[CSS]</style>`);
 
 

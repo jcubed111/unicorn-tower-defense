@@ -7,10 +7,7 @@ const DEBUG = true;
 //     return styled(tagName, '', {}, ...children);
 // }
 
-const div = (className = '', ...children) => {
-    return styled("div", className,/* {},*/ ...children);
-    // return styledDiv(className, {}, ...children);
-};
+const div = (className = '', ...children) => styled('div', className, ...children);
 
 // const span = (className = '', ...children) => {
 //     return styled('span', className, {}, ...children);
@@ -20,17 +17,9 @@ const div = (className = '', ...children) => {
 //     return styled("div", className, style, ...children);
 // }
 
-const styled = (tagName = "div", className = "",/* style = {},*/ ...children) => {
+const styled = (tagName = 'div', className = '', ...children) => {
     const el = document.createElement(tagName);
     el.className = className;
-
-    /*// This loop works for `-` properties
-    for(const k in style) {
-        el.style.setProperty(k, style[k]);
-    }
-    // This works for all other properties
-    Object.assign(el.style, style);*/
-
     el.append(...children.flat().filter(c => c));
     return el;
 };
@@ -44,7 +33,10 @@ const probRound = v => ~~v + (Math.random() < v % 1);
 // const randInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;
 const randChoice = arr => arr[~~(Math.random() * arr.length)];
 const randFloat = (a, b) => Math.random() * (b - a) + a;
-const randVec = (mag, a = randFloat(0, Math.PI * 2)) => [Math.cos(a) * mag, Math.sin(a) * mag];
+const randVec = mag => {
+    const angle = randFloat(0, Math.PI * 2);
+    return [Math.cos(angle) * mag, Math.sin(angle) * mag];
+};
 
 /* Vector2 helpers */
 // Vectors are [x, y] tuples.
@@ -61,8 +53,10 @@ const range = end => [...Array(end).keys()];
 // NOTE: doesn't handle non-perfect sizes
 const chunked = (size, arr) => range(arr.length / size).map(i => arr.slice(i * size, i * size + size));
 // const minBy = (arr, cb) => arr.reduce((a, b) => cb(a) < cb(b) ? a : b, arr[0]);
-const minByTiesRand = (arr, cb, best = Math.min(...arr.map(cb))) =>
-    randChoice(arr.filter(v => cb(v) == best));
+const minByTiesRand = (arr, cb) => {
+    const best = Math.min(...arr.map(cb));
+    return randChoice(arr.filter(v => cb(v) == best));
+};
 
 /* 2d Grid Helpers */
 const grid2d = (size, fill) => range(size).map(i => range(size).fill(fill));
@@ -106,7 +100,7 @@ const grid2dToIndexed = grid => grid.flatMap((col, x) => col.map((cell, y) => [x
 // (lerpArr is the exception: it's length-agnostic, and is used on vectors too)
 const lerpArr = (a, b, f) => a.map((v, i) => v * (1 - f) + b[i] * f);
 const clampColorComponent = v => v < 0 ? 0 : v > 255 ? 255 : ~~v;
-const colorAsString = c => c['s'] ??= `#` + c.map(v => (256 + clampColorComponent(v)).toString(16).slice(1)).join('');
+const colorAsString = c => c['s'] ??= `#` + c.map(v => clampColorComponent(v).toString(16).padStart(2, '0')).join('');
 const multiplyColor = (a, b) => a.map((v, i) => v * b[i] / 255);
 const lerpGrad = (grad, f) => {
     const steps = grad.length - 1;

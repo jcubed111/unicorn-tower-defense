@@ -187,14 +187,15 @@ const makeBrowserGlobals = () => {
         ...extra,
     });
 
+    const htmlEl = makeElement('html');
     const globals = {
         document: {
             createElement: makeElement,
             createTextNode: text => ({text}),
             body: makeElement('body'),
             head: makeElement('head'),
-            // document.all[0] is <html> in the game code.
-            all: [makeElement('html')],
+            documentElement: htmlEl,
+            all: [htmlEl],
             addEventListener: noop,
         },
         localStorage: {},
@@ -207,6 +208,23 @@ const makeBrowserGlobals = () => {
             createBufferSource = () => makeAudioNode({buffer: null});
         },
         Image: class { constructor() { return makeElement('img'); } },
+        // Sprites are built with putImageData; nothing here reads the pixels
+        // back, so the stub only has to hold onto them.
+        ImageData: class {
+            constructor(data, width) {
+                this.data = data;
+                this.width = width;
+                this.height = data.length / 4 / width;
+            }
+        },
+        OscillatorNode: class {
+            constructor(ctx, options = {}) {
+                return makeAudioNode({
+                    frequency: makeAudioParam(),
+                    type: options.type ?? 'sine',
+                });
+            }
+        },
         innerWidth: 1280,
         innerHeight: 800,
         devicePixelRatio: 1,

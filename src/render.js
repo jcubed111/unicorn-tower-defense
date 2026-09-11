@@ -26,12 +26,10 @@ function renderRectIndicator(
 ) {
     ctx.lineWidth = lineWidth;
     ctx.strokeStyle = lineColor;
-    ctx.beginPath();
-    ctx.rect(
+    ctx.strokeRect(
         ...scaleVec(addVecWithBScaled(pos, radii, -1), 15),
         ...scaleVec(radii, 30),
     );
-    ctx.stroke();
 }
 
 const WAVE_DENSITY_INV = 50;
@@ -96,12 +94,7 @@ function renderTerrainBase(ctx, dt, terrain) {
 }
 
 function render(dt) {
-    // NOTE: GameState.mainCanvas is written out in full below rather than
-    // aliased to a local. Roadroller predicts the repeated `GameState.mainCanvas`
-    // almost for free, while the alias costs a declaration and makes the
-    // surrounding contexts more varied -- measured at 13 bytes worse zipped.
-    // `terrain` is aliased because de-aliasing it too came out 3 bytes worse
-    // again; the two interact, so re-measure before changing either.
+    const mainCanvas = GameState.mainCanvas;
     const terrain = GameState.terrain;
     const originalDt = dt;
     dt *= terrain.timeRate || 0.1;  // For rendering, never make time completely stop
@@ -115,15 +108,13 @@ function render(dt) {
     );
 
     // Set rem to 1/2 tile size
-    // document.all[0] is <html>; documentElement is 15 chars and used nowhere else
-    document.all[0].style.fontSize =
+    document.documentElement.style.fontSize =
         (GameState.pxCssSize = pxSize / window.devicePixelRatio) + 'px';
-    GameState.mainCanvas.width = 1.25 * (
-        GameState.mainCanvas.height = pxSize * tileSize * terrain.size
-    );
-    const cssEdgeSize = GameState.mainCanvas.height / window.devicePixelRatio;
-    GameState.mainCanvas.style.width = 1.25 * cssEdgeSize + 'px';
-    GameState.mainCanvas.style.height = cssEdgeSize + 'px';
+    mainCanvas.height = pxSize * tileSize * terrain.size;
+    mainCanvas.width = 1.25 * mainCanvas.height;
+    const cssEdgeSize = mainCanvas.height / window.devicePixelRatio;
+    mainCanvas.style.width = 1.25 * cssEdgeSize + 'px';
+    mainCanvas.style.height = cssEdgeSize + 'px';
     // GameState.sidebarEl.style.width = (cssEdgeSize >> 2) + 'px';
 
     const ctx = GameState.mainCanvas.getContext('2d');
@@ -154,7 +145,7 @@ function render(dt) {
     }
 
     // Draw enemies
-    terrain.enemies.forEach(e => {
+    for(const e of terrain.enemies) {
         // enemy armor
         if(e.armor) {
             renderCircleIndicator(ctx, e.pos, 0.4, Math.log2(e.armor + 1), '#b3ea', 1);
@@ -173,9 +164,9 @@ function render(dt) {
                 );
             }
         });
-    });
+    }
     // Draw enemy hp
-    terrain.enemies.forEach(e => {
+    for(const e of terrain.enemies) {
         if(e.hp < e.maxHp) {
             const radius = 0.27 * e.maxHp / (e.maxHp + 10); // in (0, 1)
 
@@ -188,7 +179,7 @@ function render(dt) {
                 e.hp / e.maxHp,
             );
         }
-    });
+    }
 
     // Terrain specific effects
     GameState.terrain.renderSpecialEffects(dt, ctx);
@@ -235,9 +226,11 @@ function render(dt) {
             const [towerType, towerLevel] = grid2dAt(terrain.rawTowers, pos);
             const spriteOffsetForLevel = towerType == GameState.drawType ? towerLevel : 0;
             if(spriteOffsetForLevel <= 2) {
-                // runes 1-3 are sprites 4/8/12; 7 (level select) is 23
-                const spriteIndex = (GameState.drawType == 7 ? 23 : GameState.drawType * 4)
-                    + spriteOffsetForLevel;
+                const spriteIndex = [
+                    4, 8, 12,  // runes
+                    0, 0, 0,  // spells
+                    23,  // level select
+                ][GameState.drawType - 1] + spriteOffsetForLevel;
                 renderSprite(
                     ctx,
                     pos,

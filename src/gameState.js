@@ -1,34 +1,28 @@
-// Every field here is assigned before its first read (initHtml, main, or
-// gameFlow), and the four read early -- hoveringPos/hoveringTower/
-// hoveringElOverride/drawType -- only need to be falsy, which `undefined`
-// already is. So the initializers are all commented out rather than shipped;
-// they're kept as the field list. Worth 16B, since Closure can't prove a
-// property write is dead but does strip comments.
 const GameState = {
-    // pxCssSize: 1,
-    // terrain: null,
-    // mainCanvas: null,
-    // cloudBlocker: null,
-    // mainMenu: null,
+    pxCssSize: 1,
+    terrain: null,
+    mainCanvas: null,
+    cloudBlocker: null,
+    mainMenu: null,
+    sidebarEl: null,
 
-    // hoveringPos: null,
-    // hoveringTower: null,
-    // waveInfoToast: null,
-    // toastWaveInfo: _ => 0,
+    hoveringPos: null,
+    hoveringTower: null,
+    waveInfoToast: null,
+    toastWaveInfo: _ => 0,
 
     // forces hovering el to resolve to this value; used to allow hovering ui elements
-    // hoveringElOverride: null,
-    // runeButtons: [],
+    hoveringElOverride: null,
+    runeButtons: [],
     // 0 = no draw, 1-3 = runes, 4-6 = spells, 7 = level select
-    // drawType: 0,
-    // manaDisplay: null,
-    // heartDisplay: null,
-    // topLeftDisplay: null,
-    // startNextWaveButton: null,
-    // hoverInfoEl: null,
-    // runebook: null,
-    // rerenderRunebook: () => 0,  // set in main
-    // sidebarEl: null,  // never was in this list; set in initHtml
+    drawType: 0,
+    manaDisplay: null,
+    heartDisplay: null,
+    topLeftDisplay: null,
+    startNextWaveButton: null,
+    hoverInfoEl: null,
+    runebook: null,
+    rerenderRunebook: () => 0,  // set in main
 };
 
 const TOWER_BASE_COSTS =      [, 45, 30, 10];
@@ -42,7 +36,8 @@ const WAVE_DELAY = 20;
 const LS_PREFIX = 'com.jstimac.26.';
 // No JSON: localStorage stringifies on write anyway (an array lands as
 // "1,2,3"), and every read is either a flag tested for truthiness or a list
-// parsed by getLevelSet. Drops JSON/parse/stringify entirely.
+// parsed by getLevelSet. Saved games in the wild are in this format -- do not
+// change it without a migration.
 const getLocalStorageItem = key => window.localStorage[LS_PREFIX + key];
 const setLocalStorageItem = (key, value) => window.localStorage[LS_PREFIX + key] = value;
 
