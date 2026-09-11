@@ -28,9 +28,19 @@ JS_DEV := $(JS_FILES:src/%=dev/%)
 # take everything but that.
 JS_FILES_NO_MAIN := $(filter-out src/main.js,$(JS_FILES))
 
-# how many parallel Roadroller searches to race. Each is ~20s and they run
-# concurrently, so more is nearly free until you run out of cores.
-PACK_RUNS := 16
+# Roadroller settings. These only buy bytes, and bytes stopped mattering after
+# the competition, so they're tuned for a fast build.
+#
+# PACK_RUNS: how many parallel Roadroller searches to race, keeping the
+# smallest. Its annealing is seeded from Math.random, so each lands somewhere in
+# a ~25 byte band.
+# PACK_OPT: Roadroller's -O level. 0 skips the parameter search entirely
+# (instant, ~+95 bytes), 1 does a quick pass (~4s), 2 is the full anneal (~27s
+# per run, and not reliably better than 1).
+#
+# For an actual size push: PACK_RUNS=16 PACK_OPT=2 make
+PACK_RUNS := 1
+PACK_OPT := 1
 
 # how many itertions to zip for. Less is faster; seems to max out after 10k
 # ZIP_ITERS := 10000
@@ -85,18 +95,16 @@ build/main-min.js: build/main-max.js
 # --assume_function_wrapper: combine.py wraps the payload in `(()=>{...})()`, so
 # Closure may treat top-level declarations as function-scoped and rename/remove
 # them far more aggressively. Only valid because of that wrapper.
-# Run twice: the second pass folds what the first exposed. Together -30 bytes.
 	@npx google-closure-compiler --js=build/main-max.js --js_output_file=build/main-min-0.js --compilation_level=ADVANCED_OPTIMIZATIONS --define=DEBUG=false --assume_function_wrapper
-	@npx google-closure-compiler --js=build/main-min-0.js --js_output_file=build/main-min-1.js --compilation_level=ADVANCED_OPTIMIZATIONS --assume_function_wrapper
-	@npx uglifyjs build/main-min-1.js -c drop_console=true,unsafe=true,passes=3 -m --mangle-props --toplevel > build/main-min-2.js
-	@cat build/main-min-2.js | sed 's/window[.]//g' > $@
+	@npx uglifyjs build/main-min-0.js -c drop_console=true,unsafe=true,passes=3 -m --mangle-props --toplevel > build/main-min-1.js
+	@cat build/main-min-1.js | sed 's/window[.]//g' > $@
 
 # Roadroller is a context-mixing packer: it beats DEFLATE badly enough on this
 # payload to be worth the ~2KB self-extracting stub it prepends. Its parameter
 # search is randomized, so pack.sh races PACK_RUNS of them and keeps the best.
 build/main-packed.js: build/main-payload.js scripts/pack.sh
 	@echo $@ "<-" $^
-	@scripts/pack.sh $< $@ $(PACK_RUNS)
+	@scripts/pack.sh $< $@ $(PACK_RUNS) $(PACK_OPT)
 # 	npx uglifyjs build/main-min-1.js \
 # 	    --compress \
 # 	        arrows=true,booleans=true,collapse_vars=true,comparisons=true,dead_code=true,drop_console=true,drop_debugger=true,hoist_funs=true,hoist_props=true,hoist_vars=true,if_return=true,inline=3,join_vars=true,keep_fargs=false,keep_infinity=false,loops=true,module=true,negate_iife=true,properties=true,pure_getters=true,reduce_funcs=true,reduce_vars=true,sequences=true,side_effects=true,strings=true,switches=true,templates=true,top_retain=false,toplevel=true,typeofs=true,unsafe=true,unsafe_comps=true,unsafe_Function=true,unsafe_math=true,unsafe_proto=true,unsafe_regexp=true,unsafe_undefined=true,unused=true \

@@ -79,7 +79,7 @@ GameState.toastWaveInfo = async (...content) => {
 const runBattle = async n => {
     // returns true to restart
 
-    await levelData[n][0]?.();
+    await levelData[n].preLevelStoryContent?.();
 
     setCloudTransition(false);
 
@@ -116,7 +116,7 @@ const runBattle = async n => {
     await setCloudTransition(true);
 
     if(pass) {
-        await levelData[n][6]?.();
+        await levelData[n].postLevelStoryContent?.();
     }
 
     return result;

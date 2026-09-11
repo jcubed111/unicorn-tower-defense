@@ -1,22 +1,24 @@
 #!/bin/bash
-# Packs $1 into $2 with Roadroller, keeping the best of $3 parallel searches.
+# Packs $1 into $2 with Roadroller at -O$4, keeping the best of $3 searches.
 #
 # Roadroller tunes its sparse context models with simulated annealing seeded
-# from Math.random, so each search lands somewhere in a ~25 byte band. One
-# search is ~20s and there are cores to spare, so race a handful and keep the
-# smallest; wall clock stays about the same as a single run.
+# from Math.random, so each search lands somewhere in a ~25 byte band. Racing
+# several in parallel and keeping the smallest costs about the same wall clock
+# as one run, but only matters when you're chasing bytes -- see PACK_RUNS and
+# PACK_OPT in the Makefile.
 set -uo pipefail
 
 input="$1"
 output="$2"
 runs="${3:-8}"
+opt="${4:-1}"
 tmp="$(dirname "$output")/pack"
 
 rm -rf "$tmp"
 mkdir -p "$tmp"
 
 for i in $(seq 1 "$runs"); do
-	npx roadroller "$input" -o "$tmp/$i.js" -O2 -D 2> "$tmp/$i.log" &
+	npx roadroller "$input" -o "$tmp/$i.js" "-O$opt" -D 2> "$tmp/$i.log" &
 done
 wait
 

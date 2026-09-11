@@ -47,7 +47,7 @@ window.onload = () => {
     });
 
     // Unicorn head island terrain
-    GameState.terrain = new LevelSelectTerrain('', _ => 0, ...levelData.at(-1));
+    GameState.terrain = new LevelSelectTerrain('', levelData.at(-1));
 
     animLoop();
     runGame();

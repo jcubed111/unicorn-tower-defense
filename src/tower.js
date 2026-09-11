@@ -196,9 +196,9 @@ class Tower{
         );
     }
 
-    // `origin` is passed straight to boltAt, whose own default fills in
-    // this.center, so subclasses that only vary the bolt origin can reuse this.
-    hit(targetsInRange, origin) {
+    // `origin` is where the bolt is drawn from; subclasses that only vary that
+    // can reuse this whole method.
+    hit(targetsInRange, origin = this.center) {
         const target = randChoice(targetsInRange);
         target.takeDamage(this.damage);
         this.boltAt(target, origin);
@@ -513,7 +513,7 @@ const orderedTowerTypes = [
         chain = this.level - 1;
         extraDescription = [this.chain, 'chain'];
 
-        hit(targetsInRange, i = 0, origin) {
+        hit(targetsInRange, i = 0, origin = this.center) {
             const target = super.hit(targetsInRange, origin);
             if(i < this.chain) {
                 const chainTargets = this.getTargetsInRange(target.pos)

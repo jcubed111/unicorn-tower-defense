@@ -33,16 +33,14 @@ class Terrain{
     tileHoverEls = grid2d(this.size, null);  // Grid2d<Element | null>
     markedTileSprites = grid2d(this.size, []);
 
-    // NOTE: This constructor needs to match the same order as levelData
     constructor(
-        onEndCb,
-        preLevelStoryContent,  // slot 0, not used here
         goalLocation,
-        waves,
         terrainString,
+        waves,
+        onEndCb,
         // narwhalData is stored collapsed as [path, ...waveIndices]
-        narwhalData,
-        extraSetup,
+        narwhalData = [],
+        extraSetup = _ => 0,
     ) {
         terrainString.split('').forEach((c, i) => this.isGround[i % this.size][~~(i / this.size)] = c.charCodeAt(0) - 46);
         this.onEndCb = onEndCb;
@@ -50,7 +48,7 @@ class Terrain{
             this.goalLocation = goalLocation
         ];
         this._setWaves(waves, narwhalData);
-        extraSetup?.(this);
+        extraSetup(this);
         this.recomputeDerivedValues();
         this.spawnLocations = range(this.size)
             .filter(x => this.isGround[x][0])
@@ -440,8 +438,17 @@ class LevelSelectTerrain extends Terrain{
     passedLevelSet = getLevelSet('p');
     perfectedLevelSet = getLevelSet('q');
 
-    constructor(levelIndexString, ...rest) {
-        super(...rest);
+    // `level` is a levelData entry: the level select map lives at levelData[0]
+    // and the home screen at levelData.at(-1).
+    constructor(levelIndexString, level, onEndCb = _ => 0) {
+        super(
+            level.goalLocation,
+            level.terrainString,
+            level.waves,
+            onEndCb,
+            level.narwhalData,
+            level.extraSetup,
+        );
         levelIndexString.split('').forEach((c, i) => {
             const x = i % this.size;
             const y = ~~(i / this.size);
@@ -450,7 +457,7 @@ class LevelSelectTerrain extends Terrain{
             if(level && this.levelIsUnlocked[level]) {
                 this.tileHoverEls[x][y] = div('',
                     div('C--infoTitle', `Level ${level}`),
-                    div('', `${levelData[level]?.[2]?.length} Waves`),
+                    div('', `${levelData[level]?.waves?.length} Waves`),
                     makeSpriteCanvas(ctx => {
                         renderTerrainBase(ctx, 0,
                             getTerrainForLevel(level, _ => 0),
