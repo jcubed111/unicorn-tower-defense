@@ -55,9 +55,8 @@ const runOrbPonder = TowerType => () => {
 
     const pattern = TowerType.sourcePattern;
     const gridClone = mapGrid2d(pattern.asGrid, n => n);
-    const [px, py] = randChoice(
-        grid2dToIndexed(gridClone).filter(g => g[2])
-    );
+    const filledSquares = grid2dToIndexed(gridClone).filter(g => g[2]);
+    const [px, py] = filledSquares[(100 + ~~pattern.hueOrder) % filledSquares.length];
     gridClone[px][py] = [4, 1];
 
     const mysteryShape = towerGridToElement(
