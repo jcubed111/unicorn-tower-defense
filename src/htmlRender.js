@@ -128,7 +128,17 @@ const initHtml = () => {
                 GameState.topLeftDisplay = div(),  // Wave status text
             ),
             GameState.mainMenu = div('C--fullscreen',
-                styled('h1', '', "Rune Mage Tower Defense"),
+                styled('h1', '',
+                    makeSpriteCanvas(
+                        ctx => {
+                            range(4).forEach(i => {
+                                renderSprite(ctx, [i, 0], sprites[44 + i]);
+                                renderSprite(ctx, [i, 1], sprites[48 + i]);
+                            });
+                        },
+                        4, 2, 90,
+                    )
+                ),
                 "Click to Begin",
             ),
             GameState.cloudBlocker = div('C--fullscreen C--cloudBlockerHide'),

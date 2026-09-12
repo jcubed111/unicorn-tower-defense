@@ -33,8 +33,17 @@ function renderRectIndicator(
 }
 
 const WAVE_DENSITY_INV = 50;
-const waveHitInt = mapGrid2d(grid2d(16, 0), _ => ~~randFloat(0, WAVE_DENSITY_INV));
-function renderTerrainBase(ctx, dt, terrain) {
+const waveHitInt = mapGrid2d(grid2d(20, 0), _ => ~~randFloat(0, WAVE_DENSITY_INV));
+function renderTerrainBase(ctx, dt, terrain, wide=false) {
+    // wide just adds waves behind the sidebar area
+    if(wide) {
+        for(let x = 16; x < 20; x++) for(let y = 0; y < 16; y++) {
+            const isWaveNow = (performance.now() >> 10) % WAVE_DENSITY_INV == grid2dAt(waveHitInt, [x, y]);
+            if(isWaveNow) {
+                renderSprite(ctx, [x, y], sprites[15]);
+            }
+        }
+    }
     forEachGrid2d(terrain.isGround, (isGround, pos) => {
         const [x, y] = pos;
         const maybeComputedTower = grid2dAt(terrain.computedTowersByLocation, pos);
@@ -127,7 +136,7 @@ function render(dt) {
     terrain.screenShake *= 0.5 ** (4 * dt);
 
     // Render terrain & towers
-    renderTerrainBase(ctx, dt, terrain);
+    renderTerrainBase(ctx, dt, terrain, true);
 
     // Render tower special effects
     terrain.computedTowersArr.forEach(t => t.renderSpecialEffects(dt, ctx));
