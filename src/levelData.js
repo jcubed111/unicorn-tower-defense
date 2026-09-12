@@ -1,5 +1,5 @@
 const makeLevelSelectTerrain = cb => new LevelSelectTerrain(
-    '...........s........p...q...r........................m...........................o...................l.............n.......h...........i..........................k..j...e..f.................................g...a..b...c..d...................................',
+    '...........s.t......p...q...r........................m...........................o...................l.............n.......h...........i..........................k..j...e..f.................................g...a..b...c..d...................................',
     levelData[0],
     cb,
 );
@@ -25,6 +25,7 @@ const levelDeps = [
     /* 17: */ [16],
     /* 18: */ [17],
     /* 19: */ [18],
+    /* 20: */ [18],  // nb
 ];
 
 const getLevelIsUnlockedMap = () => {
@@ -57,12 +58,13 @@ const runOrbPonder = TowerType => () => {
     const gridClone = mapGrid2d(pattern.asGrid, n => n);
     const filledSquares = grid2dToIndexed(gridClone).filter(g => g[2]);
     const [px, py] = filledSquares[(100 + ~~pattern.hueOrder) % filledSquares.length];
-    gridClone[px][py] = [4, 1];
+    gridClone[px][py] = [-1, 1];
 
     const mysteryShape = towerGridToElement(
         gridClone,
         pattern.outerColor,
         true,
+        new TowerType([]).isDarkTower,
     );
 
     return showEventText()(
@@ -143,6 +145,7 @@ const levelData = [
                     [       ,   , [2, 3] ],
                 ],
                 normalizedTowerRgb(0, 1, 0),
+                false,
             )),
             `Inscribe a rune atop one of the same color to make a stronger version`,
         ),
@@ -554,7 +557,10 @@ const levelData = [
                 wrapEl(sprites[46].asImage, el => el.style.width = '40rem'),
                 // Sorted by hue so the ring of runes reads as a rainbow.
                 ...orderedTowerTypes
-                    .filter(T => new T([]).isDiscovered())
+                    .filter(T => {
+                        const t = new T([])
+                        return t.isDiscovered() && !t.hideWhenUndiscovered;
+                    })
                     .sort((a, b) => a.sourcePattern.hueOrder - b.sourcePattern.hueOrder)
                     .map((T, i, arr) =>
                         wrapEl(
@@ -599,6 +605,23 @@ const levelData = [
         narwhalData: [
             [[7, -1], [10,2], [11, 10], [11, 16]],
             ...range(11).map(n => 9 * n + 4),
+        ],
+    },
+    // Level 20: shadow runes
+    {
+        terrainString: './/.........//...//...////////6..///.////////.2../////////....2../////////..915..////////////..../////////////..../////////////.../////////.////...////////..///.73///////...///7;../////....///0.....2.....///.0.918.2.//////..415.415../////',
+        goalLocation: [8, 13],
+        extraSetup: t => {
+            t.rawTowers[2][4] = [4, 2];
+            t.rawTowers[13][10] = [4, 1];
+            t.rawTowers[6][6] = [4, 3];
+        },
+        waves: [
+            Enemy,
+            Enemy,
+            Enemy,
+            Enemy,
+            Enemy,
         ],
     },
     // Home screen

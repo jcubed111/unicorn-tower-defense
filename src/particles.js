@@ -75,8 +75,21 @@ class EnergyFadeParticle extends Particle{
     constructor(pos, baseColor, lifespan = 2) {
         super(pos);
         baseColor = baseColor.map(clampColorComponent);
-        this.grad = _EnergyFadeParticleGradCache[baseColor] ??= [
+        this.grad = _EnergyFadeParticleGradCache['w' + baseColor] ??= [
             lerpArr(WHITE, baseColor, 0.5),
+            baseColor,
+            withAlpha(baseColor, 0),
+        ];
+        this.lifespan = lifespan;
+    }
+}
+
+class EnergyFadeParticleDark extends Particle{
+    constructor(pos, baseColor, lifespan = 2) {
+        super(pos);
+        baseColor = baseColor.map(clampColorComponent);
+        this.grad = _EnergyFadeParticleGradCache['b' + baseColor] ??= [
+            lerpArr([0, 0, 0, 255], baseColor, 0.75),
             baseColor,
             withAlpha(baseColor, 0),
         ];

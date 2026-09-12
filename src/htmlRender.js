@@ -39,21 +39,26 @@ const getButtonBorderBackForColor = c => buttonBorderBackImageCache[colorAsStrin
 GameState.rerenderRunebook = () => {
     GameState.runebook.replaceChildren(
         div('C--sidebarTitle', "ᚱuneᛒooᛕ"),
-        ...orderedTowerTypes.map(T => {
-            const isDiscovered = new T([]).isDiscovered();
-            return withHoverInfo(
-                div('C--runeListing ' + (!isDiscovered && 'C--secondary'),
-                    div('', isDiscovered ? new T([]).displayName : '???'),
-                    T.sourcePattern.makeElement(isDiscovered),
-                ),
-                isDiscovered
-                    ? new T(T.sourcePattern.asGrid).asHoverEl()
-                    : div('',
-                        div('C--infoTitle', '???'),
-                        div('C--secondary', 'Build this pattern to reveal its details'),
+        ...orderedTowerTypes
+            .filter(T => {
+                const t = new T([]);
+                return t.isDiscovered() || !t.hideWhenUndiscovered;
+            })
+            .map(T => {
+                const isDiscovered = new T([]).isDiscovered();
+                return withHoverInfo(
+                    div('C--runeListing ' + (!isDiscovered && 'C--secondary'),
+                        div('', isDiscovered ? new T([]).displayName : '???'),
+                        T.sourcePattern.makeElement(isDiscovered),
                     ),
-            );
-        }).reverse(),
+                    isDiscovered
+                        ? new T(T.sourcePattern.asGrid).asHoverEl()
+                        : div('',
+                            div('C--infoTitle', '???'),
+                            div('C--secondary', 'Build this pattern to reveal its details'),
+                        ),
+                );
+            }).reverse(),
     );
 };
 

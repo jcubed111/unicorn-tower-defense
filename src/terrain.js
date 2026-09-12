@@ -148,8 +148,8 @@ class Terrain{
                         return;
                     }
 
-                    // Apply any shadow tower additions to this tower's level
-                    // unless we are a shadow tower. Also add this to the cache key.
+                    // Apply any boost tower additions to this tower's level
+                    // unless we are a boost tower. Also add this to the cache key.
                     const addLevel = CandidateTower == Boost
                         ? 0
                         : towerCells

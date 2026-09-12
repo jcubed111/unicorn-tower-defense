@@ -62,7 +62,10 @@ function renderTerrainBase(ctx, dt, terrain, wide=false) {
             }
             const sprite = isGround == 1
                 ? maybeComputedTower
-                    ? sprites[3].withColor([200,200,200,255])
+                    ? maybeComputedTower.isDarkTower
+                        ? sprites[3].withColor([150,150,150,255])
+                        : sprites[3].withColor([200,200,200,255])
+                    // ? sprites[3].withColor([200,200,200,255])
                     : sprites[(x + 3 * y) % 7 ? 3 : 2]
                 // rainbow
                 : sprites[37 + ((isGround - 2) >> 2)].withRot((isGround - 2) & 3)
@@ -91,6 +94,7 @@ function renderTerrainBase(ctx, dt, terrain, wide=false) {
                 maybeComputedTower.getColor(),
                 neighborPos =>
                     grid2dAt(terrain.computedTowersByLocation, neighborPos) == maybeComputedTower,
+                maybeComputedTower.isDarkTower,
             ).forEach(s => {
                 renderSprite(ctx, pos, s);
 
@@ -99,6 +103,9 @@ function renderTerrainBase(ctx, dt, terrain, wide=false) {
                     s,
                     pos,
                     (maybeComputedTower._particleFirstRender && dt) ? 0.5 : dt / 20,
+                    maybeComputedTower.isDarkTower
+                        ? (...args) => new EnergyFadeParticleDark(...args)
+                        : undefined,
                 );
             });
         }

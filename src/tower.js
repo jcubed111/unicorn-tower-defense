@@ -2,22 +2,29 @@
 const MAX_TOWER_LEVEL = 3;
 
 
-const normalizedTowerRgb = (r, g, b) => {
+const normalizedTowerRgb = (r, g, b, k = 0) => {
     const m = Math.max(r, g, b);
     if(!m) return [0, 0, 0, 255];
+    // kf shifts the whole thing toward black
+    const kf = 1 - k / (k + r + g + b);
     // We boost the luminance of blue, and drop the luminance of green, so it looks more aligned visually.
-    return [r / m * 255 + 76 * b / m, g / m * 204 + b / m * 61, b / m * 255, 255].map(clampColorComponent);
+    return [
+        kf * (r / m * 255 + 76 * b / m),
+        kf * (g / m * 204 + b / m * 61),
+        (kf * 0.5 + 0.5) * (b / m * 255),
+        255,
+    ].map(clampColorComponent);
 }
 
-function getTowerSprites(pos, rawCell, outerColor, isSameAt) {
+function getTowerSprites(pos, rawCell, outerColor, isSameAt, isDarkTower) {
     const [rawTowerType, rawTowerLevel] = rawCell;
     return [
-        rawTowerType == 4
+        rawTowerType == -1
             ? sprites[36]
             : sprites[rawTowerType * 4 + rawTowerLevel - 1].withColor(lerpArr(
                 outerColor,
-                normalizedTowerRgb(rawTowerType == 1, rawTowerType == 2, rawTowerType == 3),
-                0.5,
+                normalizedTowerRgb(rawTowerType == 1, rawTowerType == 2, rawTowerType == 3, rawTowerType == 4),
+                isDarkTower ? 0.75 : 0.5,
             )),
         // the side sprite for each direction; the CARDINAL_DIRS index is the rotation
         ...CARDINAL_DIRS.map((dir, sideRot) =>
@@ -37,6 +44,7 @@ function withTowerPattern(stringRepr, hueOrder, optsOrCls, elseCls=undefined) {
             frequency([...stringRepr], 'r'),
             frequency([...stringRepr], 'g'),
             frequency([...stringRepr], 'b'),
+            frequency([...stringRepr], 'k'),
         ),
         textColor = outerColor,
     } = optsOrCls == Cls ? {} : optsOrCls;
@@ -44,7 +52,7 @@ function withTowerPattern(stringRepr, hueOrder, optsOrCls, elseCls=undefined) {
     // Grid<null | [towerType, 1]>
     const asGrid = transposeGrid2d(
         stringRepr.split('|').map(row => row.split('').map(
-            t => (t = ' rgb'.indexOf(t)) > 0 ? [t, 1] : null,
+            t => (t = ' rgbk'.indexOf(t)) > 0 ? [t, 1] : null,
         )),
     );
     const allForms = allFormsGrid2d(asGrid)
@@ -54,14 +62,19 @@ function withTowerPattern(stringRepr, hueOrder, optsOrCls, elseCls=undefined) {
         textColor,
         allForms,
         // makeElement: (isDiscovered, forceComponentLevel, cellSizeRem) => towerGridToElement(asGrid, outerColor, isDiscovered, forceComponentLevel, cellSizeRem),
-        makeElement: (...args) => towerGridToElement(asGrid, outerColor, ...args),
+        makeElement: (...args) => towerGridToElement(
+            asGrid,
+            outerColor,
+            stringRepr.includes('k') || new Cls([]).isDarkTower,
+            ...args,
+        ),
         asGrid,
         hueOrder,
     };
     return Cls;
 }
 
-function towerGridToElement(towerGrid, outerColor, isDiscovered = true, forceComponentLevel = 0, cellSizeRem = 7.5) {
+function towerGridToElement(towerGrid, outerColor, isDarkTower, isDiscovered = true, forceComponentLevel = 0, cellSizeRem = 7.5) {
     // towerGrid: Grid2d<[towerType, level] | null>
     // If not discovered, renders as `?`s
     return makeSpriteCanvas(ctx => {
@@ -69,9 +82,10 @@ function towerGridToElement(towerGrid, outerColor, isDiscovered = true, forceCom
             if(tower) {
                 getTowerSprites(
                     pos,
-                    isDiscovered ? [tower[0], forceComponentLevel || tower[1]] : [4, 1],
+                    isDiscovered ? [tower[0], forceComponentLevel || tower[1]] : [-1, 1],
                     isDiscovered ? outerColor : [150, 150, 150, 255],
                     pos => grid2dAt(towerGrid, pos)?.[0] > 0,
+                    isDarkTower,
                 ).forEach(
                     s => renderSprite(ctx, pos, s)
                 );
@@ -88,9 +102,11 @@ class Tower{
     charge = 0;
     damage = 2;
     extraDescription;
+    hideWhenUndiscovered = false;  // don't show in runebook unless discovered
     /** @type {number} */ level;
 
     size = 0;
+    isDarkTower = false;
     _particleFirstRender = true;
 
     constructor(componentTowers, startingCharge = 0, levelAdd = 0) {
@@ -105,6 +121,7 @@ class Tower{
             // only built for the runebook, so their center is meaningless anyway.
             this.center = addVec(this.center, maybeTower[2] ?? [0, 0]);
             this.size++;
+            if(maybeTower[0] == 4) this.isDarkTower = true;
         });
         this.center = addVecWithBScaled([0.5, 0.5], this.center, 1 / this.size);
     }
@@ -116,6 +133,7 @@ class Tower{
             div('C--floatRight', towerGridToElement(
                 this.componentTowers,
                 this.getColor(),
+                this.isDarkTower,
             )),
             div('C--infoTitle', `${this.displayName}`),
             div('C--secondary', `Level ${this.level}`),
@@ -218,7 +236,9 @@ class Tower{
         ParticleSystem.spawnParticlePixelLine(
             from,
             target.pos,
-            pos => new EnergyFadeParticle(pos, this.getColor(), 0.5),
+            pos => this.isDarkTower
+                ? new EnergyFadeParticleDark(pos, this.getColor(), 0.5)
+                : new EnergyFadeParticle(pos, this.getColor(), 0.5),
         );
 
         const [r, g, b] = this.getColor();
@@ -242,7 +262,8 @@ let Boost,
     Lightning,
     Red,
     Green,
-    Blue;
+    Blue,
+    Black;
 
 const orderedTowerTypes = [
     // IMPORTANT: this needs to be ordered from highest priority -> lowest. Usually this means larger towers come first.
@@ -264,6 +285,7 @@ const orderedTowerTypes = [
         damage = 2 * this.level;
         range = 2.5;
         extraDescription = "Adds this tower's level to the enclosed tower";
+        isDarkTower = true;
 
         constructor(...args) {
             super(...args);
@@ -491,6 +513,30 @@ const orderedTowerTypes = [
         }
     }),
 
+    /*Black = */withTowerPattern('rk', 11, class extends Tower{
+        hideWhenUndiscovered = true;
+        displayName = 'Magenta';
+        range = 1.5;
+        chargeTime = 2;
+        damage = 3 * this.level;
+    }),
+
+    /*Black = */withTowerPattern('gk', 11, class extends Tower{
+        hideWhenUndiscovered = true;
+        displayName = 'Forest';
+        range = 1.5;
+        chargeTime = 2;
+        damage = 3 * this.level;
+    }),
+
+    /*Black = */withTowerPattern('bk', 11, class extends Tower{
+        hideWhenUndiscovered = true;
+        displayName = 'Sea';
+        range = 1.5;
+        chargeTime = 2;
+        damage = 3 * this.level;
+    }),
+
     ManaLeech = withTowerPattern('gb', 9, class extends Tower{
         displayName = 'Mana Leech';
         range = 2 + this.level / 4;
@@ -571,6 +617,14 @@ const orderedTowerTypes = [
                 }
             }
         }
+    }),
+
+    Black = withTowerPattern('k', 11, class extends Tower{
+        hideWhenUndiscovered = true;
+        displayName = 'Black';
+        range = 1.5;
+        chargeTime = 2;
+        damage = 3 * this.level;
     }),
 
     Red = withTowerPattern('r', 1, class extends Tower{
