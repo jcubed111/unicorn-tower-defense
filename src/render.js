@@ -52,6 +52,14 @@ function renderTerrainBase(ctx, dt, terrain, wide=false) {
             renderSprite(ctx, pos, sprites[performance.now() & 1024 ? 7 : 11]);
         }
         if(isGround) {
+            // Rainbow shadow?
+            if(isGround != 1) {
+                renderSprite(
+                    ctx,
+                    addVec(pos, [0, 5/15]),
+                    sprites[33 + ((isGround - 2) >> 2)].withColor([0, 0, 0, 25]).withRot((isGround - 2) & 3),
+                );
+            }
             const sprite = isGround == 1
                 ? maybeComputedTower
                     ? sprites[3].withColor([200,200,200,255])
