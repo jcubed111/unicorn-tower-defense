@@ -1,3 +1,5 @@
+![Rune Mage Tower Defense logo](thumbnail.png)
+
 # Rune Mage Tower Defense
 
 Tower Defense meets Tetris in this rune-building strategy game.
@@ -52,3 +54,5 @@ Different types of towers are good against different enemies (ex, lightning is g
 If the game is too difficult, try to discover more types of towers. Check out the Runebook to see which shapes form valid towers.
 
 If the game is too easy, try to pass the levels without losing any health. Every level (yes, even that one) can be perfected with the right combination of towers.
+
+![Gameplay preview](hero.png)
