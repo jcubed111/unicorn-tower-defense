@@ -82,10 +82,10 @@ class Enemy{
 
     getSprites() {
         const s = sprites[
-            16 + ((GameState.terrain.terrainTotalTime * 3 * this.speed) & 3)
+            20 + ((GameState.terrain.terrainTotalTime * 3 * this.speed) & 3)
         ].withColor(this.baseSpriteColor);
         return [
-            ...(this.slowEffects.length ? [sprites[20].withColor([59, 124, 255, 255])] : []),
+            ...(this.slowEffects.length ? [sprites[24].withColor([59, 124, 255, 255])] : []),
             this.poisonEffects.length ? s.withColor([150, 255, 150, 255]) : s,
         ];
     }
@@ -206,7 +206,7 @@ class Pegacorn extends Enemy{
     }
 
     getSprites() {
-        return [...super.getSprites(), sprites[37 + ((GameState.terrain.terrainTotalTime * 3 * this.speed) & 1)]];
+        return [...super.getSprites(), sprites[41 + ((GameState.terrain.terrainTotalTime * 3 * this.speed) & 1)]];
     }
 
     getTarget(square) {
@@ -304,7 +304,7 @@ class Rainbowicorn extends Enemy{
             GameState.terrain.recomputeDerivedValues();
 
             ParticleSystem.sparkleSpriteAt(
-                sprites[33].withRot(isVertical ? 0 : 1),
+                sprites[37].withRot(isVertical ? 0 : 1),
                 bridgePos,
                 0.25,
             );
@@ -338,7 +338,7 @@ class Narwhalicorn extends Enemy{
     }
 
     getSprites() {
-        return [sprites[28].withColor([0, 0, 0, 70])];
+        return [sprites[32].withColor([0, 0, 0, 70])];
     }
 
     getTarget(square) {
@@ -356,7 +356,7 @@ class Kingicorn extends Enemy{
     banishDamage = 5;
 
     getSprites() {
-        return [...super.getSprites(), sprites[43]];
+        return [...super.getSprites(), sprites[47]];
     }
 
     onDeath() {
@@ -389,7 +389,7 @@ class Kingicorn2 extends Enemy{
     baseSpriteColor = [150, 150, 150, 255];
 
     getSprites() {
-        return [...super.getSprites(), sprites[43]];
+        return [...super.getSprites(), sprites[47]];
     }
 
     onDeath() {
@@ -423,7 +423,7 @@ class Kingicorn3 extends Enemy{
     _spawnClock = 0;
 
     getSprites() {
-        return [...super.getSprites(), sprites[43]];
+        return [...super.getSprites(), sprites[47]];
     }
 
     step(dt) {

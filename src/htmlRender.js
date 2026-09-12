@@ -4,8 +4,8 @@ const scrollBackImage = makeSpriteCanvas(ctx => {
     ctx.fillRect(0, 10, 10, 10);
     ctx.fillStyle = '#404040';
     ctx.fillRect(0, 10, 1, 10);
-    renderSprite(ctx, [0, 0], sprites[24]);
-    renderSprite(ctx, [0, 1 + 1/15], sprites[24]);
+    renderSprite(ctx, [0, 0], sprites[28]);
+    renderSprite(ctx, [0, 1 + 1/15], sprites[28]);
 }, 1, 2).toDataURL();
 const scrollDiv = (...divArgs) => {
     const el = div(...divArgs);
@@ -19,7 +19,7 @@ const scrollDiv = (...divArgs) => {
 const runeBorderBackImageCache = {};
 const runeBorderDiv = (color, bgAlpha=102) => (...divArgs) => {
     runeBorderBackImageCache[color]
-        ??= sprites[26].withColor(color).asImage.toDataURL();
+        ??= sprites[30].withColor(color).asImage.toDataURL();
     const el = div(...divArgs);
     el.style.borderStyle = `solid`;
     el.style.borderWidth = `4rem`;
@@ -32,8 +32,8 @@ const runeBorderDiv = (color, bgAlpha=102) => (...divArgs) => {
 const buttonBorderBackImageCache = {};
 const getButtonBorderBackForColor = c => buttonBorderBackImageCache[colorAsString(c)]
     ??= [
-        sprites[23].withColor(c).asImage.toDataURL(),
-        sprites[23].withColor(c).withRot(1).asImage.toDataURL(),
+        sprites[27].withColor(c).asImage.toDataURL(),
+        sprites[27].withColor(c).withRot(1).asImage.toDataURL(),
     ];
 
 GameState.rerenderRunebook = () => {
@@ -80,7 +80,7 @@ const initHtml = () => {
                     div('C--manaColor', GameState.manaDisplay = styled('span'), " ᚯ"),
                     div('C--heartNumber', GameState.heartDisplay = styled('span', '', 10)),
                     wrapEl(
-                        div('C--button', wrapEl(sprites[39].asImage, c => c.style.width = '10rem')),
+                        div('C--button', wrapEl(sprites[43].asImage, c => c.style.width = '10rem')),
                         e => e.addEventListener('click', _ => {
                             if(confirm('Give up?')) GameState.terrain.lose();
                         }),
@@ -132,8 +132,8 @@ const initHtml = () => {
                     makeSpriteCanvas(
                         ctx => {
                             range(4).forEach(i => {
-                                renderSprite(ctx, [i, 0], sprites[44 + i]);
-                                renderSprite(ctx, [i, 1], sprites[48 + i]);
+                                renderSprite(ctx, [i, 0], sprites[48 + i]);
+                                renderSprite(ctx, [i, 1], sprites[52 + i]);
                             });
                         },
                         4, 2, 90,

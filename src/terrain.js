@@ -283,7 +283,7 @@ class Terrain{
                 if(this.health >= 0) {
                     ParticleSystem.explodeSpritesAt(
                         HEART_POS,
-                        sprites[29].withColor([20, 20, 20, 255]),
+                        sprites[33].withColor([20, 20, 20, 255]),
                     );
                     AudioSystem.playRespawn();
                 }
@@ -310,7 +310,7 @@ class Terrain{
             this.screenShake += 6;
             ParticleSystem.explodeSpritesAt(
                 addVec(this.goalLocation, [0, -0.333]),  // needs to match wizard pos in render
-                sprites[31],
+                sprites[35],
             );
         }
         this.health = -1;
@@ -434,15 +434,15 @@ class Terrain{
         // this prevents generating (and caching) 255 different sprites, instead
         // caching only around 32
         const c = (255 * this.mana / (this.mana + 50)) & ~7;
-        renderSprite(ctx, MANA_POOL_POS, sprites[25].withColor([c, c, c, 255]));
+        renderSprite(ctx, MANA_POOL_POS, sprites[29].withColor([c, c, c, 255]));
         ParticleSystem.sparkleSpriteAt(
-            sprites[25],
+            sprites[29],
             MANA_POOL_POS,
             rate * dt,
         );
 
         // Draw heart
-        renderSprite(ctx, HEART_POS, sprites[29]);
+        renderSprite(ctx, HEART_POS, sprites[33]);
     }
 }
 
@@ -494,17 +494,17 @@ class LevelSelectTerrain extends Terrain{
             if(!i) return;
             if(this.levelIsUnlocked[i]) {
                 if(this.perfectedLevelSet.has(i)) {
-                    renderSprite(ctx, addVec(pos, [0, -0.1]), sprites[21]);
+                    renderSprite(ctx, addVec(pos, [0, -0.1]), sprites[25]);
                     ctx.fillStyle = '#fff';
                 }else if(this.passedLevelSet.has(i)) {
-                    renderSprite(ctx, addVec(pos, [0, -0.1]), sprites[36]);
+                    renderSprite(ctx, addVec(pos, [0, -0.1]), sprites[40]);
                     ctx.fillStyle = '#06b04e';
                 }else{
                     ctx.fillStyle = '#fff';
                 }
                 ctx.fillText(i, ...addVecWithBScaled([7.5, 10], pos, 15));
             }else{
-                renderSprite(ctx, pos, sprites[32].withColor([10, 56, 10, 255]));
+                renderSprite(ctx, pos, sprites[36].withColor([10, 56, 10, 255]));
             }
         });
     }

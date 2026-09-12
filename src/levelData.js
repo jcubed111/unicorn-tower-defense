@@ -67,9 +67,9 @@ const runOrbPonder = TowerType => () => {
 
     return showEventText()(
         div('C--orbPonderWrapper',
-            wrapEl(sprites[40].asImage, el => el.style.width = '60rem'),
+            wrapEl(sprites[44].asImage, el => el.style.width = '60rem'),
             wrapEl(mysteryShape,        el => el.style.width = '27rem'),
-            wrapEl(sprites[41].asImage, el => el.style.width = '60rem'),
+            wrapEl(sprites[45].asImage, el => el.style.width = '60rem'),
         ),
         `Pondering your orb reveals a vision...`,
     );
@@ -91,19 +91,19 @@ const levelData = [
     {
         preLevelStoryContent: async () => {
             await showEventText()(
-                wrapEventImage(sprites[31]),
+                wrapEventImage(sprites[35]),
                 `An `,
                 styled('b', '', `EVIL RUNE MAGE`),
                 ` has descended upon the Unicorn Archipelago!\n\n(That's you)`,
             );
             await showEventText()(
-                wrapEventImage(sprites[22]),
+                wrapEventImage(sprites[26]),
                 `You've stolen the\n`,
                 styled('b', '', `GOLDEN HORN,`),
                 `\nbut the unicorns want it back.\n\n(Obviously)`,
             );
             await showEventText()(
-                wrapEventImage(sprites[18].withRot(2)),
+                wrapEventImage(sprites[22].withRot(2)),
                 `Defeat the attacking unicorns and escape with your\n`,
                 styled('b', '', `RIGHTEOUSLY STOLEN BOOTY`),
             );
@@ -319,7 +319,7 @@ const levelData = [
             await showEventText()(
                 wrapEventImage(spriteListToEl([
                     sprites[3],
-                    sprites[26].withColor([0, 0, 0, 255]),
+                    sprites[30].withColor([0, 0, 0, 255]),
                     sprites[6].withColor([255, 0, 0, 255]),
                 ])),
                 `A `,
@@ -347,7 +347,7 @@ const levelData = [
             terrain.markLocation(
                 [5, 8],
                 [
-                    sprites[26].withColor([0, 0, 0, 255]),
+                    sprites[30].withColor([0, 0, 0, 255]),
                     sprites[6].withColor([255, 0, 0, 255]),
                 ],
                 div('',
@@ -382,7 +382,7 @@ const levelData = [
             terrain.markLocation(
                 [3, 12],
                 [
-                    sprites[26].withColor([0, 0, 0, 255]),
+                    sprites[30].withColor([0, 0, 0, 255]),
                     sprites[10].withColor([112, 99, 255, 255]),
                 ],
                 div('',
@@ -417,7 +417,7 @@ const levelData = [
             terrain.markLocation(
                 [7, 8],
                 [
-                    sprites[26].withColor([0, 0, 0, 255]),
+                    sprites[30].withColor([0, 0, 0, 255]),
                     sprites[10].withColor([0, 204, 0, 255]),
                 ],
                 div('',
@@ -515,8 +515,8 @@ const levelData = [
     {
         preLevelStoryContent: () => showEventText()(
             wrapEventImage(spriteListToEl([
-                sprites[18].withRot(2),
-                sprites[43].withRot(2),
+                sprites[22].withRot(2),
+                sprites[47].withRot(2),
             ])),
             `This is it!\n\nDefeat the Kingicorn and escape with the Golden Horn!`,
         ),
@@ -551,7 +551,7 @@ const levelData = [
         ],
         postLevelStoryContent: () => showEventText()(
             div('C--orbPonderWrapper',
-                wrapEl(sprites[42].asImage, el => el.style.width = '40rem'),
+                wrapEl(sprites[46].asImage, el => el.style.width = '40rem'),
                 // Sorted by hue so the ring of runes reads as a rainbow.
                 ...orderedTowerTypes
                     .filter(T => new T([]).isDiscovered())

@@ -47,10 +47,10 @@ const showLevelEndMenu = (levelNum, isSuccess, isPerfect) => {
     const img =
         isPerfect
             ? makeSpriteCanvas(ctx => {
-                renderSprite(ctx, [0, 0], sprites[21]);
-                renderSprite(ctx, [0, 8/15], sprites[31]);
+                renderSprite(ctx, [0, 0], sprites[25]);
+                renderSprite(ctx, [0, 8/15], sprites[35]);
             }, 1, 23/15)
-            : sprites[isSuccess ? 31 : 27];
+            : sprites[isSuccess ? 35 : 31];
 
     return showEventText(
         runeBorderDiv([16, 16, 16, 255], 200),

@@ -57,7 +57,7 @@ function renderTerrainBase(ctx, dt, terrain, wide=false) {
                 renderSprite(
                     ctx,
                     addVec(pos, [0, 5/15]),
-                    sprites[33 + ((isGround - 2) >> 2)].withColor([0, 0, 0, 25]).withRot((isGround - 2) & 3),
+                    sprites[37 + ((isGround - 2) >> 2)].withColor([0, 0, 0, 25]).withRot((isGround - 2) & 3),
                 );
             }
             const sprite = isGround == 1
@@ -65,7 +65,7 @@ function renderTerrainBase(ctx, dt, terrain, wide=false) {
                     ? sprites[3].withColor([200,200,200,255])
                     : sprites[(x + 3 * y) % 7 ? 3 : 2]
                 // rainbow
-                : sprites[33 + ((isGround - 2) >> 2)].withRot((isGround - 2) & 3)
+                : sprites[37 + ((isGround - 2) >> 2)].withRot((isGround - 2) & 3)
             renderSprite(ctx, pos, sprite);
             // sparkle the rainbow paths
             if(isGround != 1) {
@@ -154,11 +154,11 @@ function render(dt) {
 
     // Draw wizard
     if(terrain.health >= 0) {
-        renderSprite(ctx, terrain.goalLocation, sprites[30]);
+        renderSprite(ctx, terrain.goalLocation, sprites[34]);
         // needs to match explode location in Terrain.step
-        renderSprite(ctx, addVec(terrain.goalLocation, [0, -0.333]), sprites[31]);
+        renderSprite(ctx, addVec(terrain.goalLocation, [0, -0.333]), sprites[35]);
     }else{
-        renderSprite(ctx, terrain.goalLocation, sprites[30].withColor([0, 0, 0, 127]));
+        renderSprite(ctx, terrain.goalLocation, sprites[34].withColor([0, 0, 0, 127]));
     }
 
     // Draw enemies
@@ -246,7 +246,7 @@ function render(dt) {
                 const spriteIndex = [
                     4, 8, 12,  // runes
                     0, 0, 0,  // spells
-                    23,  // level select
+                    27,  // level select
                 ][GameState.drawType - 1] + spriteOffsetForLevel;
                 renderSprite(
                     ctx,

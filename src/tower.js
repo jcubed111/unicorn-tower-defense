@@ -13,7 +13,7 @@ function getTowerSprites(pos, rawCell, outerColor, isSameAt) {
     const [rawTowerType, rawTowerLevel] = rawCell;
     return [
         rawTowerType == 4
-            ? sprites[32]
+            ? sprites[36]
             : sprites[rawTowerType * 4 + rawTowerLevel - 1].withColor(lerpArr(
                 outerColor,
                 normalizedTowerRgb(rawTowerType == 1, rawTowerType == 2, rawTowerType == 3),
