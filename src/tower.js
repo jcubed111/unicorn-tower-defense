@@ -25,11 +25,21 @@ function getTowerSprites(pos, rawCell, outerColor, isSameAt) {
     ];
 }
 
-function withTowerPattern(stringRepr, hueOrder, Cls) {
+function withTowerPattern(stringRepr, hueOrder, optsOrCls, elseCls=undefined) {
     // Decorates a Tower class to add it's pattern as a static.
     // Used over `static` since that causes closure compler to freak.
     // NOTE: super important that stringRepr is a perfect grid with every row being
     // the same size. We don't check but the game will crash otherwise.
+
+    const Cls = elseCls ?? optsOrCls;
+    const {
+        outerColor = normalizedTowerRgb(
+            frequency([...stringRepr], 'r'),
+            frequency([...stringRepr], 'g'),
+            frequency([...stringRepr], 'b'),
+        ),
+        textColor = outerColor,
+    } = optsOrCls == Cls ? {} : optsOrCls;
 
     // Grid<null | [towerType, 1]>
     const asGrid = transposeGrid2d(
@@ -39,14 +49,9 @@ function withTowerPattern(stringRepr, hueOrder, Cls) {
     );
     const allForms = allFormsGrid2d(asGrid)
 
-    const values = range(3).fill(0);
-    forEachGrid2d(asGrid, c => {
-        if(c) values[c[0] - 1]++;
-    });
-    const outerColor = normalizedTowerRgb(...values);
-
     Cls.sourcePattern = {
         outerColor,
+        textColor,
         allForms,
         // makeElement: (isDiscovered, forceComponentLevel, cellSizeRem) => towerGridToElement(asGrid, outerColor, isDiscovered, forceComponentLevel, cellSizeRem),
         makeElement: (...args) => towerGridToElement(asGrid, outerColor, ...args),
@@ -88,10 +93,10 @@ class Tower{
     size = 0;
     _particleFirstRender = true;
 
-    constructor(componentTowers, startingCharge = 0) {
+    constructor(componentTowers, startingCharge = 0, levelAdd = 0) {
         this.componentTowers = componentTowers; // Grid2d<[type, level, pos]>
         this.center = [0, 0];
-        this.level = 0;
+        this.level = levelAdd;
         this.charge = startingCharge;
         forEachGrid2d(componentTowers, maybeTower => {
             if(!maybeTower) return;
@@ -106,7 +111,7 @@ class Tower{
 
     _asHoverElResult;
     asHoverEl() {
-        const color = colorAsString(this.getColor());
+        const color = colorAsString(this.getTextColor());
         return this._asHoverElResult ??= div('',
             div('C--floatRight', towerGridToElement(
                 this.componentTowers,
@@ -177,6 +182,10 @@ class Tower{
         return this.constructor.sourcePattern.outerColor;
     }
 
+    getTextColor() {
+        return this.constructor.sourcePattern.textColor;
+    }
+
     step(dt) {
         this.charge = Math.min(this.charge + dt, this.chargeTime);
         if(this.charge >= this.chargeTime) {
@@ -217,7 +226,8 @@ class Tower{
     }
 }
 
-let Meteor,
+let Boost,
+    Meteor,
     Heavy,
     Sniper,
     Slow,
@@ -244,6 +254,40 @@ const orderedTowerTypes = [
     //     displayName = 'Fear';
     //     // TODO
     // }),
+
+    Boost = withTowerPattern(' r |grb|g b', 12.5, {
+        outerColor: [20, 20, 20, 255],
+        textColor: [200, 200, 200, 255],
+    }, class extends Tower{
+        displayName = 'Boost';
+        chargeTime = 4;
+        damage = 2 * this.level;
+        range = 2.5;
+        extraDescription = "Adds this tower's level to the enclosed tower";
+
+        constructor(...args) {
+            super(...args);
+
+            if(this.componentTowers.length) {
+                // componentTowers is [] for mock towers so this fails
+                // componentTowers: Grid2d<[type, level, pos] | null>
+                const [[rx1, ry1], [rx2, ry2]] = this.componentTowers
+                    .flat()
+                    .filter(a => a)
+                    .filter(([t]) => t == 1)
+                    .map(([t, l, pos]) => pos ?? [0, 0]);
+                const [[gx1, gy1] = [0, 0], [bx1, by1] = [0, 0]] = this.componentTowers
+                    .flat()
+                    .filter(a => a)
+                    .map(([t, l, pos]) => pos ?? [0, 0])
+                    .filter(([x, y]) => x != rx1 && x != rx2 && y!= ry1 && y != ry2);
+                this.boostByLevelSquare = [
+                    (gx1 + bx1) >> 1,
+                    (gy1 + by1) >> 1,
+                ];
+            }
+        }
+    }),
 
     Meteor = withTowerPattern(' g |rrr| b ', 2, class extends Tower{
         displayName = 'Meteor';

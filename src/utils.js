@@ -98,7 +98,6 @@ const grid2dToIndexed = grid => grid.flatMap((col, x) => col.map((cell, y) => [x
 /* Color helpers */
 // All the color helpers assume colors are 4 components, with EVERY component in [0, 255]
 // (lerpArr is the exception: it's length-agnostic, and is used on vectors too)
-const lerpArr = (a, b, f) => a.map((v, i) => v * (1 - f) + b[i] * f);
 const clampColorComponent = v => v < 0 ? 0 : v > 255 ? 255 : ~~v;
 const colorAsString = c => c['s'] ??= `#` + c.map(v => clampColorComponent(v).toString(16).padStart(2, '0')).join('');
 const multiplyColor = (a, b) => a.map((v, i) => v * b[i] / 255);
@@ -114,3 +113,7 @@ const lerpGrad = (grad, f) => {
 const withAlpha = (color, a) => [...color.slice(0, 3), a];
 const WHITE = [255, 255, 255, 255];
 const HALF_WHITE = [255, 255, 255, 127];
+
+/* Array-like helpers */
+const lerpArr = (a, b, f) => a.map((v, i) => v * (1 - f) + b[i] * f);
+const frequency = (arr, needle) => arr.reduce((acc, v) => acc + (v == needle ? 1 : 0), 0);

@@ -109,6 +109,7 @@ class Terrain{
         const prevComputedTowersByLocation = this.computedTowersByLocation;
         this.computedTowersByLocation = grid2d(this.size, 0);
         this.computedTowersArr = [];
+        const shadowAddSquares = {};  // Record<[x,y], addLevel>
 
         orderedTowerTypes.forEach(CandidateTower =>
             // We can pick any Grid2d[this.size] here, but this.rawTowers was used above
@@ -147,16 +148,26 @@ class Terrain{
                         return;
                     }
 
+                    // Apply any shadow tower additions to this tower's level
+                    // unless we are a shadow tower. Also add this to the cache key.
+                    const addLevel = CandidateTower == Boost
+                        ? 0
+                        : towerCells
+                            .flat()
+                            .filter(a => a)
+                            .map(([t, l, pos]) => shadowAddSquares[pos] ?? 0)
+                            .reduce((acc, v) => acc + v, 0);
                     // Array.toString flattens nested arrays with commas, which
-                    // is as discriminating a cache key here as JSON was (every
-                    // cell is null or a fixed [type, level, [x, y]]).
-                    const key = '' + towerCells;
+                    // is a discriminating a cache key here
+                    // (every cell is null or a fixed [type, level, [x, y]]).
+                    const key = '' + towerCells + '|' + addLevel;
                     const tower = this.computedTowerCache[key] ??= new CandidateTower(
                         towerCells,
                         // Keep charge when upgrading to a higher level of the same tower.
                         // This works because prevTower will have a deterministic value in this
                         // case, and will be a different type if this isn't a level upgrade.
                         prevTower.constructor === CandidateTower ? prevTower.charge : 0,
+                        addLevel,
                     );
                     forEachGrid2d(towerCells, maybeTower => {
                         if(!maybeTower) return;
@@ -164,6 +175,9 @@ class Terrain{
                         unjoinedTowerColors[x][y] = 0;
                         this.computedTowersByLocation[x][y] = tower;
                     });
+                    if(tower.boostByLevelSquare) {
+                        shadowAddSquares[tower.boostByLevelSquare] = tower.level;
+                    }
                     this.computedTowersArr.push(tower);
                     tower.setDiscovered();
                 })
